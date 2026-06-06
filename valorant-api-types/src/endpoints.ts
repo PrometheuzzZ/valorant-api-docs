@@ -81,6 +81,7 @@ import {riotClientConfigEndpoint} from './endpoints/auth/RiotClientConfig'
 import {partyDisableCodeEndpoint} from './endpoints/party/PartyDisableCode'
 import {partyGenerateCodeEndpoint} from './endpoints/party/PartyGenerateCode'
 import {partyJoinByCodeEndpoint} from './endpoints/party/PartyJoinByCode'
+import {matchReplayInfoEndpoint} from './endpoints/replays/MatchReplayInfo'
 
 export const endpoints = {
     fetchContentEndpoint,
@@ -173,5 +174,7 @@ export const endpoints = {
     playerInfoEndpoint,
     riotGeoEndpoint,
     pasTokenEndpoint,
-    riotClientConfigEndpoint
+    riotClientConfigEndpoint,
+
+    matchReplayInfoEndpoint
 }
