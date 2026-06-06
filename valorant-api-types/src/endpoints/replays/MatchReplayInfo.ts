@@ -8,7 +8,7 @@ export const matchReplayInfoEndpoint = {
     queryName: 'MatchHistoryQuery_GetMatchFileUrls',
     category: 'Replays',
     type: 'other',
-    suffix: 'https://{region}c1.pp.sgp.pvp.net/match-history-query/v3/products/valorant/players/{puuid}/infoTypes/{type}',
+    suffix: 'https://euc1.pp.sgp.pvp.net/match-history-query/v3/products/valorant/players/{puuid}/infoTypes/{type}',
     riotRequirements: {
         token: true,
         entitlement: true,

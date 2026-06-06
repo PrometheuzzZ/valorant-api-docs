@@ -87,6 +87,12 @@ export * from './endpoints/auth/RiotGeo'
 export * from './endpoints/auth/PASToken'
 export * from './endpoints/auth/RiotClientConfig'
 
+export * from './endpoints/pvp/PlayerSession'
+export * from './endpoints/store/Storefront2'
+export * from './endpoints/store/CreateOrder'
+export * from './endpoints/store/GetOrder'
+export * from './endpoints/replays/MatchReplayInfo'
+
 export * from './endpoints'
 export * from './commonTypes'
 export * from './ValorantEndpoint'

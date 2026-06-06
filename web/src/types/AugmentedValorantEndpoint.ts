@@ -1,5 +1,5 @@
 import type { ValorantEndpoint } from "valorant-api-types";
-import { endpoints as existingEndpoints } from "valorant-api-types";
+import { endpoints as existingEndpoints, matchReplayInfoEndpoint } from "valorant-api-types";
 import { z } from "zod";
 
 export type AugmentedValorantEndpoint = Omit<ValorantEndpoint, 'method'> & {
@@ -37,6 +37,7 @@ export const endpoints: {[key: string]: AugmentedValorantEndpoint} = {
             ['chat server port', z.string().describe('The chat server port from the [GET Riot Client Config]. Only observed as `5223`')]
         ])
     },
+    matchReplayInfoEndpoint: matchReplayInfoEndpoint as unknown as AugmentedValorantEndpoint,
     ...(existingEndpoints as unknown as {[key: string]: AugmentedValorantEndpoint}),
     localWebSocketEndpoint: {
         name: 'Local WebSocket',
