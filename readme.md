@@ -1,6 +1,6 @@
 # Valorant API Docs
 
-### **To read documentation and get started, go to <https://valorant-api-docs.vercel.app>**
+### **To read documentation and get started, go to <https://valdocs.prometheuz.me>**
 
 This is a project designed to automatically document Valorant endpoints based on a typescript module describing endpoints and types.
 This module is published on npm so it can be consumed from other projects to use the types, generate documentation, or generate api code.
