@@ -7,61 +7,174 @@ const insomniaImportURL = `insomnia://app/import?uri=${Astro.url.origin}/insomni
 ---
 
 <Layout title="Valorant API Docs">
-	<main class="mx-auto p-3 max-w-4xl text-lg leading-normal">
-		<h1 class="text-center mb-8 text-4xl">Valorant API Docs <span class="text-gray-500 dark:text-gray-300 text-xl">(unofficial)</span></h1>
+	<main class="main-content">
+		<header class="page-header">
+			<h1>Valorant API Docs</h1>
+			<span class="page-subtitle">unofficial · community maintained</span>
+		</header>
 
-		<p>
-			This is a site dedicated to documenting the Valorant API endpoints the client uses internally.
-			These endpoints are <span class="font-bold">not</span> officially supported.
-			However, as long as you use common sense and don't do anything a Riot employee would frown at, you won't get banned.
-		</p>
-		<p>
-			You can join the Discord server here: <a class="link" href="https://discord.gg/a9yzrw3KAm">https://discord.gg/a9yzrw3KAm</a>
-		</p>
-		
-		<h2 class="text-xl font-semibold mt-4 mb-2">Getting Started</h2>
-		<p>
-			One of the easiest ways to get started and get a feel for what kinds of data you can get from the apis is to play around with the requests yourself in a REST client like Insomnia.
-			<ol class="list-decimal ml-6 space-y-2 my-2">
-				<li>
-					Download and install Insomnia here: <a class="link" href="https://insomnia.rest/download">https://insomnia.rest/download</a>
-					<ul class="list-disc ml-6">
-						<li>
-							Recent updates to Insomnia require a Kong account. For a fork of Insomnia that does not require an account, see
-							<a class="link" href="https://github.com/ArchGPT/insomnium">https://github.com/ArchGPT/insomnium</a>
-						</li>
-					</ul>
-				</li>
-				<li>
-					<InsomniaButton href="insomnia://plugins/install?name=insomnia-plugin-valorant">Add insomnia-plugin-valorant</InsomniaButton>
-					<ul class="list-disc ml-6">
-						<li>
-							This plugin autocompletes useful API placeholders such as auth info, lockfile data, and player info.
-							For more info, see <a class="link" href="https://github.com/techchrism/insomnia-plugin-valorant">https://github.com/techchrism/insomnia-plugin-valorant</a>
-						</li>
-					</ul>
-				</li>
-				<li>
-					<InsomniaButton href={insomniaImportURL}>Import Workspace</InsomniaButton>
-				</li>
-			</ol>
-			You can right-click a request in Insomnia and click "Generate Code" to see how to make the request in the language and library of your choice.
-		</p>
+		<div class="card">
+			<p>
+				This site documents the Valorant API endpoints the client uses internally.
+				These endpoints are <strong>not</strong> officially supported.
+				Use common sense and you won't get banned.
+			</p>
+			<p style="margin-top: 0.75rem">
+				Join the Discord: <a class="link" href="https://discord.gg/a9yzrw3KAm">discord.gg/a9yzrw3KAm</a>
+			</p>
+		</div>
 
-		<h2 class="text-xl font-semibold mt-4 mb-2">Investigating Endpoints</h2>
-		<p>
-			Endpoints are commonly found from the ShooterGame log located at <SimpleCode>%LocalAppData%\VALORANT\Saved\Logs\ShooterGame.log</SimpleCode>
-			You can use <a class="link" href="https://github.com/techchrism/valorant-log-endpoint-scraper">Valorant Log Endpoint Scraper</a> to quickly export a list of endpoints and other urls found in the log.
-		</p>
+		<section class="section">
+			<h2 class="section-title">Getting Started</h2>
+			<div class="card">
+				<p>The easiest way to explore the API is with a REST client like Insomnia.</p>
+				<ol class="steps">
+					<li>
+						<span class="step-num">01</span>
+						<div>
+							Download Insomnia: <a class="link" href="https://insomnia.rest/download">insomnia.rest/download</a>
+							<div class="note">
+								Recent versions require a Kong account.
+								For an account-free fork see <a class="link" href="https://github.com/ArchGPT/insomnium">insomnium</a>.
+							</div>
+						</div>
+					</li>
+					<li>
+						<span class="step-num">02</span>
+						<div>
+							<InsomniaButton href="insomnia://plugins/install?name=insomnia-plugin-valorant">Add insomnia-plugin-valorant</InsomniaButton>
+							<div class="note">
+								Autocompletes auth info, lockfile data, player info.
+								See <a class="link" href="https://github.com/techchrism/insomnia-plugin-valorant">github.com/techchrism/insomnia-plugin-valorant</a>
+							</div>
+						</div>
+					</li>
+					<li>
+						<span class="step-num">03</span>
+						<div>
+							<InsomniaButton href={insomniaImportURL}>Import Workspace</InsomniaButton>
+						</div>
+					</li>
+				</ol>
+				<p class="note" style="margin-top:1rem">Right-click a request → "Generate Code" to get code in any language.</p>
+			</div>
+		</section>
 
-		<h2 class="text-xl font-semibold mt-4 mb-2">Prior Work</h2>
-		<p>
-			Documenting the endpoints and making them available is a team effort. Here are some notable contributions:
-			<ul class="list-disc ml-6">
-				<li>RumbleMike's <a class="link" href="https://github.com/HeyM1ke/ValorantClientAPI">ValorantClientAPI</a> repo</li>
-				<li>Hidan's <a class="link" href="https://gist.github.com/Kavan72/b6e0bfdf21d610148f64df878b8a2cc5">endpoint gist</a></li>
-				<li>The assistance of many in the Discord</li>
-			</ul>
-		</p>
+		<section class="section">
+			<h2 class="section-title">Investigating Endpoints</h2>
+			<div class="card">
+				<p>
+					Endpoints are found in the ShooterGame log at<br/>
+					<SimpleCode>%LocalAppData%\VALORANT\Saved\Logs\ShooterGame.log</SimpleCode>
+				</p>
+				<p style="margin-top:0.75rem">
+					Use <a class="link" href="https://github.com/techchrism/valorant-log-endpoint-scraper">Valorant Log Endpoint Scraper</a> to quickly export endpoints from the log.
+				</p>
+			</div>
+		</section>
+
+		<section class="section">
+			<h2 class="section-title">Prior Work</h2>
+			<div class="card">
+				<ul class="credit-list">
+					<li>RumbleMike's <a class="link" href="https://github.com/HeyM1ke/ValorantClientAPI">ValorantClientAPI</a></li>
+					<li>Hidan's <a class="link" href="https://gist.github.com/Kavan72/b6e0bfdf21d610148f64df878b8a2cc5">endpoint gist</a></li>
+					<li>Many contributors in the Discord</li>
+				</ul>
+			</div>
+		</section>
 	</main>
 </Layout>
+
+<style>
+.main-content {
+	padding: 40px 32px;
+	max-width: 800px;
+}
+
+.page-header {
+	margin-bottom: 32px;
+}
+
+.page-header h1 {
+	font-size: 32px;
+	margin-bottom: 4px;
+}
+
+.page-subtitle {
+	font-size: 11px;
+	text-transform: uppercase;
+	letter-spacing: 2px;
+	color: var(--muted);
+}
+
+.card {
+	background: var(--surface);
+	border: 1px solid var(--border);
+	border-radius: 8px;
+	padding: 20px 24px;
+	font-size: 13px;
+	line-height: 1.75;
+	color: #aaa;
+}
+
+.card strong { color: var(--text); }
+
+.section {
+	margin-top: 32px;
+}
+
+.section-title {
+	font-size: 10px;
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 2px;
+	color: var(--muted);
+	margin-bottom: 10px;
+	padding-bottom: 8px;
+	border-bottom: 1px solid var(--border);
+}
+
+.steps {
+	list-style: none;
+	padding: 0;
+	margin-top: 12px;
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+}
+
+.steps li {
+	display: flex;
+	gap: 16px;
+	align-items: flex-start;
+}
+
+.step-num {
+	font-size: 10px;
+	font-weight: 700;
+	color: var(--accent);
+	flex-shrink: 0;
+	margin-top: 2px;
+	letter-spacing: 1px;
+}
+
+.note {
+	font-size: 11px;
+	color: var(--muted);
+	margin-top: 4px;
+}
+
+.credit-list {
+	list-style: none;
+	padding: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.credit-list li::before {
+	content: '→ ';
+	color: var(--accent);
+}
+</style>

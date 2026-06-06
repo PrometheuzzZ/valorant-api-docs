@@ -6,27 +6,20 @@ export interface Props {
     class?: string
 }
 
-function getEndpointMethodColor(method: AugmentedValorantEndpoint['method']) {
+function getMethodStyle(method: AugmentedValorantEndpoint['method']): string {
    switch(method) {
       case undefined:
-      case 'GET':
-         return 'text-purple-600 dark:text-purple-400'
-      case 'POST':
-         return 'text-green-500'
-      case 'PUT':
-         return 'text-orange-500 dark:text-orange-400'
-      case 'DELETE':
-         return 'text-red-500 dark:text-red-400'
-      case 'WSS':
-         return 'text-sky-500 dark:text-sky-400'
-      case 'TCP':
-         return 'text-yellow-500 dark:text-yellow-300'
-      default:
-         return 'text-gray-800'
+      case 'GET':    return 'color:#a78bfa'
+      case 'POST':   return 'color:#34d399'
+      case 'PUT':    return 'color:#fb923c'
+      case 'DELETE': return 'color:#ff4655'
+      case 'WSS':    return 'color:#38bdf8'
+      case 'TCP':    return 'color:#fbbf24'
+      default:       return 'color:#888'
    }
 }
 
 const {method} = Astro.props
 const classText = Astro.props.class
 ---
-<span class={getEndpointMethodColor(method) + ' font-semibold mr-1 ' + (classText ?? '')}>{method || 'GET'}</span>
+<span style={getMethodStyle(method)} class={'font-semibold mr-1 text-xs ' + (classText ?? '')}>{method || 'GET'}</span>
