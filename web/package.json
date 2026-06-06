@@ -16,6 +16,8 @@
 		"valorant-api-types": "~0.10.1"
 	},
 	"devDependencies": {
+		"@anatine/zod-mock": "^3.14.0",
+		"@faker-js/faker": "^9.9.0",
 		"@tailwindcss/typography": "^0.5.10",
 		"@types/marked": "^5.0.2",
 		"marked": "^11.0.0",
