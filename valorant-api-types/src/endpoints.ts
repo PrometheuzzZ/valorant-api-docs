@@ -30,7 +30,9 @@ import {customGameConfigsEndpoint} from './endpoints/party/CustomGameConfigs'
 import {partyChatTokenEndpoint} from './endpoints/party/PartyChatToken'
 import {partyVoiceTokenEndpoint} from './endpoints/party/PartyVoiceToken'
 import {pricesEndpoint} from './endpoints/store/Prices'
-import {storefrontEndpoint} from './endpoints/store/Storefront'
+import {storefront2Endpoint} from './endpoints/store/Storefront2'
+import {createOrderEndpoint} from './endpoints/store/CreateOrder'
+import {getOrderEndpoint} from './endpoints/store/GetOrder'
 import {walletEndpoint} from './endpoints/store/Wallet'
 import {ownedItemsEndpoint} from './endpoints/store/OwnedItems'
 import {pregamePlayerEndpoint} from './endpoints/pregame/PregamePlayer'
@@ -70,6 +72,7 @@ import {cookieReauthEndpoint} from './endpoints/auth/CookieReauth'
 import {entitlementEndpoint} from './endpoints/auth/Entitlement'
 import {playerInfoEndpoint} from './endpoints/auth/PlayerInfo'
 import {nameServiceEndpoint} from "./endpoints/pvp/NameService";
+import {playerSessionEndpoint} from './endpoints/pvp/PlayerSession'
 import {sendFriendRequestEndpoint} from './endpoints/local/SendFriendRequest'
 import {removeFriendRequestEndpoint} from './endpoints/local/RemoveFriendRequest'
 import {riotGeoEndpoint} from './endpoints/auth/RiotGeo'
@@ -92,6 +95,7 @@ export const endpoints = {
     penaltiesEndpoint,
     configEndpoint,
     nameServiceEndpoint,
+    playerSessionEndpoint,
 
     partyEndpoint,
     partyPlayerEndpoint,
@@ -117,7 +121,9 @@ export const endpoints = {
     partyJoinByCodeEndpoint,
 
     pricesEndpoint,
-    storefrontEndpoint,
+    storefront2Endpoint,
+    createOrderEndpoint,
+    getOrderEndpoint,
     walletEndpoint,
     ownedItemsEndpoint,
 
