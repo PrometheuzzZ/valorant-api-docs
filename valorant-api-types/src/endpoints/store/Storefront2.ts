@@ -48,8 +48,8 @@ const pluginStoreEntrySchema = z.object({
 })
 
 export const storefront2Endpoint = {
-    name: 'Storefront2',
-    description: 'Get the currently available items in the store (v3)',
+    name: 'Storefront',
+    description: 'Get the currently available items in the store',
     queryName: 'Store_GetStorefrontV3',
     category: 'Store Endpoints',
     type: 'pd',
