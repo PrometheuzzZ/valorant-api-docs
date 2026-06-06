@@ -10,10 +10,7 @@ export const matchReplayInfoEndpoint = {
     type: 'other',
     suffix: 'https://euc1.pp.sgp.pvp.net/match-history-query/v3/products/valorant/players/{puuid}/infoTypes/{type}?id={match id}&id={match id}',
     riotRequirements: {
-        token: true,
-        entitlement: true,
-        clientPlatform: true,
-        clientVersion: true
+        token: true
     },
     variables: new Map<string, z.ZodTypeAny>([
         ['type', z.enum(['SUMMARY', 'REPLAY']).describe('`SUMMARY` returns match data JSON URLs, `REPLAY` returns `.vrf` replay file URLs')],
