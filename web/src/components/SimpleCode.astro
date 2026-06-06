@@ -5,4 +5,16 @@ export interface Props {
 
 const classStr = Astro.props.class || ''
 ---
-<code class={'bg-gray-100 dark:bg-black p-1 rounded-xl break-all' + (classStr.length > 0 ? ' ' : '') + classStr}><slot/></code>
+<code class={'inline-code break-all' + (classStr.length > 0 ? ' ' : '') + classStr}><slot/></code>
+
+<style>
+.inline-code {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 2px 7px;
+    font-family: var(--mono);
+    font-size: 0.85em;
+    color: var(--text);
+}
+</style>

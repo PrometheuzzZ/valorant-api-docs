@@ -2,32 +2,53 @@
 
 @layer base {
     h1 {
-        font-size: clamp(2.44rem, 2.38vw + 1.85rem, 3.75rem);
+        font-family: 'Syne', sans-serif;
+        font-weight: 800;
+        letter-spacing: -0.5px;
+        color: #fff;
     }
 
     h2 {
-        font-size: clamp(1.2rem, 0.7vw + 1.2rem, 1.5rem);
+        font-family: 'Syne', sans-serif;
+        font-weight: 700;
+        color: #fff;
+        font-size: clamp(1.1rem, 0.7vw + 1rem, 1.35rem);
+    }
+
+    h3 {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 10px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        color: var(--muted);
     }
 
     a.link {
-        @apply underline text-blue-600 hover:text-blue-800 visited:text-purple-600 dark:text-blue-400 dark:hover:text-blue-600 dark:visited:text-purple-400
+        color: var(--accent);
+        text-decoration: underline;
     }
+    a.link:hover { opacity: 0.8; }
 
     .prose-sane {
-        @apply prose dark:prose-invert;
-        @apply prose-code:before:content-none prose-code:after:content-none prose-code:bg-gray-100 prose-code:dark:bg-black prose-code:p-1 prose-code:rounded-xl prose-code:break-words prose-code:text-current prose-code:font-normal;
-        @apply prose-a:font-normal prose-a:text-blue-600 hover:prose-a:text-blue-800 visited:prose-a:text-purple-600 prose-a:dark:text-blue-400 hover:prose-a:dark:text-blue-600 visited:prose-a:dark:text-purple-400;
-        @apply prose-p:before:content-none prose-p:after:content-none;
-        @apply prose-ul:my-0;
-        @apply prose-li:my-1;
-        @apply bg-slate-50 text-slate-900 dark:bg-slate-900 dark:text-slate-50;
+        color: var(--text);
+        font-size: 0.95rem;
+        line-height: 1.7;
     }
+    .prose-sane p { margin-bottom: 0.75rem; }
+    .prose-sane code {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 4px;
+        padding: 1px 6px;
+        font-size: 0.85em;
+        color: var(--text);
+    }
+    .prose-sane a { color: var(--accent); text-decoration: underline; }
+    .prose-sane ul { list-style: disc; padding-left: 1.5rem; margin-bottom: 0.5rem; }
+    .prose-sane ol { list-style: decimal; padding-left: 1.5rem; margin-bottom: 0.5rem; }
+    .prose-sane li { margin-bottom: 0.25rem; }
 }
 
 @tailwind components;
-
 @tailwind utilities;
-
-:root {
-    color-scheme: light dark;
-}

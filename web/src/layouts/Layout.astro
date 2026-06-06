@@ -35,24 +35,46 @@ if(endpoint) {
 		<meta name="viewport" content="width=device-width" />
 		<link rel="icon" type="image/ico" href="/favicon.ico" />
 		<meta name="description" content={desc}/>
+		<link rel="preconnect" href="https://fonts.googleapis.com"/>
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+		<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet"/>
 		<title>{title}</title>
 	</head>
-	<body class="min-h-screen bg-slate-50 text-slate-900 dark:bg-slate-900 dark:text-slate-50 md:grid md:grid-cols-main">
+	<body class="min-h-screen md:grid md:grid-cols-main">
 		<Sidebar endpointName={endpointName}/>
 		<slot/>
 	</body>
 </html>
 <style is:global>
 	:root {
-		--accent: 124, 58, 237;
-		--accent-gradient: linear-gradient(45deg, rgb(var(--accent)), #da62c4 30%, white 60%);
+		--bg: #0d0d0d;
+		--surface: #141414;
+		--border: #1e1e1e;
+		--accent: #ff4655;
+		--accent-dim: rgba(255,70,85,0.12);
+		--text: #e8e8e8;
+		--muted: #555;
+		--mono: 'JetBrains Mono', monospace;
+		--display: 'Syne', sans-serif;
 	}
 	html {
-		font-family: system-ui, sans-serif;
-		background-color: #F6F6F6;
+		font-family: var(--mono);
+		background-color: var(--bg);
+		color: var(--text);
+		color-scheme: dark;
 	}
-	code {
-		font-family: Menlo, Monaco, Lucida Console, Liberation Mono, DejaVu Sans Mono,
-			Bitstream Vera Sans Mono, Courier New, monospace;
+	body {
+		background: var(--bg);
+		color: var(--text);
+	}
+	code, pre {
+		font-family: var(--mono);
+	}
+	a.link {
+		color: var(--accent);
+		text-decoration: underline;
+	}
+	a.link:hover {
+		opacity: 0.8;
 	}
 </style>

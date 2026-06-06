@@ -23,53 +23,42 @@ const {endpointName} = Astro.props
 
 <input type="checkbox" id="toggler" class="hidden"/>
 
-<aside id="sidebar" class="md:sticky top-0 left-0 z-40 md:h-screen overflow-y-auto bg-gray-50 dark:bg-gray-800" aria-label="Sidebar">
-   <div class="sticky top-0 px-3 py-1 bg-gray-50 dark:bg-gray-800">
-      <h2 class="text-center font-semibold">Valorant API Docs</h2>
-      <span class="block text-center text-gray-500 dark:text-gray-300">(unofficial)</span>
-      <span class="block text-center mt-1">
+<aside id="sidebar" aria-label="Sidebar">
+   <div class="sidebar-header">
+      <a href="/" class="sidebar-brand">
+         <span class="brand-name">Valorant API</span>
+         <span class="brand-sub">unofficial docs</span>
+      </a>
+      <span class="repo-link-wrap">
          <RepoLink user="techchrism" repo="valorant-api-docs"/>
       </span>
 
-      <div class="md:hidden text-center">
-         <label for="toggler" aria-controls="sidebar"
-            class="inline-flex items-center mt-1 p-2 rounded-lg bg-gray-200 hover:bg-gray-400 dark:bg-gray-700 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-600 dark:text-gray-100 dark:focus:ring-gray-600">
-            Open Menu
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 1 16 16" width="16" height="16" aria-hidden="true" id="opener-arrow" fill="currentColor" class="transition-transform ease-in-out">
+      <div class="mobile-toggle">
+         <label for="toggler" aria-controls="sidebar">
+            Menu
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 1 16 16" width="14" height="14" fill="currentColor" id="opener-arrow">
                <path fill-rule="evenodd" d="M6.22 3.22a.75.75 0 011.06 0l4.25 4.25a.75.75 0 010 1.06l-4.25 4.25a.75.75 0 01-1.06-1.06L9.94 8 6.22 4.28a.75.75 0 010-1.06z"></path>
             </svg>
          </label>
       </div>
    </div>
 
-   <ul class="px-3 my-1 space-y-2 hidden md:block" id="sidebar-list">
+   <ul id="sidebar-list">
       <li>
-         <a href="/" class={
-            'flex items-center p-2 text-sm font-normal text-black rounded-lg dark:text-white ' +
-            ((Astro.url.pathname === '/') ?
-               'hover:bg-blue-200 dark:hover:bg-blue-700 bg-blue-200 dark:bg-blue-900 active-endpoint' :
-               'hover:bg-gray-200 dark:hover:bg-gray-700')
-            }>
-            <span class="flex-1 ml-3 whitespace-nowrap">
-               Home
-            </span>
+         <a href="/" class={'nav-item' + (Astro.url.pathname === '/' ? ' nav-item--active active-endpoint' : '')}>
+            <span class="nav-label">Home</span>
          </a>
       </li>
       {Array.from(categories).map(([category, endpoints]) => {
          return (
-            <li>
-               <h3 class="px-3 py-2 text-sm font-semibold tracking-wide text-gray-500 uppercase dark:text-gray-400">{category}</h3>
-               <ul class="space-y-1">
+            <li class="nav-section">
+               <span class="nav-category">{category}</span>
+               <ul>
                   {endpoints.map(endpoint => {
                      return (
                         <li>
-                           <a href={getEndpointSlug(endpoint)} class={
-                              'flex items-center p-2 text-sm font-normal text-black rounded-lg dark:text-white ' +
-                              ((endpointName === endpoint.name) ?
-                                 'hover:bg-blue-200 dark:hover:bg-blue-700 bg-blue-200 dark:bg-blue-900 active-endpoint' :
-                                 'hover:bg-gray-200 dark:hover:bg-gray-700')
-                              }>
-                              <span class="flex-1 ml-3 whitespace-nowrap">
+                           <a href={getEndpointSlug(endpoint)} class={'nav-item' + (endpointName === endpoint.name ? ' nav-item--active active-endpoint' : '')}>
+                              <span class="nav-label">
                                  <EndpointMethod method={endpoint.method}/>
                                  {endpoint.name}
                               </span>
@@ -81,17 +70,157 @@ const {endpointName} = Astro.props
             </li>
          )
       })}
-      
    </ul>
 </aside>
 
 <style>
-#toggler:checked~#sidebar #sidebar-list {
+aside {
+   background: var(--surface);
+   border-right: 1px solid var(--border);
+   position: sticky;
+   top: 0;
+   left: 0;
+   z-index: 40;
+   height: 100vh;
+   overflow-y: auto;
+   scrollbar-width: thin;
+   scrollbar-color: var(--border) transparent;
+}
+
+.sidebar-header {
+   position: sticky;
+   top: 0;
+   background: var(--surface);
+   border-bottom: 1px solid var(--border);
+   padding: 20px 16px 16px;
+   z-index: 1;
+}
+
+.sidebar-brand {
+   display: block;
+   text-decoration: none;
+   margin-bottom: 4px;
+}
+
+.brand-name {
+   display: block;
+   font-family: 'Syne', sans-serif;
+   font-weight: 800;
+   font-size: 16px;
+   color: #fff;
+   letter-spacing: -0.3px;
+}
+
+.brand-sub {
+   display: block;
+   font-size: 10px;
+   text-transform: uppercase;
+   letter-spacing: 2px;
+   color: var(--muted);
+   margin-top: 2px;
+}
+
+.repo-link-wrap {
+   display: block;
+   margin-top: 8px;
+   font-size: 11px;
+}
+
+.mobile-toggle {
+   display: none;
+   margin-top: 10px;
+}
+
+.mobile-toggle label {
+   display: inline-flex;
+   align-items: center;
+   gap: 6px;
+   font-size: 11px;
+   text-transform: uppercase;
+   letter-spacing: 1px;
+   color: var(--muted);
+   cursor: pointer;
+   padding: 5px 10px;
+   border: 1px solid var(--border);
+   border-radius: 5px;
+   background: transparent;
+   transition: all .15s;
+}
+.mobile-toggle label:hover { border-color: var(--accent); color: var(--accent); }
+
+#sidebar-list {
+   padding: 12px 8px;
+   list-style: none;
    display: block;
 }
 
-#toggler:checked~#sidebar #opener-arrow {
+.nav-section {
+   margin-top: 16px;
+}
+
+.nav-category {
+   display: block;
+   font-size: 9px;
+   font-weight: 600;
+   text-transform: uppercase;
+   letter-spacing: 2px;
+   color: var(--muted);
+   padding: 0 8px 6px;
+   border-bottom: 1px solid var(--border);
+   margin-bottom: 4px;
+}
+
+.nav-item {
+   display: flex;
+   align-items: center;
+   padding: 7px 8px;
+   border-radius: 5px;
+   text-decoration: none;
+   color: #888;
+   font-size: 12px;
+   transition: all .1s;
+   border-left: 2px solid transparent;
+}
+
+.nav-item:hover {
+   background: rgba(255,70,85,0.06);
+   color: var(--text);
+   border-left-color: var(--border);
+}
+
+.nav-item--active {
+   background: var(--accent-dim);
+   color: var(--accent);
+   border-left-color: var(--accent);
+}
+
+.nav-item--active:hover {
+   background: var(--accent-dim);
+   color: var(--accent);
+}
+
+.nav-label {
+   display: flex;
+   align-items: center;
+   gap: 4px;
+   flex-wrap: wrap;
+}
+
+#toggler:checked ~ #sidebar #sidebar-list {
+   display: block;
+}
+
+#toggler:checked ~ #sidebar #opener-arrow {
    transform: rotate(90deg);
+}
+
+@media (max-width: 768px) {
+   aside {
+      position: static;
+      height: auto;
+   }
+   .mobile-toggle { display: block; }
+   #sidebar-list { display: none; }
 }
 </style>
 

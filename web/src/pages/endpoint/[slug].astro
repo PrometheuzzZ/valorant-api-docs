@@ -53,7 +53,7 @@ function endpointToURL(endpoint: AugmentedValorantEndpoint): string {
 }
 
 function variableHtmlTemplate(variable: string, slug: string) {
-    return `<a href="#${slug}" class="text-emerald-700 dark:text-orange-400 underline">${variable}</a>`
+    return `<a href="#${slug}" class="link">${variable}</a>`
 }
 
 function replaceEndpointLinks(str: string, type: 'markdown' | 'html') {
@@ -216,38 +216,40 @@ if(endpoint.riotRequirements !== undefined) {
 ---
 
 <Layout title={`${endpoint.name} - Valorant API Docs`} endpointName={endpoint.name}>
-    <main class="mx-auto p-3 max-w-4xl">
-        <h1 class="text-center mb-2">
-            <EndpointMethod method={endpoint.method}/>
-            {endpoint.name}
-        </h1>
+    <main class="ep-main">
+        <header class="ep-header">
+            <h1 class="ep-title">
+                <EndpointMethod method={endpoint.method} class="ep-method"/>
+                {endpoint.name}
+            </h1>
+        </header>
 
-        <code id="endpoint-url" class="block max-w-fit m-auto break-all bg-gray-100 dark:bg-black p-2 rounded-xl my-5" set:html={urlHtml}/>
+        <code id="endpoint-url" class="ep-url" set:html={urlHtml}/>
 
-        <div class="prose-sane text-xl my-5 break-words max-w-none" id="description">
+        <div class="prose-sane ep-description" id="description">
             <Fragment set:html={content}/>
         </div>
 
-        {headerToHtml.size > 0 && <>
-            <h3 class="text-lg font-semibold my-2">Headers:</h3>
-            <ul class="list-disc list-inside space-y-1">
+        {headerToHtml.size > 0 && <section class="ep-section">
+            <h3 class="ep-section-title">Headers</h3>
+            <ul class="ep-list">
                 {Array.from(headerToHtml).map(([header, value]) => {
-                    return <li class="pl-2">
+                    return <li>
                         <SimpleCode set:html={`${header}: ${value}`}/>
                     </li>
                 })}
             </ul>
-        </>}
+        </section>}
 
-        {urlParameters.length > 0 && <>
-            <h3 class="text-lg font-semibold my-2">URL Parameters:</h3>
-            <ul class="list-disc list-inside space-y-2">
+        {urlParameters.length > 0 && <section class="ep-section">
+            <h3 class="ep-section-title">URL Parameters</h3>
+            <ul class="ep-list ep-list--vars">
                 {urlParameters.map(variable => {
                     const meta = variablesToReplace.get(variable)!
 
-                    return <li id={meta.slug} class="target:border-l-2 pl-2 border-emerald-700 dark:border-orange-500">
+                    return <li id={meta.slug} class="ep-var">
                         <SimpleCode>{variable}</SimpleCode>
-                        <div class="ml-12">
+                        <div class="ep-var-desc">
                             {(() => {
                                 switch(meta.name) {
                                     case 'shard':
@@ -264,30 +266,32 @@ if(endpoint.riotRequirements !== undefined) {
                     </li>
                 })}
             </ul>
-        </>}
+        </section>}
 
-        {hasQuery && <>
-            <h3 class="text-lg font-semibold my-2">Query Parameters:</h3>
-            <ul class="list-disc list-inside space-y-2">
+        {hasQuery && <section class="ep-section">
+            <h3 class="ep-section-title">Query Parameters</h3>
+            <ul class="ep-list ep-list--vars">
                 {Array.from(endpoint.query!.entries()).map(([name, type]) => {
-                    return <li id={getSlug(name)} class="target:border-l-2 pl-2 border-emerald-700 dark:border-orange-500">
-                        <SimpleCode>{name}</SimpleCode>
-                        <span> ({type.isOptional() ? 'Optional' : 'Required'})</span>
-                        <div class="ml-12" set:html={marked.parse(type.description ?? variablesToReplace.get(`{${name}}`)?.descriptionHtml ?? '')}/>
+                    return <li id={getSlug(name)} class="ep-var">
+                        <div>
+                            <SimpleCode>{name}</SimpleCode>
+                            <span class="ep-badge">{type.isOptional() ? 'optional' : 'required'}</span>
+                        </div>
+                        <div class="ep-var-desc" set:html={marked.parse(type.description ?? variablesToReplace.get(`{${name}}`)?.descriptionHtml ?? '')}/>
                     </li>
                 })}
             </ul>
-        </>}
+        </section>}
 
-        {otherVariables.length > 0 && <>
-            <h3 class="text-lg font-semibold my-2">Other Variables:</h3>
-            <ul class="list-disc list-inside space-y-2">
+        {otherVariables.length > 0 && <section class="ep-section">
+            <h3 class="ep-section-title">Other Variables</h3>
+            <ul class="ep-list ep-list--vars">
                 {otherVariables.map(variableName => {
                     const variable = variablesToReplace.get(variableName)!
 
-                    return <li id={getSlug(variable.slug)} class="target:border-l-2 pl-2 border-emerald-700 dark:border-orange-500">
+                    return <li id={getSlug(variable.slug)} class="ep-var">
                         <SimpleCode>{variable.name}</SimpleCode>
-                        <div class="ml-12">
+                        <div class="ep-var-desc">
                             {(() => {
                                 switch(variable.name) {
                                     case 'client version':
@@ -304,19 +308,19 @@ if(endpoint.riotRequirements !== undefined) {
                     </li>
                 })}
             </ul>
-        </>}
+        </section>}
 
-        {endpoint.body !== undefined && <>
-            <h3 class="text-lg font-semibold my-2">Body:</h3>
+        {endpoint.body !== undefined && <section class="ep-section">
+            <h3 class="ep-section-title">Body</h3>
             <Code code={printNode(createTypeAlias(zodToTs(endpoint.body, 'Body').node, endpoint.name.replaceAll(' ', '') + 'Body'))} lang="ts" wrap theme={githubDark} />
-        </>}
+        </section>}
 
-        {endpoint.responses?.['200'] && <>
-            <h3 class="text-lg font-semibold my-2">Response:</h3>
+        {endpoint.responses?.['200'] && <section class="ep-section">
+            <h3 class="ep-section-title">Response</h3>
             <Code code={
                 printNode(createTypeAlias(zodToTs(endpoint.responses['200'], 'Response').node, endpoint.name.replaceAll(' ', '') + 'Response'))
             } lang="ts" wrap theme={githubDark} />
-        </>}
+        </section>}
     </main>
 </Layout>
 
@@ -343,7 +347,118 @@ if(endpoint.riotRequirements !== undefined) {
 </script>
 
 <style>
+.ep-main {
+    padding: 40px 32px;
+    max-width: 900px;
+}
+
+.ep-header {
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border);
+}
+
+.ep-title {
+    font-size: 24px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+:global(.ep-method) {
+    font-size: 14px !important;
+}
+
+.ep-url {
+    display: block;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: 6px;
+    padding: 12px 16px;
+    font-size: 13px;
+    word-break: break-all;
+    color: #c8c8c8;
+    margin-bottom: 24px;
+}
+
+:global(.ep-url a) {
+    color: var(--accent);
+    text-decoration: none;
+}
+:global(.ep-url a:hover) { text-decoration: underline; }
+
+.ep-description {
+    margin-bottom: 28px;
+    font-size: 13px;
+    color: #999;
+    line-height: 1.75;
+}
+
+.ep-section {
+    margin-top: 28px;
+}
+
+.ep-section-title {
+    font-size: 9px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--muted);
+    margin-bottom: 10px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+}
+
+.ep-list {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.ep-list--vars {
+    gap: 14px;
+}
+
+.ep-var {
+    border-left: 2px solid var(--border);
+    padding-left: 14px;
+    transition: border-color .15s;
+}
+
+.ep-var:target {
+    border-left-color: var(--accent);
+}
+
+.ep-var-desc {
+    font-size: 12px;
+    color: #888;
+    margin-top: 4px;
+    line-height: 1.6;
+}
+
+:global(.ep-var-desc a) { color: var(--accent); }
+
+.ep-badge {
+    display: inline-block;
+    margin-left: 8px;
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 1px 6px;
+    border-radius: 3px;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    vertical-align: middle;
+}
+
 :global(.astro-code) {
-    padding: 0.5rem;
+    padding: 14px 16px !important;
+    border-radius: 6px !important;
+    border: 1px solid var(--border) !important;
+    font-size: 12px !important;
 }
 </style>
