@@ -72,6 +72,7 @@ import {cookieReauthEndpoint} from './endpoints/auth/CookieReauth'
 import {entitlementEndpoint} from './endpoints/auth/Entitlement'
 import {playerInfoEndpoint} from './endpoints/auth/PlayerInfo'
 import {nameServiceEndpoint} from "./endpoints/pvp/NameService";
+import {playerSessionEndpoint} from './endpoints/pvp/PlayerSession'
 import {sendFriendRequestEndpoint} from './endpoints/local/SendFriendRequest'
 import {removeFriendRequestEndpoint} from './endpoints/local/RemoveFriendRequest'
 import {riotGeoEndpoint} from './endpoints/auth/RiotGeo'
@@ -94,6 +95,7 @@ export const endpoints = {
     penaltiesEndpoint,
     configEndpoint,
     nameServiceEndpoint,
+    playerSessionEndpoint,
 
     partyEndpoint,
     partyPlayerEndpoint,
