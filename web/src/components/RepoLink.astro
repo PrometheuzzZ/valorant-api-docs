@@ -16,14 +16,17 @@ const {user, repo} = Astro.props
 
 <script>
     const starElement = document.getElementById('starcount')
-    const existingStars = localStorage.getItem('stars-cache')
+    const user = starElement!.dataset.user
+    const repo = starElement!.dataset.repo
+    const cacheKey = `stars-cache-${user}-${repo}`
+    const existingStars = localStorage.getItem(cacheKey)
     const starData = existingStars ? JSON.parse(existingStars) : null
 
     if(starData === null || starData.from < (Date.now() - (1000 * 60 * 60 * 24))) {
-        fetch(`https://api.github.com/repos/${starElement!.dataset.user}/${starElement!.dataset.repo}`)
+        fetch(`https://api.github.com/repos/${user}/${repo}`)
             .then(res => res.json())
             .then(data => {
-                localStorage.setItem('stars-cache', JSON.stringify({
+                localStorage.setItem(cacheKey, JSON.stringify({
                     from: Date.now(),
                     stars: data.stargazers_count
                 }))
@@ -31,5 +34,5 @@ const {user, repo} = Astro.props
             })
     } else {
         starElement!.innerText = starData.stars
-    }    
+    }
 </script>
