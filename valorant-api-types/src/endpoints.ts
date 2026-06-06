@@ -31,6 +31,7 @@ import {partyChatTokenEndpoint} from './endpoints/party/PartyChatToken'
 import {partyVoiceTokenEndpoint} from './endpoints/party/PartyVoiceToken'
 import {pricesEndpoint} from './endpoints/store/Prices'
 import {storefrontEndpoint} from './endpoints/store/Storefront'
+import {storefront2Endpoint} from './endpoints/store/Storefront2'
 import {walletEndpoint} from './endpoints/store/Wallet'
 import {ownedItemsEndpoint} from './endpoints/store/OwnedItems'
 import {pregamePlayerEndpoint} from './endpoints/pregame/PregamePlayer'
@@ -118,6 +119,7 @@ export const endpoints = {
 
     pricesEndpoint,
     storefrontEndpoint,
+    storefront2Endpoint,
     walletEndpoint,
     ownedItemsEndpoint,
 
