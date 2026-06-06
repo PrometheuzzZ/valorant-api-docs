@@ -13,7 +13,7 @@
 		"@astrojs/tailwind": "^5.0.2",
 		"astro": "^3.6.4",
 		"tailwindcss": "^3.3.5",
-		"valorant-api-types": "~0.10.1"
+		"valorant-api-types": "*"
 	},
 	"devDependencies": {
 		"@anatine/zod-mock": "^3.14.0",

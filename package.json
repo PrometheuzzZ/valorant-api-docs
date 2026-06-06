@@ -1,0 +1,8 @@
+{
+  "name": "valorant-api-docs",
+  "private": true,
+  "workspaces": [
+    "valorant-api-types",
+    "web"
+  ]
+}
