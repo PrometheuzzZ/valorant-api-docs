@@ -8,7 +8,7 @@ export default defineConfig({
     site: 'https://valapidocs.techchrism.me',
     integrations: [tailwind()],
     build: {
-        format: 'file'
+        format: 'directory'
     },
     vite: {
         resolve: {
