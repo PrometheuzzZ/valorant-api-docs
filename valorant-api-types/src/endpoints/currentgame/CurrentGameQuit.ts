@@ -5,7 +5,7 @@ export const currentGameQuitEndpoint = {
     name: 'Current Game Quit',
     description: 'Quits the current game',
     queryName: 'CoreGame_DisassociatePlayer',
-    category: 'Current Game Endpoints',
+    category: 'CoreGame',
     type: 'glz',
     method: 'POST',
     suffix: 'core-game/v1/players/{puuid}/disassociate/{current game match id}',

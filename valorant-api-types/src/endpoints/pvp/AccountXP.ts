@@ -11,7 +11,7 @@ export const accountXPEndpoint = {
     name: 'Account XP',
     description: 'Get the account level, XP, and XP history for the current player. This endpoint only works with the authenticated player\'s PUUID.',
     queryName: 'AccountXP_GetPlayer',
-    category: 'PVP Endpoints',
+    category: 'AccountXP',
     type: 'pd',
     suffix: 'account-xp/v1/players/{puuid}',
     riotRequirements: {

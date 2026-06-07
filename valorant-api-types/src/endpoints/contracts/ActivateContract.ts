@@ -6,7 +6,7 @@ export const activateContractEndpoint = {
     name: 'Activate Contract',
     description: 'Activate a specific contract by ID',
     queryName: 'Contracts_Activate',
-    category: 'Contract Endpoints',
+    category: 'Contracts',
     type: 'pd',
     suffix: 'contracts/v1/contracts/{puuid}/special/{contract id}',
     method: 'POST',

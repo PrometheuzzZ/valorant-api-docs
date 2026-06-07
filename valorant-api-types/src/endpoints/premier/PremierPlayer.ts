@@ -3,7 +3,7 @@ import {z} from 'zod'
 import {playerUUIDSchema, weakUUIDSchema} from '../../commonTypes'
 
 export const premierPlayerEndpoint = {
-    name: 'Get Premier Player',
+    name: 'Premier Player',
     description: 'Get Premier player data including roster membership and invite status.',
     queryName: 'Premier_GetPlayer_V2',
     category: 'Premier',

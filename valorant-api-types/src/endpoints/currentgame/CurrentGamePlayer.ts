@@ -6,7 +6,7 @@ export const currentGamePlayerEndpoint = {
     name: 'Current Game Player',
     description: 'Get the current game match ID for the provided player',
     queryName: 'CoreGame_FetchPlayer',
-    category: 'Current Game Endpoints',
+    category: 'CoreGame',
     type: 'glz',
     suffix: 'core-game/v1/players/{puuid}',
     riotRequirements: {

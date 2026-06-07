@@ -8,7 +8,7 @@ export const lockCharacterEndpoint = {
         '**DO NOT USE THIS FOR INSTALOCKING**  \n' +
         'Riot doesn\'t like this. You may get banned or get the API restricted for the rest of us.  ',
     queryName: 'Pregame_LockCharacter',
-    category: 'Pre-Game Endpoints',
+    category: 'Pregame',
     type: 'glz',
     method: 'POST',
     suffix: 'pregame/v1/matches/{pre-game match id}/lock/{agent id}',

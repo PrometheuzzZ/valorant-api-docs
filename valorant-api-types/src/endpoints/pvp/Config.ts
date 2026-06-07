@@ -8,7 +8,7 @@ export const configEndpoint = {
     name: 'Config',
     description: 'Get the config for the given player',
     queryName: 'Config_FetchConfig',
-    category: 'PVP Endpoints',
+    category: 'Config',
     type: 'pd',
     suffix: 'v1/config/{region}',
     responses: {

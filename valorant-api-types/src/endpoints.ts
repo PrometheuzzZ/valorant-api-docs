@@ -9,6 +9,8 @@ import {competitiveUpdatesEndpoint} from './endpoints/pvp/CompetitiveUpdates'
 import {leaderboardEndpoint} from './endpoints/pvp/Leaderboard'
 import {penaltiesEndpoint} from './endpoints/pvp/Penalties'
 import {activeFutureInterventionsEndpoint} from './endpoints/pvp/ActiveFutureInterventions'
+import {playerReportTokenEndpoint} from './endpoints/pvp/PlayerReportToken'
+import {playerAvoidListEndpoint} from './endpoints/pvp/PlayerAvoidList'
 import {itemUpgradesEndpoint} from './endpoints/contracts/ItemUpgrades'
 import {configEndpoint} from './endpoints/pvp/Config'
 import {partyEndpoint} from './endpoints/party/Party'
@@ -36,6 +38,9 @@ import {createOrderEndpoint} from './endpoints/store/CreateOrder'
 import {getOrderEndpoint} from './endpoints/store/GetOrder'
 import {walletEndpoint} from './endpoints/store/Wallet'
 import {ownedItemsEndpoint} from './endpoints/store/OwnedItems'
+import {giftPurchaserEligibilityEndpoint} from './endpoints/store/GiftPurchaserEligibility'
+import {giftRecipientEligibilityEndpoint} from './endpoints/store/GiftRecipientEligibility'
+import {agentStorefrontEndpoint} from './endpoints/store/AgentStorefront'
 import {pregamePlayerEndpoint} from './endpoints/pregame/PregamePlayer'
 import {pregameMatchEndpoint} from './endpoints/pregame/PregameMatch'
 import {pregameLoadoutsEndpoint} from './endpoints/pregame/PregameLoadouts'
@@ -85,6 +90,11 @@ import {partyJoinByCodeEndpoint} from './endpoints/party/PartyJoinByCode'
 import {premierPlayerEndpoint} from './endpoints/premier/PremierPlayer'
 import {premierPlayerCrestsEndpoint} from './endpoints/premier/PremierPlayerCrests'
 import {premierEligibilityEndpoint} from './endpoints/premier/PremierEligibility'
+import {premierSeasonsEndpoint} from './endpoints/premier/PremierSeasons'
+import {premierSeasonActiveEndpoint} from './endpoints/premier/PremierSeasonActive'
+import {premierConferencesEndpoint} from './endpoints/premier/PremierConferences'
+import {premierRosterEndpoint} from './endpoints/premier/PremierRoster'
+import {premierRosterMatchHistoryEndpoint} from './endpoints/premier/PremierRosterMatchHistory'
 
 export const endpoints = {
     fetchContentEndpoint,
@@ -98,6 +108,8 @@ export const endpoints = {
     leaderboardEndpoint,
     penaltiesEndpoint,
     activeFutureInterventionsEndpoint,
+    playerReportTokenEndpoint,
+    playerAvoidListEndpoint,
     configEndpoint,
     nameServiceEndpoint,
     playerSessionEndpoint,
@@ -125,12 +137,14 @@ export const endpoints = {
     partyGenerateCodeEndpoint,
     partyJoinByCodeEndpoint,
 
-    pricesEndpoint,
     storefront2Endpoint,
     createOrderEndpoint,
     getOrderEndpoint,
     walletEndpoint,
     ownedItemsEndpoint,
+    giftPurchaserEligibilityEndpoint,
+    giftRecipientEligibilityEndpoint,
+    agentStorefrontEndpoint,
 
     pregamePlayerEndpoint,
     pregameMatchEndpoint,
@@ -147,6 +161,11 @@ export const endpoints = {
     premierPlayerEndpoint,
     premierPlayerCrestsEndpoint,
     premierEligibilityEndpoint,
+    premierSeasonsEndpoint,
+    premierSeasonActiveEndpoint,
+    premierConferencesEndpoint,
+    premierRosterEndpoint,
+    premierRosterMatchHistoryEndpoint,
 
     itemUpgradesEndpoint,
     contractsEndpoint,

@@ -6,7 +6,7 @@ export const partySetMemberReadyEndpoint = {
     name: 'Party Set Member Ready',
     description: 'Set the ready status of a player in the current party',
     queryName: 'Party_SetMemberReady',
-    category: 'Party Endpoints',
+    category: 'Party',
     type: 'glz',
     suffix: 'parties/v1/parties/{party id}/members/{puuid}/setReady',
     method: 'POST',

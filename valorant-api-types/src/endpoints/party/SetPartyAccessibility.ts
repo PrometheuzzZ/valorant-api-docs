@@ -6,7 +6,7 @@ export const setPartyAccessibilityEndpoint = {
     name: 'Set Party Accessibility',
     description: 'Set the accessibility of the party',
     queryName: 'Party_SetAccessibility',
-    category: 'Party Endpoints',
+    category: 'Party',
     type: 'glz',
     method: 'POST',
     suffix: 'parties/v1/parties/{party id}/accessibility',

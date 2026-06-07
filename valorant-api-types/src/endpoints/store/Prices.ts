@@ -6,7 +6,7 @@ export const pricesEndpoint = {
     name: 'Prices',
     description: 'Get the current store prices for all items',
     queryName: 'Store_GetOffers',
-    category: 'Store Endpoints',
+    category: 'Store',
     type: 'pd',
     suffix: 'store/v1/offers/',
     riotRequirements: {

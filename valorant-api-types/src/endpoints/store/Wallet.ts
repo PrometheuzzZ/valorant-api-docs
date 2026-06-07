@@ -5,7 +5,7 @@ export const walletEndpoint = {
     name: 'Wallet',
     description: 'Get the current wallet balance for the user',
     queryName: 'Store_GetWallet',
-    category: 'Store Endpoints',
+    category: 'Store',
     type: 'pd',
     suffix: 'store/v1/wallet/{puuid}',
     riotRequirements: {

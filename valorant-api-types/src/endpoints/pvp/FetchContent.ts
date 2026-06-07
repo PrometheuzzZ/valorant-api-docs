@@ -6,7 +6,7 @@ export const fetchContentEndpoint = {
     name: 'Fetch Content',
     description: 'Get a list of seasons, acts, and events',
     queryName: 'Content_FetchContent',
-    category: 'PVP Endpoints',
+    category: 'Content',
     type: 'shared',
     suffix: 'content-service/v3/content',
     riotRequirements: {

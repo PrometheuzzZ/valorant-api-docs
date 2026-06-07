@@ -6,7 +6,7 @@ export const partyDisableCodeEndpoint = {
     name: 'Party Disable Code',
     description: 'Disable the party invite code',
     queryName: 'Party_CreateInviteCode',
-    category: 'Party Endpoints',
+    category: 'Party',
     type: 'glz',
     method: 'DELETE',
     suffix: 'parties/v1/parties/{party id}/invitecode',

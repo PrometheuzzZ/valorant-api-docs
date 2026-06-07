@@ -13,7 +13,7 @@ export const pregameLoadoutsEndpoint = {
     name: 'Pre-Game Loadouts',
     description: 'Get Pre-Game loadout data',
     queryName: 'Pregame_GetMatchLoadouts',
-    category: 'Pre-Game Endpoints',
+    category: 'Pregame',
     type: 'glz',
     suffix: 'pregame/v1/matches/{pre-game match id}/loadouts',
     riotRequirements: {

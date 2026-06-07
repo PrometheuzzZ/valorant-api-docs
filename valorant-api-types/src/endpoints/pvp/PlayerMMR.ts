@@ -6,7 +6,7 @@ export const playerMMREndpoint = {
     name: 'Player MMR',
     description: 'Get a player\'s MMR and history',
     queryName: 'MMR_FetchPlayer',
-    category: 'PVP Endpoints',
+    category: 'MMR',
     type: 'pd',
     suffix: 'mmr/v1/players/{puuid}',
     riotRequirements: {

@@ -6,7 +6,7 @@ export const refreshPlayerIdentityEndpoint = {
     name: 'Refresh Player Identity',
     description: 'Refresh the identity of the specified player',
     queryName: 'Party_RefreshPlayerIdentity',
-    category: 'Party Endpoints',
+    category: 'Party',
     type: 'glz',
     method: 'POST',
     suffix: 'parties/v1/parties/{party id}/members/{puuid}/refreshPlayerIdentity',

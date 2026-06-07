@@ -6,7 +6,7 @@ export const partyGenerateCodeEndpoint = {
     name: 'Party Generate Code',
     description: 'Generate a party invite code',
     queryName: 'Party_CreateInviteCode',
-    category: 'Party Endpoints',
+    category: 'Party',
     type: 'glz',
     method: 'POST',
     suffix: 'parties/v1/parties/{party id}/invitecode',

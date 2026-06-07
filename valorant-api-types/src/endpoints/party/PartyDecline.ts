@@ -6,7 +6,7 @@ export const partyDeclineEndpoint = {
     name: 'Party Decline',
     description: 'Decline a party invite request',
     queryName: 'Party_DeclineRequest',
-    category: 'Party Endpoints',
+    category: 'Party',
     type: 'glz',
     method: 'POST',
     suffix: 'parties/v1/parties/{party id}/request/{request id}/decline',

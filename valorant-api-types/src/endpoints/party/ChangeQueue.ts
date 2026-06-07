@@ -6,7 +6,7 @@ export const changeQueueEndpoint = {
     name: 'Change Queue',
     description: 'Change the queue for the party',
     queryName: 'Party_ChangeQueue',
-    category: 'Party Endpoints',
+    category: 'Party',
     type: 'glz',
     method: 'POST',
     suffix: 'parties/v1/parties/{party id}/queue',

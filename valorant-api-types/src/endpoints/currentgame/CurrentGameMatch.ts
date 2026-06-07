@@ -14,7 +14,7 @@ export const currentGameMatchEndpoint = {
     name: 'Current Game Match',
     description: 'Get the current game match info',
     queryName: 'CoreGame_FetchMatch',
-    category: 'Current Game Endpoints',
+    category: 'CoreGame',
     type: 'glz',
     suffix: 'core-game/v1/matches/{current game match id}',
     riotRequirements: {

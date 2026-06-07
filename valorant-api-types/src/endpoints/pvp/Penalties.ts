@@ -38,7 +38,7 @@ export const penaltiesEndpoint = {
     name: 'Penalties',
     description: 'Get the matchmaking penalties for the given player',
     queryName: 'Restrictions_FetchPlayerRestrictionsV3',
-    category: 'PVP Endpoints',
+    category: 'Restrictions',
     type: 'pd',
     suffix: 'restrictions/v3/penalties',
     riotRequirements: {

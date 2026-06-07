@@ -16,7 +16,7 @@ const premierSeasonSchema = z.object({
 })
 
 export const premierPlayerCrestsEndpoint = {
-    name: 'Get Premier Player Crests',
+    name: 'Premier Player Crests',
     description: 'Get Premier season history and crest data for a player.',
     queryName: 'Premier_GetPlayerCrests',
     category: 'Premier',

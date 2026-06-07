@@ -3,7 +3,7 @@ import {z} from 'zod'
 import {playerUUIDSchema} from '../../commonTypes'
 
 export const premierEligibilityEndpoint = {
-    name: 'Get Premier Eligibility',
+    name: 'Premier Eligibility',
     description: 'Get the Premier eligibility status for the player, including account verification, ranked placement, and any active restrictions.',
     queryName: 'Premier_GetEligibility',
     category: 'Premier',

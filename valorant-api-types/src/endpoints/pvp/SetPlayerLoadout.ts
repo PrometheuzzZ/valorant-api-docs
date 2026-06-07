@@ -7,7 +7,7 @@ export const setPlayerLoadoutEndpoint = {
     name: 'Set Player Loadout',
     description: 'Set the player\'s current loadout.',
     queryName: 'playerLoadoutUpdate',
-    category: 'PVP Endpoints',
+    category: 'playerLoadout',
     type: 'pd',
     method: 'PUT',
     suffix: 'personalization/v2/players/{puuid}/playerloadout',

@@ -13,7 +13,7 @@ export const currentGameLoadoutsEndpoint = {
     name: 'Current Game Loadouts',
     description: 'Get the current game loadout info for all players in the match',
     queryName: 'CoreGame_FetchMatchLoadouts',
-    category: 'Current Game Endpoints',
+    category: 'CoreGame',
     type: 'glz',
     suffix: 'core-game/v1/matches/{current game match id}/loadouts',
     riotRequirements: {

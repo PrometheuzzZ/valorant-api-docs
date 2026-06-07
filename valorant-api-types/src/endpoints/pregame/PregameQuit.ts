@@ -5,7 +5,7 @@ export const pregameQuitEndpoint = {
     name: 'Pre-Game Quit',
     description: 'Quit the pre-game lobby',
     queryName: 'Pregame_QuitMatch',
-    category: 'Pre-Game Endpoints',
+    category: 'Pregame',
     type: 'glz',
     method: 'POST',
     suffix: 'pregame/v1/matches/{pre-game match id}/quit',

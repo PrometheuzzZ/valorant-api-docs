@@ -6,7 +6,7 @@ export const refreshCompetitiveTierEndpoint = {
     name: 'Refresh Competitive Tier',
     description: 'Refresh the competitive tier of the specified player',
     queryName: 'Party_RefreshCompetitiveTier',
-    category: 'Party Endpoints',
+    category: 'Party',
     type: 'glz',
     method: 'POST',
     suffix: 'parties/v1/parties/{party id}/members/{puuid}/refreshCompetitiveTier',
