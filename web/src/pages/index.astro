@@ -4,6 +4,19 @@ import SimpleCode from '../components/SimpleCode.astro';
 import Layout from '../layouts/Layout.astro';
 
 const insomniaImportURL = `insomnia://app/import?uri=${Astro.url.origin}/insomnia.json`
+
+let contentCatalogBranch: string | null = null
+let contentCatalogURL: string | null = null
+try {
+    const res = await fetch('https://valorant-api.com/v1/version')
+    if (res.ok) {
+        const data = await res.json()
+        contentCatalogBranch = data?.data?.branch ?? null
+        if (contentCatalogBranch) {
+            contentCatalogURL = `https://valorant.dyn.riotcdn.net/x/content-catalog/PublicContentCatalog-${contentCatalogBranch}.zip`
+        }
+    }
+} catch {}
 ---
 
 <Layout title="Valorant API Docs">
@@ -97,9 +110,17 @@ const insomniaImportURL = `insomnia://app/import?uri=${Astro.url.origin}/insomni
 						<strong>Official Public Content Catalog</strong> — static data zip updated each patch
 						<ul class="sublist">
 							<li>
-								URL: <SimpleCode>https://valorant.dyn.riotcdn.net/x/content-catalog/PublicContentCatalog-&#123;branch&#125;.zip</SimpleCode>
+								{contentCatalogURL ? (
+									<>URL: <a class="link" href={contentCatalogURL}><SimpleCode>{contentCatalogURL}</SimpleCode></a></>
+								) : (
+									<>URL: <SimpleCode>https://valorant.dyn.riotcdn.net/x/content-catalog/PublicContentCatalog-&#123;branch&#125;.zip</SimpleCode></>
+								)}
 							</li>
-							<li>Get <code class="inline-code">&#123;branch&#125;</code> from <a class="link" href="https://valorant-api.com/v1/version">valorant-api.com/v1/version</a> → <code class="inline-code">data.branch</code></li>
+							{contentCatalogBranch ? (
+								<li>Current branch: <code class="inline-code">{contentCatalogBranch}</code> (fetched at build time from <a class="link" href="https://valorant-api.com/v1/version">valorant-api.com/v1/version</a>)</li>
+							) : (
+								<li>Get <code class="inline-code">&#123;branch&#125;</code> from <a class="link" href="https://valorant-api.com/v1/version">valorant-api.com/v1/version</a> → <code class="inline-code">data.branch</code></li>
+							)}
 							<li><a class="link" href="https://developer.riotgames.com/docs/valorant#rso-integration_assets">Riot developer docs</a></li>
 						</ul>
 					</li>
@@ -201,11 +222,29 @@ const insomniaImportURL = `insomnia://app/import?uri=${Astro.url.origin}/insomni
 	padding: 0;
 	display: flex;
 	flex-direction: column;
-	gap: 8px;
+	gap: 4px;
+}
+
+.credit-list > li {
+	margin-top: 12px;
+}
+
+.credit-list > li:first-child {
+	margin-top: 0;
 }
 
 .credit-list li::before {
 	content: '→ ';
 	color: var(--accent);
+}
+
+.sublist {
+	list-style: none;
+	padding: 0;
+	margin-top: 4px;
+	padding-left: 16px;
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
 }
 </style>
