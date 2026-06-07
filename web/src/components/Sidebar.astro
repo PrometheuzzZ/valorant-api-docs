@@ -41,6 +41,14 @@ const {endpointName} = Astro.props
             </svg>
          </label>
       </div>
+
+      <div class="search-wrap">
+         <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+         </svg>
+         <input id="sidebar-search" type="text" placeholder="Search endpoints..." autocomplete="off" spellcheck="false"/>
+         <button id="search-clear" aria-label="Clear search">✕</button>
+      </div>
    </div>
 
    <ul id="sidebar-list">
@@ -207,6 +215,54 @@ aside {
    text-transform: uppercase;
 }
 
+.search-wrap {
+   position: relative;
+   display: flex;
+   align-items: center;
+   margin-top: 10px;
+}
+
+.search-icon {
+   position: absolute;
+   left: 9px;
+   color: var(--muted);
+   pointer-events: none;
+   flex-shrink: 0;
+}
+
+#sidebar-search {
+   width: 100%;
+   background: var(--bg);
+   border: 1px solid var(--border);
+   border-radius: 6px;
+   padding: 6px 28px 6px 28px;
+   font-size: 12px;
+   font-family: var(--mono);
+   color: var(--text);
+   outline: none;
+   transition: border-color .15s;
+}
+
+#sidebar-search::placeholder { color: var(--muted); }
+#sidebar-search:focus { border-color: var(--accent); }
+
+#search-clear {
+   position: absolute;
+   right: 7px;
+   background: none;
+   border: none;
+   color: var(--muted);
+   cursor: pointer;
+   font-size: 10px;
+   padding: 2px 4px;
+   display: none;
+   line-height: 1;
+}
+#search-clear:hover { color: var(--text); }
+
+.nav-section--hidden { display: none; }
+.nav-item--hidden { display: none; }
+
 #toggler:checked ~ #sidebar #sidebar-list {
    display: block;
 }
@@ -241,4 +297,32 @@ if(previousTop !== null) {
 window.addEventListener('beforeunload', () => {
    sessionStorage.setItem('sidebar-scroll', sidebar.scrollTop.toString())
 });
+
+const searchInput = document.getElementById('sidebar-search') as HTMLInputElement
+const searchClear = document.getElementById('search-clear') as HTMLButtonElement
+const sections = document.querySelectorAll<HTMLElement>('.nav-section')
+
+function doSearch(query: string) {
+   const q = query.trim().toLowerCase()
+   searchClear.style.display = q ? 'block' : 'none'
+
+   sections.forEach(section => {
+      const items = section.querySelectorAll<HTMLElement>('li')
+      let anyVisible = false
+      items.forEach(item => {
+         const text = item.textContent?.toLowerCase() ?? ''
+         const match = !q || text.includes(q)
+         item.classList.toggle('nav-item--hidden', !match)
+         if (match) anyVisible = true
+      })
+      section.classList.toggle('nav-section--hidden', !anyVisible)
+   })
+}
+
+searchInput.addEventListener('input', () => doSearch(searchInput.value))
+searchClear.addEventListener('click', () => {
+   searchInput.value = ''
+   doSearch('')
+   searchInput.focus()
+})
 </script>
