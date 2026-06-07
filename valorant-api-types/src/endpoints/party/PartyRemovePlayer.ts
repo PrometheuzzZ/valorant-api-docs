@@ -5,7 +5,7 @@ export const partyRemovePlayerEndpoint = {
     name: 'Party Remove Player',
     description: 'Remove a player from the current party',
     queryName: 'Party_RemovePlayer',
-    category: 'Party Endpoints',
+    category: 'Party',
     type: 'glz',
     suffix: 'parties/v1/players/{puuid}',
     method: 'DELETE',

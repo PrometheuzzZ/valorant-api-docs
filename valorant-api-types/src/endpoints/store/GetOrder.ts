@@ -11,7 +11,7 @@ export const getOrderEndpoint = {
     name: 'Get Order',
     description: 'Get the status and rewards of a purchase order. The `{order id}` can be obtained from the [POST Create Order](create-order) endpoint.',
     queryName: 'Store_GetOrder',
-    category: 'Store Endpoints',
+    category: 'Store',
     type: 'pd',
     suffix: 'store/v1/order/{order id}',
     riotRequirements: {

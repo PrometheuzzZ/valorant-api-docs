@@ -51,7 +51,7 @@ export const storefront2Endpoint = {
     name: 'Storefront',
     description: 'Get the currently available items in the store',
     queryName: 'Store_GetStorefrontV3',
-    category: 'Store Endpoints',
+    category: 'Store',
     type: 'pd',
     method: 'POST',
     suffix: 'store/v3/storefront/{puuid}',

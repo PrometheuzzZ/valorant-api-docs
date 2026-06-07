@@ -6,7 +6,7 @@ export const pregamePlayerEndpoint = {
     name: 'Pre-Game Player',
     description: 'Get the pre-game match ID for the provided player',
     queryName: 'Pregame_GetPlayer',
-    category: 'Pre-Game Endpoints',
+    category: 'Pregame',
     type: 'glz',
     suffix: 'pregame/v1/players/{puuid}',
     riotRequirements: {

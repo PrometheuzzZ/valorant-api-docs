@@ -6,7 +6,7 @@ export const leaderboardEndpoint = {
     name: 'Leaderboard',
     description: 'Get the leaderboard for a given season',
     queryName: 'MMR_FetchLeaderboard',
-    category: 'PVP Endpoints',
+    category: 'MMR',
     type: 'pd',
     suffix: 'mmr/v1/leaderboards/affinity/na/queue/competitive/season/{season id}',
     query: new Map([

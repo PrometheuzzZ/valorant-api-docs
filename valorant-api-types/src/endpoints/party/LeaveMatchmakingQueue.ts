@@ -6,7 +6,7 @@ export const leaveMatchmakingQueueEndpoint = {
     name: 'Leave Matchmaking Queue',
     description: 'Leave the matchmaking queue for the party',
     queryName: 'Party_LeaveMatchmakingQueue',
-    category: 'Party Endpoints',
+    category: 'Party',
     type: 'glz',
     method: 'POST',
     suffix: 'parties/v1/parties/{party id}/matchmaking/leave',

@@ -6,7 +6,7 @@ export const competitiveUpdatesEndpoint = {
     name: 'Competitive Updates',
     description: 'Get recent games and how they changed ranking',
     queryName: 'MMR_FetchCompetitiveUpdates',
-    category: 'PVP Endpoints',
+    category: 'MMR',
     type: 'pd',
     suffix: 'mmr/v1/players/{puuid}/competitiveupdates',
     query: new Map([

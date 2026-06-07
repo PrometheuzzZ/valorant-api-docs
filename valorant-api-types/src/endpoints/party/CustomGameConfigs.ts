@@ -71,7 +71,7 @@ export const customGameConfigsEndpoint = {
     name: 'Custom Game Configs',
     description: 'Get information about the available gamemodes, maps, queues, and gamepods',
     queryName: 'Party_FetchCustomGameConfigs',
-    category: 'Party Endpoints',
+    category: 'Party',
     type: 'glz',
     suffix: 'parties/v1/parties/customgameconfigs',
     riotRequirements: {

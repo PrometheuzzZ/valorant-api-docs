@@ -6,7 +6,7 @@ export const setCustomGameSettingsEndpoint = {
     name: 'Set Custom Game Settings',
     description: 'Changes the settings for a custom game',
     queryName: 'Party_SetCustomGameSettings',
-    category: 'Party Endpoints',
+    category: 'Party',
     type: 'glz',
     method: 'POST',
     suffix: 'parties/v1/parties/{party id}/customgamesettings',

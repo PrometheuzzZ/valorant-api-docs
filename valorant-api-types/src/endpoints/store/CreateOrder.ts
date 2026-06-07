@@ -6,7 +6,7 @@ export const createOrderEndpoint = {
     name: 'Create Order',
     description: 'Create an in-game purchase order. The `OfferID` can be obtained from the [POST Storefront](storefront) endpoint.',
     queryName: 'Store_CreateOrder',
-    category: 'Store Endpoints',
+    category: 'Store',
     type: 'pd',
     method: 'POST',
     suffix: 'store/v1/order/',

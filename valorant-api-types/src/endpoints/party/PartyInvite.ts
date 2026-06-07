@@ -6,7 +6,7 @@ export const partyInviteEndpoint = {
     name: 'Party Invite',
     description: 'Invite a player to the party by name and tagline',
     queryName: 'Party_InviteToPartyByDisplayName',
-    category: 'Party Endpoints',
+    category: 'Party',
     type: 'glz',
     method: 'POST',
     suffix: 'parties/v1/parties/{party id}/invites/name/{name}/tag/{tagline}',

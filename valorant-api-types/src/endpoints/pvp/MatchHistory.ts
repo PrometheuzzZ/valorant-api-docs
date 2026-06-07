@@ -6,7 +6,7 @@ export const matchHistoryEndpoint = {
     name: 'Match History',
     description: 'Get the match history for the given player',
     queryName: 'MatchHistory_FetchMatchHistory',
-    category: 'PVP Endpoints',
+    category: 'MatchHistory',
     type: 'pd',
     suffix: 'match-history/v1/history/{puuid}',
     query: new Map([

@@ -18,7 +18,7 @@ export const agentStorefrontEndpoint = {
     name: 'Agent Storefront',
     description: 'Get the agent store, listing all purchasable agents with their available offers and costs.',
     queryName: 'Store_GetAgentStorefront',
-    category: 'Store Endpoints',
+    category: 'Store',
     type: 'pd',
     suffix: 'store/v1/storefronts/agent',
     riotRequirements: {

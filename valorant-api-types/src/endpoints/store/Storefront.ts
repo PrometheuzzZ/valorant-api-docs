@@ -43,7 +43,7 @@ export const storefrontEndpoint = {
     name: 'Storefront',
     description: 'Get the currently available items in the store',
     queryName: 'Store_GetStorefrontV2',
-    category: 'Store Endpoints',
+    category: 'Store',
     type: 'pd',
     suffix: 'store/v2/storefront/{puuid}',
     riotRequirements: {

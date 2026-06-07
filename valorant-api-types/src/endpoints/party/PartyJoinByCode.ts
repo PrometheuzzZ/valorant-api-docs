@@ -6,7 +6,7 @@ export const partyJoinByCodeEndpoint = {
     name: 'Party Join By Code',
     description: 'Join a party using an invite code',
     queryName: 'Party_CreateInviteCode',
-    category: 'Party Endpoints',
+    category: 'Party',
     type: 'glz',
     method: 'POST',
     suffix: 'parties/v1/players/joinbycode/{code}',

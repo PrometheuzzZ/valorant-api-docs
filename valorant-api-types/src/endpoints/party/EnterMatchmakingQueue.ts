@@ -6,7 +6,7 @@ export const enterMatchmakingQueueEndpoint = {
     name: 'Enter Matchmaking Queue',
     description: 'Enter the matchmaking queue for the party',
     queryName: 'Party_EnterMatchmakingQueue',
-    category: 'Party Endpoints',
+    category: 'Party',
     type: 'glz',
     method: 'POST',
     suffix: 'parties/v1/parties/{party id}/matchmaking/join',

@@ -5,7 +5,7 @@ export const partyVoiceTokenEndpoint = {
     name: 'Party Voice Token',
     description: 'Get the party voice token',
     queryName: 'Party_FetchVoiceToken',
-    category: 'Party Endpoints',
+    category: 'Party',
     type: 'glz',
     suffix: '/parties/v1/parties/{party id}/voicetoken',
     riotRequirements: {

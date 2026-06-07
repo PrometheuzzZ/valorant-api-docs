@@ -6,7 +6,7 @@ export const startCustomGameEndpoint = {
     name: 'Start Custom Game',
     description: 'Start a custom game',
     queryName: 'Party_StartCustomGame',
-    category: 'Party Endpoints',
+    category: 'Party',
     type: 'glz',
     method: 'POST',
     suffix: 'parties/v1/parties/{party id}/startcustomgame',

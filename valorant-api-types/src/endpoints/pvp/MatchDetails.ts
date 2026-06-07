@@ -55,7 +55,7 @@ export const matchDetailsEndpoint = {
     name: 'Match Details',
     description: 'Get the details of a match after it ends',
     queryName: 'MatchDetails_FetchMatchDetails',
-    category: 'PVP Endpoints',
+    category: 'MatchDetails',
     type: 'pd',
     suffix: 'match-details/v1/matches/{matchID}',
     variables: new Map([

@@ -6,7 +6,7 @@ export const refreshPingsEndpoint = {
     name: 'Refresh Pings',
     description: 'Refresh the pings of the specified player',
     queryName: 'Party_RefreshPings',
-    category: 'Party Endpoints',
+    category: 'Party',
     type: 'glz',
     method: 'POST',
     suffix: 'parties/v1/parties/{party id}/members/{puuid}/refreshPings',

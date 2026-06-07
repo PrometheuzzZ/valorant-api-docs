@@ -6,7 +6,7 @@ export const contractsEndpoint = {
     name: 'Contracts',
     description: 'Get contract details including agents, battlepass, missions, and recent games',
     queryName: 'Contracts_Fetch',
-    category: 'Contract Endpoints',
+    category: 'Contracts',
     type: 'pd',
     suffix: 'contracts/v1/contracts/{puuid}',
     riotRequirements: {

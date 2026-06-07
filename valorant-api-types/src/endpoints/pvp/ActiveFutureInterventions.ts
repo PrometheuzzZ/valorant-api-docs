@@ -13,7 +13,7 @@ export const activeFutureInterventionsEndpoint = {
     name: 'Player Interventions',
     description: 'Get active and upcoming behavioral interventions (penalties) for the player, grouped by behavior category such as AFK or queue dodging.',
     queryName: 'Restrictions_FetchActiveFutureInterventions',
-    category: 'PVP Endpoints',
+    category: 'Restrictions',
     type: 'pd',
     suffix: 'restrictions/v1/activeFutureInterventions',
     riotRequirements: {

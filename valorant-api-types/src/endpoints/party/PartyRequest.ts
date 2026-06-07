@@ -5,7 +5,7 @@ export const partyRequestEndpoint = {
     name: 'Party Request',
     description: 'Requests to join the specified party ID',
     queryName: 'Party_RequestToJoinParty',
-    category: 'Party Endpoints',
+    category: 'Party',
     type: 'glz',
     method: 'POST',
     suffix: 'parties/v1/parties/{party id}/request',

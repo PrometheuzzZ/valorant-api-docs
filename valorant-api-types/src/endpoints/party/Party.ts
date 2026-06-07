@@ -6,7 +6,7 @@ export const partyEndpoint = {
     name: 'Party',
     description: 'Get the party information for the given party ID',
     queryName: 'Party_FetchParty',
-    category: 'Party Endpoints',
+    category: 'Party',
     type: 'glz',
     suffix: 'parties/v1/parties/{party id}',
     riotRequirements: {

@@ -35,7 +35,7 @@ export const playerLoadoutEndpoint = {
     name: 'Player Loadout',
     description: 'Get the player\'s current loadout. Only works for your own PUUID.',
     queryName: 'playerLoadoutUpdate',
-    category: 'PVP Endpoints',
+    category: 'playerLoadout',
     type: 'pd',
     suffix: 'personalization/v2/players/{puuid}/playerloadout',
     riotRequirements: {

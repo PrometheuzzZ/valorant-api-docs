@@ -17,7 +17,7 @@ export const ownedItemsEndpoint = {
         '`3ad1b2b2-acdb-4524-852f-954a76ddae0a` | Skin Variants\n' +
         '`de7caa6b-adf7-4588-bbd1-143831e786c6` | Titles  ',
     queryName: 'Store_GetEntitlements',
-    category: 'Store Endpoints',
+    category: 'Store',
     type: 'pd',
     suffix: 'store/v1/entitlements/{puuid}/{ItemTypeID}',
     variables: new Map([

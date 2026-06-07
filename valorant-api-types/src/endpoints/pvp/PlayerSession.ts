@@ -6,7 +6,7 @@ export const playerSessionEndpoint = {
     name: 'Player Session',
     description: 'Get the current session state of a player. `loopState` indicates what the player is currently doing — `MENUS` means they are in the main menu, `PREGAME` means they are in agent select, `INGAME` means they are in a match. When `loopState` is `PREGAME` or `INGAME`, `loopStateMetadata` contains the match ID that can be used with the [GET Pre-Game Match](pre-game-match) or [GET Current Game Match](current-game-match) endpoints.',
     queryName: 'Session_GetPlayerSession',
-    category: 'PVP Endpoints',
+    category: 'Session',
     type: 'glz',
     suffix: 'session/v1/sessions/{puuid}',
     riotRequirements: {

@@ -5,7 +5,7 @@ export const partyChatTokenEndpoint = {
     name: 'Party Chat Token',
     description: 'Get the party chat token',
     queryName: 'Party_FetchMUCToken',
-    category: 'Party Endpoints',
+    category: 'Party',
     type: 'glz',
     suffix: '/parties/v1/parties/{party id}/muctoken',
     riotRequirements: {
