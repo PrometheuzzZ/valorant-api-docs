@@ -63,7 +63,7 @@ const premierSeasonSchema = z.object({
 })
 
 export const premierSeasonsEndpoint = {
-    name: 'Fetch Premier Seasons',
+    name: 'Premier Seasons',
     description: 'Get a list of all Premier seasons for a given affinity/region, including events, conferences, divisions, and reward data.',
     queryName: 'Premier_FetchPremierSeasons',
     category: 'Premier',

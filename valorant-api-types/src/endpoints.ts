@@ -86,6 +86,7 @@ import {premierPlayerEndpoint} from './endpoints/premier/PremierPlayer'
 import {premierPlayerCrestsEndpoint} from './endpoints/premier/PremierPlayerCrests'
 import {premierEligibilityEndpoint} from './endpoints/premier/PremierEligibility'
 import {premierSeasonsEndpoint} from './endpoints/premier/PremierSeasons'
+import {premierSeasonActiveEndpoint} from './endpoints/premier/PremierSeasonActive'
 
 export const endpoints = {
     fetchContentEndpoint,
@@ -149,6 +150,7 @@ export const endpoints = {
     premierPlayerCrestsEndpoint,
     premierEligibilityEndpoint,
     premierSeasonsEndpoint,
+    premierSeasonActiveEndpoint,
 
     itemUpgradesEndpoint,
     contractsEndpoint,
