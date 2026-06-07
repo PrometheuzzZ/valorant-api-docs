@@ -143,6 +143,9 @@ export const endpoints = {
     currentGameLoadoutsEndpoint,
     currentGameQuitEndpoint,
 
+    premierPlayerEndpoint,
+    premierPlayerCrestsEndpoint,
+
     itemUpgradesEndpoint,
     contractsEndpoint,
     activateContractEndpoint,
@@ -177,8 +180,5 @@ export const endpoints = {
     playerInfoEndpoint,
     riotGeoEndpoint,
     pasTokenEndpoint,
-    riotClientConfigEndpoint,
-
-    premierPlayerEndpoint,
-    premierPlayerCrestsEndpoint
+    riotClientConfigEndpoint
 }
