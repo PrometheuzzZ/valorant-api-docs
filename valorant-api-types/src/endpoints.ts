@@ -85,6 +85,7 @@ import {partyJoinByCodeEndpoint} from './endpoints/party/PartyJoinByCode'
 import {premierPlayerEndpoint} from './endpoints/premier/PremierPlayer'
 import {premierPlayerCrestsEndpoint} from './endpoints/premier/PremierPlayerCrests'
 import {premierEligibilityEndpoint} from './endpoints/premier/PremierEligibility'
+import {premierSeasonsEndpoint} from './endpoints/premier/PremierSeasons'
 
 export const endpoints = {
     fetchContentEndpoint,
@@ -147,6 +148,7 @@ export const endpoints = {
     premierPlayerEndpoint,
     premierPlayerCrestsEndpoint,
     premierEligibilityEndpoint,
+    premierSeasonsEndpoint,
 
     itemUpgradesEndpoint,
     contractsEndpoint,
