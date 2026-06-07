@@ -99,6 +99,7 @@ export * from './endpoints/premier/PremierEligibility'
 export * from './endpoints/premier/PremierSeasons'
 export * from './endpoints/premier/PremierSeasonActive'
 export * from './endpoints/premier/PremierConferences'
+export * from './endpoints/premier/PremierRoster'
 
 export * from './endpoints'
 export * from './commonTypes'
