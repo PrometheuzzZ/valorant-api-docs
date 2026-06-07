@@ -74,12 +74,41 @@ const insomniaImportURL = `insomnia://app/import?uri=${Astro.url.origin}/insomni
 		</section>
 
 		<section class="section">
-			<h2 class="section-title">Prior Work</h2>
+			<h2 class="section-title">Other Links</h2>
 			<div class="card">
 				<ul class="credit-list">
 					<li>RumbleMike's <a class="link" href="https://github.com/HeyM1ke/ValorantClientAPI">ValorantClientAPI</a></li>
 					<li>Hidan's <a class="link" href="https://gist.github.com/Kavan72/b6e0bfdf21d610148f64df878b8a2cc5">endpoint gist</a></li>
 					<li>Many contributors in the Discord</li>
+					<li>
+						<strong>HenrikDev API</strong> — third-party Valorant API wrapper
+						<ul class="sublist">
+							<li><a class="link" href="https://api.henrikdev.xyz/dashboard/">api.henrikdev.xyz/dashboard</a> — register and manage your API key</li>
+							<li><a class="link" href="https://docs.henrikdev.xyz">docs.henrikdev.xyz</a> — full API documentation</li>
+						</ul>
+					</li>
+					<li>
+						<strong>VALORANT API</strong> — static game data (agents, skins, maps, etc.)
+						<ul class="sublist">
+							<li><a class="link" href="https://valorant-api.com/">valorant-api.com</a></li>
+						</ul>
+					</li>
+					<li>
+						<strong>Official Public Content Catalog</strong> — static data zip updated each patch
+						<ul class="sublist">
+							<li>
+								URL: <SimpleCode>https://valorant.dyn.riotcdn.net/x/content-catalog/PublicContentCatalog-&#123;branch&#125;.zip</SimpleCode>
+							</li>
+							<li>Get <code class="inline-code">&#123;branch&#125;</code> from <a class="link" href="https://valorant-api.com/v1/version">valorant-api.com/v1/version</a> → <code class="inline-code">data.branch</code></li>
+							<li><a class="link" href="https://developer.riotgames.com/docs/valorant#rso-integration_assets">Riot developer docs</a></li>
+						</ul>
+					</li>
+					<li>
+						<strong>ContentTypeID / CapID / ItemTypeID Map</strong>
+						<ul class="sublist">
+							<li><a class="link" href="https://gist.github.com/floxay/d1dffae56e24e1d1f86cfe62814120e6">gist by floxay</a></li>
+						</ul>
+					</li>
 				</ul>
 			</div>
 		</section>
