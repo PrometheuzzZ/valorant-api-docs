@@ -95,6 +95,7 @@ export * from './endpoints/store/GetOrder'
 export * from './endpoints/replays/MatchReplayInfo'
 export * from './endpoints/premier/PremierPlayer'
 export * from './endpoints/premier/PremierPlayerCrests'
+export * from './endpoints/premier/PremierEligibility'
 
 export * from './endpoints'
 export * from './commonTypes'
