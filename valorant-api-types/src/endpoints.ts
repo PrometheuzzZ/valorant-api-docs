@@ -82,6 +82,9 @@ import {riotClientConfigEndpoint} from './endpoints/auth/RiotClientConfig'
 import {partyDisableCodeEndpoint} from './endpoints/party/PartyDisableCode'
 import {partyGenerateCodeEndpoint} from './endpoints/party/PartyGenerateCode'
 import {partyJoinByCodeEndpoint} from './endpoints/party/PartyJoinByCode'
+import {premierPlayerEndpoint} from './endpoints/premier/PremierPlayer'
+import {premierPlayerCrestsEndpoint} from './endpoints/premier/PremierPlayerCrests'
+import {premierEligibilityEndpoint} from './endpoints/premier/PremierEligibility'
 
 export const endpoints = {
     fetchContentEndpoint,
@@ -140,6 +143,10 @@ export const endpoints = {
     currentGameMatchEndpoint,
     currentGameLoadoutsEndpoint,
     currentGameQuitEndpoint,
+
+    premierPlayerEndpoint,
+    premierPlayerCrestsEndpoint,
+    premierEligibilityEndpoint,
 
     itemUpgradesEndpoint,
     contractsEndpoint,
