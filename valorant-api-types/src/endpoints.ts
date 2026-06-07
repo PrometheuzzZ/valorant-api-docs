@@ -36,6 +36,8 @@ import {createOrderEndpoint} from './endpoints/store/CreateOrder'
 import {getOrderEndpoint} from './endpoints/store/GetOrder'
 import {walletEndpoint} from './endpoints/store/Wallet'
 import {ownedItemsEndpoint} from './endpoints/store/OwnedItems'
+import {giftPurchaserEligibilityEndpoint} from './endpoints/store/GiftPurchaserEligibility'
+import {giftRecipientEligibilityEndpoint} from './endpoints/store/GiftRecipientEligibility'
 import {pregamePlayerEndpoint} from './endpoints/pregame/PregamePlayer'
 import {pregameMatchEndpoint} from './endpoints/pregame/PregameMatch'
 import {pregameLoadoutsEndpoint} from './endpoints/pregame/PregameLoadouts'
@@ -130,12 +132,13 @@ export const endpoints = {
     partyGenerateCodeEndpoint,
     partyJoinByCodeEndpoint,
 
-    pricesEndpoint,
     storefront2Endpoint,
     createOrderEndpoint,
     getOrderEndpoint,
     walletEndpoint,
     ownedItemsEndpoint,
+    giftPurchaserEligibilityEndpoint,
+    giftRecipientEligibilityEndpoint,
 
     pregamePlayerEndpoint,
     pregameMatchEndpoint,
