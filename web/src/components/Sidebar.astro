@@ -67,7 +67,7 @@ const {endpointName} = Astro.props
                         <li>
                            <a href={getEndpointSlug(endpoint)} class={'nav-item' + (endpointName === endpoint.name ? ' nav-item--active active-endpoint' : '')}>
                               <span class="nav-label">
-                                 {endpoint.method && endpoint.method !== 'GET' && <EndpointMethod method={endpoint.method}/>}
+                                 <EndpointMethod method={endpoint.method}/>
                                  {endpoint.name}
                               </span>
                            </a>
