@@ -88,6 +88,7 @@ export * from './endpoints/auth/PASToken'
 export * from './endpoints/auth/RiotClientConfig'
 
 export * from './endpoints/pvp/PlayerSession'
+export * from './endpoints/pvp/ActiveFutureInterventions'
 export * from './endpoints/store/Storefront2'
 export * from './endpoints/store/CreateOrder'
 export * from './endpoints/store/GetOrder'
