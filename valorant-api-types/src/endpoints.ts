@@ -9,6 +9,7 @@ import {competitiveUpdatesEndpoint} from './endpoints/pvp/CompetitiveUpdates'
 import {leaderboardEndpoint} from './endpoints/pvp/Leaderboard'
 import {penaltiesEndpoint} from './endpoints/pvp/Penalties'
 import {activeFutureInterventionsEndpoint} from './endpoints/pvp/ActiveFutureInterventions'
+import {playerReportTokenEndpoint} from './endpoints/pvp/PlayerReportToken'
 import {itemUpgradesEndpoint} from './endpoints/contracts/ItemUpgrades'
 import {configEndpoint} from './endpoints/pvp/Config'
 import {partyEndpoint} from './endpoints/party/Party'
@@ -106,6 +107,7 @@ export const endpoints = {
     leaderboardEndpoint,
     penaltiesEndpoint,
     activeFutureInterventionsEndpoint,
+    playerReportTokenEndpoint,
     configEndpoint,
     nameServiceEndpoint,
     playerSessionEndpoint,
