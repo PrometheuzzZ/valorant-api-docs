@@ -9,6 +9,7 @@ import SimpleCode from '../../components/SimpleCode.astro'
 
 import Shard from '../../components/doc-fragments/Shard.astro'
 import Region from '../../components/doc-fragments/Region.astro'
+import Cluster from '../../components/doc-fragments/Cluster.astro'
 import Port from '../../components/doc-fragments/Port.astro'
 import ClientVersion from '../../components/doc-fragments/ClientVersion.astro'
 import LockfilePassword from '../../components/doc-fragments/LockfilePassword.astro'
@@ -267,6 +268,8 @@ if(endpoint.riotRequirements !== undefined) {
                                         return <Shard/>
                                     case 'region':
                                         return <Region/>
+                                    case 'cluster':
+                                        return <Cluster/>
                                     case 'port':
                                         return <Port/>
                                     default:
