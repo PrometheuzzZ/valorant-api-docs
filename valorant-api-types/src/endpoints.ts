@@ -38,6 +38,7 @@ import {walletEndpoint} from './endpoints/store/Wallet'
 import {ownedItemsEndpoint} from './endpoints/store/OwnedItems'
 import {giftPurchaserEligibilityEndpoint} from './endpoints/store/GiftPurchaserEligibility'
 import {giftRecipientEligibilityEndpoint} from './endpoints/store/GiftRecipientEligibility'
+import {agentStorefrontEndpoint} from './endpoints/store/AgentStorefront'
 import {pregamePlayerEndpoint} from './endpoints/pregame/PregamePlayer'
 import {pregameMatchEndpoint} from './endpoints/pregame/PregameMatch'
 import {pregameLoadoutsEndpoint} from './endpoints/pregame/PregameLoadouts'
@@ -139,6 +140,7 @@ export const endpoints = {
     ownedItemsEndpoint,
     giftPurchaserEligibilityEndpoint,
     giftRecipientEligibilityEndpoint,
+    agentStorefrontEndpoint,
 
     pregamePlayerEndpoint,
     pregameMatchEndpoint,

@@ -36,6 +36,7 @@ export * from './endpoints/party/PartyJoinByCode'
 
 export * from './endpoints/store/GiftPurchaserEligibility'
 export * from './endpoints/store/GiftRecipientEligibility'
+export * from './endpoints/store/AgentStorefront'
 export * from './endpoints/store/Storefront'
 export * from './endpoints/store/Wallet'
 export * from './endpoints/store/OwnedItems'
