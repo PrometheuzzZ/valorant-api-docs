@@ -5,7 +5,7 @@ export const giftPurchaserEligibilityEndpoint = {
     name: 'Gift Purchaser Eligibility',
     description: 'Check whether a player is eligible to send gifts to others.',
     queryName: 'Store_GetGiftPurchaserEligibility',
-    category: 'Store',
+    category: 'Store Endpoints',
     type: 'pd',
     suffix: 'store/v1/gifts/{puuid}/purchasereligibility',
     riotRequirements: {

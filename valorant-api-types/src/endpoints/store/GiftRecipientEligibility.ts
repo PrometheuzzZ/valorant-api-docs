@@ -6,7 +6,7 @@ export const giftRecipientEligibilityEndpoint = {
     name: 'Gift Recipient Eligibility',
     description: 'Check whether a specific recipient player is eligible to receive a gift from the purchaser.',
     queryName: 'Store_CheckGiftRecipientEligibility',
-    category: 'Store',
+    category: 'Store Endpoints',
     type: 'pd',
     method: 'POST',
     suffix: 'store/v1/gifts/{puuid}/eligibility/{recipientpuuid}',
