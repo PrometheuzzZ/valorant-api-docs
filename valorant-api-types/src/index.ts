@@ -93,6 +93,7 @@ export * from './endpoints/store/Storefront2'
 export * from './endpoints/store/CreateOrder'
 export * from './endpoints/store/GetOrder'
 export * from './endpoints/replays/MatchReplayInfo'
+export * from './endpoints/premier/PremierPlayer'
 
 export * from './endpoints'
 export * from './commonTypes'

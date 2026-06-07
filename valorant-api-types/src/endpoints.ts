@@ -82,6 +82,7 @@ import {riotClientConfigEndpoint} from './endpoints/auth/RiotClientConfig'
 import {partyDisableCodeEndpoint} from './endpoints/party/PartyDisableCode'
 import {partyGenerateCodeEndpoint} from './endpoints/party/PartyGenerateCode'
 import {partyJoinByCodeEndpoint} from './endpoints/party/PartyJoinByCode'
+import {premierPlayerEndpoint} from './endpoints/premier/PremierPlayer'
 
 export const endpoints = {
     fetchContentEndpoint,
@@ -175,5 +176,7 @@ export const endpoints = {
     playerInfoEndpoint,
     riotGeoEndpoint,
     pasTokenEndpoint,
-    riotClientConfigEndpoint
+    riotClientConfigEndpoint,
+
+    premierPlayerEndpoint
 }
