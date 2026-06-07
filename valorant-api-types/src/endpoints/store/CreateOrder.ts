@@ -12,7 +12,9 @@ export const createOrderEndpoint = {
     suffix: 'store/v1/order/',
     riotRequirements: {
         token: true,
-        entitlement: true
+        entitlement: true,
+        clientPlatform: true,
+        clientVersion: true
     },
     body: z.object({
         XID: z.string().length(36).describe('Unique Riot identifier (36 characters, UUID format)'),

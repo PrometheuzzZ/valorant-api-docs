@@ -16,7 +16,9 @@ export const getOrderEndpoint = {
     suffix: 'store/v1/order/{order id}',
     riotRequirements: {
         token: true,
-        entitlement: true
+        entitlement: true,
+        clientPlatform: true,
+        clientVersion: true
     },
     responses: {
         '200': z.object({
