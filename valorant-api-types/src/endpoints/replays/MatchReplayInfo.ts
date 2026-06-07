@@ -8,12 +8,12 @@ export const matchReplayInfoEndpoint = {
     queryName: 'MatchHistoryQuery_GetMatchFileUrls',
     category: 'Replays',
     type: 'other',
-    suffix: 'https://{region}.pp.sgp.pvp.net/match-history-query/v3/products/valorant/players/{puuid}/infoTypes/{type}?id={match id}&id={match id}',
+    suffix: 'https://{cluster}.pp.sgp.pvp.net/match-history-query/v3/products/valorant/players/{puuid}/infoTypes/{type}?id={match id}&id={match id}',
     riotRequirements: {
         token: true
     },
     variables: new Map<string, z.ZodTypeAny>([
-        ['region', z.enum(['euc1', 'usw2', 'apse1', 'apne1']).describe('SGP region cluster. `euc1` = EU, `usw2` = NA/BR/LATAM, `apse1` = SEA/OCE, `apne1` = JP/KR')],
+        ['cluster', z.enum(['euc1', 'usw2', 'apse1', 'apne1']).describe('SGP region cluster. `euc1` = EU, `usw2` = NA/BR/LATAM, `apse1` = SEA/OCE, `apne1` = JP/KR')],
         ['type', z.enum(['SUMMARY', 'REPLAY']).describe('`SUMMARY` returns match data JSON URLs, `REPLAY` returns `.vrf` replay file URLs')],
         ['match id', matchIDSchema.describe('A match ID. Can be repeated multiple times to fetch several matches in one request. Match IDs can be obtained from the [GET Match History] endpoint.')],
     ]),
