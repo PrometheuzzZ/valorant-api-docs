@@ -96,6 +96,7 @@ import {premierConferencesEndpoint} from './endpoints/premier/PremierConferences
 import {premierRosterEndpoint} from './endpoints/premier/PremierRoster'
 import {premierRosterMatchHistoryEndpoint} from './endpoints/premier/PremierRosterMatchHistory'
 import {premierRosterPublicInfoEndpoint} from './endpoints/premier/PremierRosterPublicInfo'
+import {premierRosterSetCustomizationEndpoint} from './endpoints/premier/PremierRosterSetCustomization'
 
 export const endpoints = {
     fetchContentEndpoint,
@@ -168,6 +169,7 @@ export const endpoints = {
     premierRosterEndpoint,
     premierRosterMatchHistoryEndpoint,
     premierRosterPublicInfoEndpoint,
+    premierRosterSetCustomizationEndpoint,
 
     itemUpgradesEndpoint,
     contractsEndpoint,
