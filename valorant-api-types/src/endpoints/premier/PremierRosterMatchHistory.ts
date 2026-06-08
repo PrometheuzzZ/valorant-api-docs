@@ -35,7 +35,7 @@ export const premierRosterMatchHistoryEndpoint = {
     queryName: 'Premier_GetRosterMatchHistory',
     category: 'Premier',
     type: 'pd',
-    suffix: 'premier/v2/rosters/{rosterid}/matchhistory',
+    suffix: 'premier/v1/rosters/{rosterid}/matchhistory',
     riotRequirements: {
         token: true,
         entitlement: true,
