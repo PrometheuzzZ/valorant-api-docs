@@ -1,5 +1,5 @@
 import {ValorantEndpoint} from '../../ValorantEndpoint'
-import {z} from 'zod'
+import {z, ZodType} from 'zod'
 
 const teamSchema = z.object({
     ID: z.string(),
@@ -41,6 +41,11 @@ export const esportsUpcomingMatchesEndpoint = {
     category: 'Esports',
     type: 'pd',
     suffix: 'esports-service/v2/upcomingMatches',
+    query: new Map([
+        ['leagueID', z.string().describe('Comma-separated list of league IDs. Default VCT leagues: 107254585505459304,109940824119741550,109974795266458277,106109559530232966,109974804058058602,111691194187846945,109222784797127274') as ZodType],
+        ['locale', z.string().optional().describe('Locale for localized names, e.g. "ru-RU", "en-US"') as ZodType],
+        ['sport', z.string().optional().describe('Sport identifier, always "val" for Valorant') as ZodType],
+    ]),
     riotRequirements: {
         token: true,
         entitlement: true
