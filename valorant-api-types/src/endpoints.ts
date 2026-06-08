@@ -94,7 +94,11 @@ import {premierSeasonsEndpoint} from './endpoints/premier/PremierSeasons'
 import {premierSeasonActiveEndpoint} from './endpoints/premier/PremierSeasonActive'
 import {premierConferencesEndpoint} from './endpoints/premier/PremierConferences'
 import {premierRosterEndpoint} from './endpoints/premier/PremierRoster'
+import {esportsUpcomingMatchesEndpoint} from './endpoints/esports/EsportsUpcomingMatches'
+import {esportsMatchesEndpoint} from './endpoints/esports/EsportsMatches'
 import {premierRosterMatchHistoryEndpoint} from './endpoints/premier/PremierRosterMatchHistory'
+import {premierRosterPublicInfoEndpoint} from './endpoints/premier/PremierRosterPublicInfo'
+import {premierRosterSetCustomizationEndpoint} from './endpoints/premier/PremierRosterSetCustomization'
 
 export const endpoints = {
     fetchContentEndpoint,
@@ -164,8 +168,13 @@ export const endpoints = {
     premierSeasonsEndpoint,
     premierSeasonActiveEndpoint,
     premierConferencesEndpoint,
+    esportsUpcomingMatchesEndpoint,
+    esportsMatchesEndpoint,
+
     premierRosterEndpoint,
     premierRosterMatchHistoryEndpoint,
+    premierRosterPublicInfoEndpoint,
+    premierRosterSetCustomizationEndpoint,
 
     itemUpgradesEndpoint,
     contractsEndpoint,
