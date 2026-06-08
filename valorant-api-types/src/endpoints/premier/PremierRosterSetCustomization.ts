@@ -3,7 +3,7 @@ import {z} from 'zod'
 import {weakUUIDSchema} from '../../commonTypes'
 
 export const premierRosterSetCustomizationEndpoint = {
-    name: 'Premier Roster Set Customization',
+    name: 'Premier Roster Customization',
     description: 'Set the customization (icon and colors) for a Premier roster.',
     queryName: 'Premier_SetRosterCustomization',
     category: 'Premier',
