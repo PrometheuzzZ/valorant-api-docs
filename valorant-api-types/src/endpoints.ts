@@ -99,6 +99,9 @@ import {esportsMatchesEndpoint} from './endpoints/esports/EsportsMatches'
 import {premierRosterMatchHistoryEndpoint} from './endpoints/premier/PremierRosterMatchHistory'
 import {premierRosterPublicInfoEndpoint} from './endpoints/premier/PremierRosterPublicInfo'
 import {premierRosterSetCustomizationEndpoint} from './endpoints/premier/PremierRosterSetCustomization'
+import {mailboxEndpoint} from './endpoints/mailbox/Mailbox'
+import {mailEndpoint} from './endpoints/mailbox/Mail'
+import {deleteMailEndpoint} from './endpoints/mailbox/DeleteMail'
 
 export const endpoints = {
     fetchContentEndpoint,
@@ -175,6 +178,10 @@ export const endpoints = {
     premierRosterMatchHistoryEndpoint,
     premierRosterPublicInfoEndpoint,
     premierRosterSetCustomizationEndpoint,
+
+    mailboxEndpoint,
+    mailEndpoint,
+    deleteMailEndpoint,
 
     itemUpgradesEndpoint,
     contractsEndpoint,
