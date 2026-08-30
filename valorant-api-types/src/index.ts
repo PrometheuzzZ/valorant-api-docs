@@ -106,6 +106,10 @@ export * from './endpoints/premier/PremierConferences'
 export * from './endpoints/premier/PremierRoster'
 export * from './endpoints/premier/PremierRosterMatchHistory'
 
+export * from './endpoints/mailbox/Mailbox'
+export * from './endpoints/mailbox/Mail'
+export * from './endpoints/mailbox/DeleteMail'
+
 export * from './endpoints'
 export * from './commonTypes'
 export * from './ValorantEndpoint'
