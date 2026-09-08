@@ -13,6 +13,7 @@ export const playerGoldstarsEndpoint = {
         'The season ID `00000000-0000-0000-0000-000000000000` in `tempS` is not a real act but the all-time summary. ' +
         'The `id` of a match is always an empty string, so the only link to the match history is the start time in `tempG` - ' +
         'matching a match from the history with the closest entry in `tempM` within about ten minutes works in practice.\n\n' +
+        'The meaning of the goldstar IDs is listed in the [GET Goldstars] endpoint.\n\n' +
         'For a player without any goldstars, `tempS` and `tempM` are empty. Matches in which no player earned a goldstar exist as well, in which case `tempP` is an empty object.',
     category: 'Goldstars',
     type: 'pd',
