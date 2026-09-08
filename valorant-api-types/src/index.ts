@@ -109,6 +109,8 @@ export * from './endpoints/premier/PremierRosterMatchHistory'
 export * from './endpoints/mailbox/Mailbox'
 export * from './endpoints/mailbox/Mail'
 export * from './endpoints/mailbox/DeleteMail'
+export * from './endpoints/goldstars/Goldstars'
+export * from './endpoints/goldstars/PlayerGoldstars'
 
 export * from './endpoints'
 export * from './commonTypes'
