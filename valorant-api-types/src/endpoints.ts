@@ -102,6 +102,8 @@ import {premierRosterSetCustomizationEndpoint} from './endpoints/premier/Premier
 import {mailboxEndpoint} from './endpoints/mailbox/Mailbox'
 import {mailEndpoint} from './endpoints/mailbox/Mail'
 import {deleteMailEndpoint} from './endpoints/mailbox/DeleteMail'
+import {goldstarsEndpoint} from './endpoints/goldstars/Goldstars'
+import {playerGoldstarsEndpoint} from './endpoints/goldstars/PlayerGoldstars'
 
 export const endpoints = {
     fetchContentEndpoint,
@@ -182,6 +184,9 @@ export const endpoints = {
     mailboxEndpoint,
     mailEndpoint,
     deleteMailEndpoint,
+
+    goldstarsEndpoint,
+    playerGoldstarsEndpoint,
 
     itemUpgradesEndpoint,
     contractsEndpoint,
