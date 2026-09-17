@@ -9,7 +9,7 @@ export const configEndpoint = {
     description: 'Get the config for the given player',
     queryName: 'Config_FetchConfig',
     category: 'Config',
-    type: 'pd',
+    type: 'shared',
     suffix: 'v1/config/{region}',
     responses: {
         '200': z.object({
