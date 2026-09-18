@@ -104,6 +104,9 @@ import {mailEndpoint} from './endpoints/mailbox/Mail'
 import {deleteMailEndpoint} from './endpoints/mailbox/DeleteMail'
 import {goldstarsEndpoint} from './endpoints/goldstars/Goldstars'
 import {playerGoldstarsEndpoint} from './endpoints/goldstars/PlayerGoldstars'
+import {activityLookupEndpoint} from './endpoints/activities/ActivityLookup'
+import {sharedJoinLinkEndpoint} from './endpoints/activities/SharedJoinLink'
+import {disableJoinLinkEndpoint} from './endpoints/activities/DisableJoinLink'
 
 export const endpoints = {
     fetchContentEndpoint,
@@ -187,6 +190,10 @@ export const endpoints = {
 
     goldstarsEndpoint,
     playerGoldstarsEndpoint,
+
+    activityLookupEndpoint,
+    sharedJoinLinkEndpoint,
+    disableJoinLinkEndpoint,
 
     itemUpgradesEndpoint,
     contractsEndpoint,

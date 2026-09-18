@@ -112,6 +112,10 @@ export * from './endpoints/mailbox/DeleteMail'
 export * from './endpoints/goldstars/Goldstars'
 export * from './endpoints/goldstars/PlayerGoldstars'
 
+export * from './endpoints/activities/ActivityLookup'
+export * from './endpoints/activities/SharedJoinLink'
+export * from './endpoints/activities/DisableJoinLink'
+
 export * from './endpoints'
 export * from './commonTypes'
 export * from './ValorantEndpoint'
