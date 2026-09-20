@@ -39,6 +39,7 @@ import {createOrderEndpoint} from './endpoints/store/CreateOrder'
 import {getOrderEndpoint} from './endpoints/store/GetOrder'
 import {walletEndpoint} from './endpoints/store/Wallet'
 import {ownedItemsEndpoint} from './endpoints/store/OwnedItems'
+import {allOwnedItemsEndpoint} from './endpoints/store/AllOwnedItems'
 import {giftPurchaserEligibilityEndpoint} from './endpoints/store/GiftPurchaserEligibility'
 import {giftRecipientEligibilityEndpoint} from './endpoints/store/GiftRecipientEligibility'
 import {agentStorefrontEndpoint} from './endpoints/store/AgentStorefront'
@@ -156,6 +157,7 @@ export const endpoints = {
     getOrderEndpoint,
     walletEndpoint,
     ownedItemsEndpoint,
+    allOwnedItemsEndpoint,
     giftPurchaserEligibilityEndpoint,
     giftRecipientEligibilityEndpoint,
     agentStorefrontEndpoint,
