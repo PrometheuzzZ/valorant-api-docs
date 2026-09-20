@@ -1,6 +1,17 @@
 import {ValorantEndpoint} from '../../ValorantEndpoint'
 import {z} from 'zod'
 import {itemIDSchema, itemTypeIDSchema, weakUUIDSchema} from '../../commonTypes'
+export const entitlementsSchema = z.object({
+    EntitlementsByTypes: z.array(z.object({
+        ItemTypeID: z.string(),
+        Entitlements: z.array(z.object({
+            TypeID: weakUUIDSchema,
+            ItemID: itemIDSchema,
+            InstanceID: weakUUIDSchema.optional()
+        }))
+    }))
+})
+
 export const ownedItemsEndpoint = {
     name: 'Owned Items',
     description: 'List what the player owns (agents, skins, buddies, ect.)\n' +
@@ -30,16 +41,7 @@ export const ownedItemsEndpoint = {
         clientVersion: true
     },
     responses: {
-        '200': z.object({
-            EntitlementsByTypes: z.array(z.object({
-                ItemTypeID: z.string(),
-                Entitlements: z.array(z.object({
-                    TypeID: weakUUIDSchema,
-                    ItemID: itemIDSchema,
-                    InstanceID: weakUUIDSchema.optional()
-                }))
-            }))
-        })
+        '200': entitlementsSchema
     }
 } as const satisfies ValorantEndpoint
 

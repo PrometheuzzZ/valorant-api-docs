@@ -10,7 +10,7 @@ export const setPlayerLoadoutEndpoint = {
     category: 'playerLoadout',
     type: 'pd',
     method: 'PUT',
-    suffix: 'personalization/v2/players/{puuid}/playerloadout',
+    suffix: 'personalization/v3/players/{puuid}/playerloadout',
     riotRequirements: {
         token: true,
         entitlement: true,

@@ -22,6 +22,7 @@ import {refreshPlayerIdentityEndpoint} from './endpoints/party/RefreshPlayerIden
 import {refreshPingsEndpoint} from './endpoints/party/RefreshPings'
 import {changeQueueEndpoint} from './endpoints/party/ChangeQueue'
 import {startCustomGameEndpoint} from './endpoints/party/StartCustomGame'
+import {startSoloExperienceEndpoint} from './endpoints/party/StartSoloExperience'
 import {enterMatchmakingQueueEndpoint} from './endpoints/party/EnterMatchmakingQueue'
 import {leaveMatchmakingQueueEndpoint} from './endpoints/party/LeaveMatchmakingQueue'
 import {setPartyAccessibilityEndpoint} from './endpoints/party/SetPartyAccessibility'
@@ -38,6 +39,7 @@ import {createOrderEndpoint} from './endpoints/store/CreateOrder'
 import {getOrderEndpoint} from './endpoints/store/GetOrder'
 import {walletEndpoint} from './endpoints/store/Wallet'
 import {ownedItemsEndpoint} from './endpoints/store/OwnedItems'
+import {allOwnedItemsEndpoint} from './endpoints/store/AllOwnedItems'
 import {giftPurchaserEligibilityEndpoint} from './endpoints/store/GiftPurchaserEligibility'
 import {giftRecipientEligibilityEndpoint} from './endpoints/store/GiftRecipientEligibility'
 import {agentStorefrontEndpoint} from './endpoints/store/AgentStorefront'
@@ -135,6 +137,7 @@ export const endpoints = {
     refreshPingsEndpoint,
     changeQueueEndpoint,
     startCustomGameEndpoint,
+    startSoloExperienceEndpoint,
     enterMatchmakingQueueEndpoint,
     leaveMatchmakingQueueEndpoint,
     setPartyAccessibilityEndpoint,
@@ -154,6 +157,7 @@ export const endpoints = {
     getOrderEndpoint,
     walletEndpoint,
     ownedItemsEndpoint,
+    allOwnedItemsEndpoint,
     giftPurchaserEligibilityEndpoint,
     giftRecipientEligibilityEndpoint,
     agentStorefrontEndpoint,
