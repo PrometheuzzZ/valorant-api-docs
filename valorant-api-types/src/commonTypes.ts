@@ -240,7 +240,7 @@ export const contractsResponse = z.object({
                 BaseMultiplierValue: z.number(),
                 Modifiers: z.array(z.object({
                     Value: z.number(),
-                    Name: z.enum(['RESTRICTIONS_XP', 'PREMIUM_CONTRACT_XP']),
+                    Name: z.enum(['RESTRICTIONS_XP', 'PREMIUM_CONTRACT_XP', 'SOCIAL_XP']),
                     BaseOnly: z.boolean()
                 }))
             }),

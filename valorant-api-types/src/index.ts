@@ -60,6 +60,7 @@ export * from './endpoints/currentgame/CurrentGameQuit'
 export * from './endpoints/contracts/ItemUpgrades'
 export * from './endpoints/contracts/Contracts'
 export * from './endpoints/contracts/ActivateContract'
+export * from './endpoints/contracts/ContractMatch'
 
 export * from './endpoints/local/LocalHelp'
 export * from './endpoints/local/Sessions'

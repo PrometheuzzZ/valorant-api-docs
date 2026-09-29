@@ -55,6 +55,7 @@ import {currentGameLoadoutsEndpoint} from './endpoints/currentgame/CurrentGameLo
 import {currentGameQuitEndpoint} from './endpoints/currentgame/CurrentGameQuit'
 import {contractsEndpoint} from './endpoints/contracts/Contracts'
 import {activateContractEndpoint} from './endpoints/contracts/ActivateContract'
+import {contractMatchEndpoint} from './endpoints/contracts/ContractMatch'
 import {localHelpEndpoint} from './endpoints/local/LocalHelp'
 import {sessionsEndpoint} from './endpoints/local/Sessions'
 import {rsoUserInfoEndpoint} from './endpoints/local/RSOUserInfo'
@@ -202,6 +203,7 @@ export const endpoints = {
     itemUpgradesEndpoint,
     contractsEndpoint,
     activateContractEndpoint,
+    contractMatchEndpoint,
 
     localHelpEndpoint,
     sessionsEndpoint,
