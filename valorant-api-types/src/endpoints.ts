@@ -27,6 +27,9 @@ import {enterMatchmakingQueueEndpoint} from './endpoints/party/EnterMatchmakingQ
 import {leaveMatchmakingQueueEndpoint} from './endpoints/party/LeaveMatchmakingQueue'
 import {setPartyAccessibilityEndpoint} from './endpoints/party/SetPartyAccessibility'
 import {setCustomGameSettingsEndpoint} from './endpoints/party/SetCustomGameSettings'
+import {customGameMembershipEndpoint} from './endpoints/party/CustomGameMembership'
+import {setPlayerModeratorStatusEndpoint} from './endpoints/party/SetPlayerModeratorStatus'
+import {setPlayerBroadcastHUDStatusEndpoint} from './endpoints/party/SetPlayerBroadcastHUDStatus'
 import {partyInviteEndpoint} from './endpoints/party/PartyInvite'
 import {partyRequestEndpoint} from './endpoints/party/PartyRequest'
 import {partyDeclineEndpoint} from './endpoints/party/PartyDecline'
@@ -143,6 +146,9 @@ export const endpoints = {
     leaveMatchmakingQueueEndpoint,
     setPartyAccessibilityEndpoint,
     setCustomGameSettingsEndpoint,
+    customGameMembershipEndpoint,
+    setPlayerModeratorStatusEndpoint,
+    setPlayerBroadcastHUDStatusEndpoint,
     partyInviteEndpoint,
     partyRequestEndpoint,
     partyDeclineEndpoint,
