@@ -97,7 +97,7 @@ export const storefront2Endpoint = {
                 Offers: z.array(pluginStoreEntrySchema),
                 DurationRemainingInSeconds: z.number(),
                 StorefrontExpiry: z.string()
-            })),
+            })).optional(),
             BonusStore: z.object({
                 BonusStoreOffers: z.array(z.object({
                     BonusOfferID: weakUUIDSchema,

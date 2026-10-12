@@ -56,7 +56,7 @@ export const playerMMREndpoint = {
                 RankedRatingBeforeUpdate: z.number(),
                 RankedRatingEarned: z.number(),
                 RankedRatingPerformanceBonus: z.number(),
-                CompetitiveMovement: z.literal('MOVEMENT_UNKNOWN'), //TODO verify
+                CompetitiveMovement: z.string().describe('Known values: `MOVEMENT_UNKNOWN`'),
                 AFKPenalty: z.number()
             }),
             IsLeaderboardAnonymized: z.boolean(),

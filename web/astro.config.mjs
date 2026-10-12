@@ -5,7 +5,7 @@ import tailwind from "@astrojs/tailwind";
 
 // https://astro.build/config
 export default defineConfig({
-    site: 'https://valapidocs.techchrism.me',
+    site: 'https://valdocs.prometheuz.me',
     integrations: [tailwind()],
     build: {
         format: 'directory'
