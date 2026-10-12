@@ -1,5 +1,5 @@
-import type { ValorantEndpoint } from "valorant-api-types";
-import { endpoints as existingEndpoints, matchReplayInfoEndpoint } from "valorant-api-types";
+import type { ValorantEndpoint } from "@prometheuz/valorant-api-types";
+import { endpoints as existingEndpoints, matchReplayInfoEndpoint } from "@prometheuz/valorant-api-types";
 import { z } from "zod";
 
 export type AugmentedValorantEndpoint = Omit<ValorantEndpoint, 'method'> & {

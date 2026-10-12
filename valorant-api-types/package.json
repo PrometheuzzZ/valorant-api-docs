@@ -1,5 +1,5 @@
 {
-  "name": "valorant-api-types",
+  "name": "@prometheuz/valorant-api-types",
   "version": "0.10.1",
   "description": "A collection of documented endpoints and return types for the unofficial Valorant API",
   "homepage": "https://github.com/PrometheuzzZ/valorant-api-docs#readme",

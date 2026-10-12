@@ -1,4 +1,4 @@
-name: Publish valorant-api-types package to npmjs
+name: Publish @prometheuz/valorant-api-types package to npmjs
 on:
   push:
     tags:
@@ -16,10 +16,13 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: '20.x'
+          node-version: '22.x'
           registry-url: 'https://registry.npmjs.org'
+      # npm trusted publishing (OIDC, no token needed) requires npm 11.5.1 or newer
+      - run: npm install -g npm@^11.5.1
       # The repo root is an npm workspace without a committed lockfile, so install from this package's own lockfile
       - run: npm ci --workspaces=false
       - run: npm publish --provenance --access public --foreground-scripts
         env:
+          # Only needed until a trusted publisher is configured for the package on npmjs.com
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
