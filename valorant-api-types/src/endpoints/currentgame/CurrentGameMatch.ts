@@ -27,7 +27,7 @@ export const currentGameMatchEndpoint = {
         '200': z.object({
             MatchID: currentGameIDSchema,
             Version: z.number(),
-            State: z.enum(['IN_PROGRESS']), //TODO verify
+            State: z.string().describe('Known values: `IN_PROGRESS`'),
             MapID: mapIDSchema,
             ModeID: gameModeSchema,
             ProvisioningFlow: z.enum(['Matchmaking', 'CustomGame']),

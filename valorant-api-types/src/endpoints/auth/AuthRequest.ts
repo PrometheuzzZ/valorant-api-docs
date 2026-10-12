@@ -39,7 +39,7 @@ export const authRequestEndpoint = {
                     login_token: z.string(),
                     redirect_url: z.string(),
                     is_console_link_session: z.boolean(),
-                    auth_method: z.literal('riot_identity'), //TODO find other auth methods (likely to be google/facebook/others)
+                    auth_method: z.string().describe('Known values: `riot_identity`'),
                     puuid: z.string()
                 }),
                 country: z.string(),

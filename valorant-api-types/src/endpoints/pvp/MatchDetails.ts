@@ -87,7 +87,7 @@ export const matchDetailsEndpoint = {
                 isRanked: z.boolean(),
                 isMatchSampled: z.boolean(),
                 seasonId: seasonIDSchema,
-                completionState: z.enum(['Surrendered', 'Completed', 'VoteDraw', '']), // TODO find remake string
+                completionState: z.string().describe('Known values: `Surrendered`, `Completed`, `VoteDraw`, empty string'),
                 platformType: platformSchema.shape.platformType,
                 premierMatchInfo: z.object({}),
                 partyRRPenalties: z.record(partyIDSchema, z.number()).optional(),

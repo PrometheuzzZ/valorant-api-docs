@@ -155,7 +155,7 @@ const pregameTeamSchema = z.object({
         Subject: playerUUIDSchema,
         CharacterID: characterIDSchema,
         CharacterSelectionState: z.enum(['', 'selected', 'locked']),
-        PregamePlayerState: z.enum(['joined']), //TODO find other values
+        PregamePlayerState: z.string().describe('Known values: `joined`'),
         CompetitiveTier: z.number(),
         PlayerIdentity: z.object({
             Subject: playerUUIDSchema,
@@ -186,7 +186,7 @@ export const pregameMatchSchema = z.object({
     MatchCoaches: z.array(z.unknown()), //TODO verify
     EnemyTeamSize: z.number(),
     EnemyTeamLockCount: z.number(),
-    PregameState: z.enum(['character_select_active', 'provisioned']), //TODO find other values
+    PregameState: z.string().describe('Known values: `character_select_active`, `provisioned`'),
     LastUpdated: dateSchema,
     MapID: mapIDSchema,
     MapSelectPool: z.array(z.unknown()),
