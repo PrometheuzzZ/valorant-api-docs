@@ -1,5 +1,6 @@
-import {endpoints, ValorantEndpoint} from 'valorant-api-types'
-import packageJson from '../../package.json'
+import {endpoints} from 'valorant-api-types'
+import type {ValorantEndpoint} from 'valorant-api-types'
+import typesPackageJson from '../../../valorant-api-types/package.json'
 
 function insertValorantPluginTemplates(url: string) {
     return url.replaceAll('{region}', '{% valorant_region  %}')
@@ -26,9 +27,9 @@ function endpointToURL(endpoint: ValorantEndpoint): string {
     }
 }
 
-const version = packageJson.dependencies['valorant-api-types'].replace(/[^\d.]/g, '')
+const version = typesPackageJson.version
 
-export async function get() {
+export async function GET() {
     let insomniaResources = []
     let folders = new Map<string, string>()
 
@@ -289,7 +290,5 @@ export async function get() {
         resources: insomniaResources
     }
 
-    return {
-        body: JSON.stringify(root)
-    }
+    return new Response(JSON.stringify(root), {headers: {'Content-Type': 'application/json'}})
 }
