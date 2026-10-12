@@ -3,6 +3,8 @@ on:
   push:
     tags:
       - v*
+  # Also allows publishing from the Actions tab (Run workflow); the version comes from valorant-api-types/package.json
+  workflow_dispatch:
 jobs:
   build:
     runs-on: ubuntu-latest
