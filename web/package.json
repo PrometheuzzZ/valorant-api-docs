@@ -6,14 +6,15 @@
 		"dev": "astro dev",
 		"start": "astro dev",
 		"build": "astro build",
+		"generate-docs": "tsx scripts/generate-markdown-docs.ts",
 		"preview": "astro preview",
 		"astro": "astro"
 	},
 	"dependencies": {
 		"@astrojs/tailwind": "^6.0.2",
+		"@prometheuz/valorant-api-types": "*",
 		"astro": "^5.18.2",
-		"tailwindcss": "^3.3.5",
-		"@prometheuz/valorant-api-types": "*"
+		"tailwindcss": "^3.3.5"
 	},
 	"devDependencies": {
 		"@anatine/zod-mock": "^3.14.0",
@@ -22,6 +23,7 @@
 		"@types/marked": "^5.0.2",
 		"marked": "^11.0.0",
 		"marked-plaintext": "^0.0.2",
+		"tsx": "^4.23.15",
 		"zod": "^3.20.2",
 		"zod-to-json-schema": "^3.25.2",
 		"zod-to-ts": "^1.2.0"

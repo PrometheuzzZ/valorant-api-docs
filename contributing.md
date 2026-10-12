@@ -1,6 +1,7 @@
 # Contributing
 
-Please don't modify any files/directories under the `docs` directory. Those files are automatically generated.
+Please don't modify any files/directories under the `docs` directory. They are regenerated from `valorant-api-types` by the
+[Build Docs](.github/workflows/build-docs.yml) workflow on every push to `trunk` (locally: `npm run generate-docs` in `web`).
 
 To modify the underlying data sources, see [./valorant-api-types](./valorant-api-types).
 To change the web docs itself, check [./web](./web).
