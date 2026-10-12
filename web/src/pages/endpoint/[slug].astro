@@ -6,6 +6,7 @@ import EndpointMethod from '../../components/EndpointMethod.astro'
 import {createTypeAlias, printNode, zodToTs} from 'zod-to-ts'
 import {Code} from 'astro/components'
 import SimpleCode from '../../components/SimpleCode.astro'
+import VariableItem from '../../components/VariableItem.astro'
 
 import Shard from '../../components/doc-fragments/Shard.astro'
 import Region from '../../components/doc-fragments/Region.astro'
@@ -74,6 +75,19 @@ const {slug} = Astro.params
 const endpoint = endpointsBySlug.get(slug!)!
 
 const content = replaceEndpointLinks(marked.parse(endpoint.description), 'html')
+
+// One-line summaries for variables shared by many endpoints; their full explanation is collapsed
+const commonVariableHints = new Map<string, string>([
+    ['shard', 'na, pbe, eu, ap or kr: depends on where the account was created'],
+    ['region', 'na, latam, br, eu, ap or kr'],
+    ['cluster', 'euc1, usw2, apse1 or apne1: the SGP cluster for the region'],
+    ['port', 'From the Riot Client lockfile'],
+    ['lockfile password', 'From the Riot Client lockfile'],
+    ['client platform', 'Base64-encoded client platform JSON'],
+    ['client version', 'The current Valorant client version'],
+    ['entitlement token', 'From the Entitlements Token or Entitlement endpoint'],
+    ['auth token', 'From the Entitlements Token endpoint or Riot auth']
+])
 
 const variablesToReplace = new Map<string, VariableMeta>([
     ['{shard}', {
@@ -260,25 +274,22 @@ const curlCommand = isHttpEndpoint(endpoint) ? toCurl(endpoint) : undefined
                 {urlParameters.map(variable => {
                     const meta = variablesToReplace.get(variable)!
 
-                    return <li id={meta.slug} class="ep-var">
-                        <SimpleCode>{variable}</SimpleCode>
-                        <div class="ep-var-desc">
-                            {(() => {
-                                switch(meta.name) {
-                                    case 'shard':
-                                        return <Shard/>
-                                    case 'region':
-                                        return <Region/>
-                                    case 'cluster':
-                                        return <Cluster/>
-                                    case 'port':
-                                        return <Port/>
-                                    default:
-                                        return (meta.descriptionHtml === undefined) ? null : <Fragment set:html={meta.descriptionHtml}/>
-                                }
-                            })()}
-                        </div>
-                    </li>
+                    return <VariableItem id={meta.slug} label={variable} hint={commonVariableHints.get(meta.name)}>
+                        {(() => {
+                            switch(meta.name) {
+                                case 'shard':
+                                    return <Shard/>
+                                case 'region':
+                                    return <Region/>
+                                case 'cluster':
+                                    return <Cluster/>
+                                case 'port':
+                                    return <Port/>
+                                default:
+                                    return (meta.descriptionHtml === undefined) ? null : <Fragment set:html={meta.descriptionHtml}/>
+                            }
+                        })()}
+                    </VariableItem>
                 })}
             </ul>
         </section>}
@@ -304,23 +315,20 @@ const curlCommand = isHttpEndpoint(endpoint) ? toCurl(endpoint) : undefined
                 {otherVariables.map(variableName => {
                     const variable = variablesToReplace.get(variableName)!
 
-                    return <li id={getSlug(variable.slug)} class="ep-var">
-                        <SimpleCode>{variable.name}</SimpleCode>
-                        <div class="ep-var-desc">
-                            {(() => {
-                                switch(variable.name) {
-                                    case 'client version':
-                                        return <ClientVersion/>
-                                    case 'lockfile password':
-                                        return <LockfilePassword/>
-                                    case 'client platform':
-                                        return <ClientPlatform/>
-                                    default:
-                                        return (variable.descriptionHtml === undefined) ? null : <Fragment set:html={variable.descriptionHtml}/>
-                                }
-                            })()}
-                        </div>
-                    </li>
+                    return <VariableItem id={getSlug(variable.slug)} label={variable.name} hint={commonVariableHints.get(variable.name)}>
+                        {(() => {
+                            switch(variable.name) {
+                                case 'client version':
+                                    return <ClientVersion/>
+                                case 'lockfile password':
+                                    return <LockfilePassword/>
+                                case 'client platform':
+                                    return <ClientPlatform/>
+                                default:
+                                    return (variable.descriptionHtml === undefined) ? null : <Fragment set:html={variable.descriptionHtml}/>
+                            }
+                        })()}
+                    </VariableItem>
                 })}
             </ul>
         </section>}
@@ -364,6 +372,7 @@ const curlCommand = isHttpEndpoint(endpoint) ? toCurl(endpoint) : undefined
     document.querySelectorAll('a[href^="#"]').forEach(b => b.addEventListener('click', e => {
         const target = document.getElementById(b.getAttribute('href')!.slice(1))
         if(target) {
+            target.querySelector('details')?.setAttribute('open', '')
             e.preventDefault()
             history.pushState({}, '', b.getAttribute('href')!)
 
@@ -379,6 +388,10 @@ const curlCommand = isHttpEndpoint(endpoint) ? toCurl(endpoint) : undefined
             target.scrollIntoView({block: 'nearest'})
         }
     }))
+
+    if(location.hash) {
+        document.getElementById(decodeURIComponent(location.hash.slice(1)))?.querySelector('details')?.setAttribute('open', '')
+    }
 
     document.querySelectorAll<HTMLButtonElement>('[data-copy]').forEach(btn => {
         btn.addEventListener('click', async () => {
@@ -491,17 +504,17 @@ const curlCommand = isHttpEndpoint(endpoint) ? toCurl(endpoint) : undefined
     gap: 14px;
 }
 
-.ep-var {
+:global(.ep-var) {
     border-left: 2px solid var(--border);
     padding-left: 14px;
     transition: border-color .15s;
 }
 
-.ep-var:target {
+:global(.ep-var:target) {
     border-left-color: var(--accent);
 }
 
-.ep-var-desc {
+:global(.ep-var-desc) {
     font-size: 15px;
     color: #aaa;
     margin-top: 6px;
