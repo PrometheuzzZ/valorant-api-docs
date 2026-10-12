@@ -130,7 +130,7 @@ export async function get() {
             created: now,
             url: insertValorantPluginTemplates(endpointToURL(endpoint)),
             name: endpoint.name,
-            description: endpoint.description + `\n\nMore info at <https://valapidocs.techchrism.me/endpoint/${endpoint.name.toLowerCase().replace(/ /g, '-')}>`,
+            description: endpoint.description + `\n\nMore info at <${new URL(`/endpoint/${endpoint.name.toLowerCase().replace(/ /g, '-')}`, import.meta.env.SITE)}>`,
             method: endpoint.method ?? 'GET',
             body: {},
             parameters: [] as any[],
