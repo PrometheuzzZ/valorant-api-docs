@@ -3,6 +3,7 @@ import {endpoints} from '../types/AugmentedValorantEndpoint'
 import EndpointMethod from './EndpointMethod.astro'
 import RepoLink from './RepoLink.astro'
 import {type AugmentedValorantEndpoint} from '../types/AugmentedValorantEndpoint'
+import {endpointToURL} from '../lib/request'
 
 
 const categories = new Map<string, AugmentedValorantEndpoint[]>()
@@ -16,6 +17,13 @@ for(const endpoint of Object.values(endpoints)) {
 
 function getEndpointSlug(endpoint: AugmentedValorantEndpoint) {
    return '/endpoint/' + endpoint.name.toLowerCase().replace(/ /g, '-')
+}
+
+// Everything a search should match: the name, method, URL, internal name, category and description
+function searchText(endpoint: AugmentedValorantEndpoint, category: string) {
+   const description = endpoint.description.replace(/[`*_\[\]()#>]/g, ' ')
+   return [endpoint.method ?? 'GET', endpoint.name, endpointToURL(endpoint), endpoint.queryName ?? '', category, description]
+      .join(' ').toLowerCase().replace(/\s+/g, ' ')
 }
 
 const {endpointName} = Astro.props
@@ -46,12 +54,14 @@ const {endpointName} = Astro.props
          <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
          </svg>
-         <input id="sidebar-search" type="text" placeholder="Search endpoints..." autocomplete="off" spellcheck="false"/>
+         <input id="sidebar-search" type="search" placeholder="Search endpoints..." title="Search by name, URL, internal name or description" autocomplete="off" spellcheck="false" aria-keyshortcuts="/ Control+K"/>
+         <kbd id="search-kbd" title="Press / or Ctrl+K to search">/</kbd>
          <button id="search-clear" aria-label="Clear search">✕</button>
       </div>
    </div>
 
    <ul id="sidebar-list">
+      <li id="search-empty">No endpoints found</li>
       <li>
          <a href="/" class={'nav-item' + (Astro.url.pathname === '/' ? ' nav-item--active active-endpoint' : '')}>
             <span class="nav-label">Home</span>
@@ -64,7 +74,7 @@ const {endpointName} = Astro.props
                <ul>
                   {endpoints.map(endpoint => {
                      return (
-                        <li>
+                        <li data-search={searchText(endpoint, category)}>
                            <a href={getEndpointSlug(endpoint)} class={'nav-item' + (endpointName === endpoint.name ? ' nav-item--active active-endpoint' : '')}>
                               <span class="nav-label">
                                  <EndpointMethod method={endpoint.method}/>
@@ -115,7 +125,7 @@ aside {
    font-family: 'Syne', sans-serif;
    font-weight: 800;
    font-size: 16px;
-   color: #fff;
+   color: var(--heading);
    letter-spacing: -0.3px;
 }
 
@@ -172,7 +182,7 @@ aside {
    font-weight: 700;
    text-transform: uppercase;
    letter-spacing: 1.5px;
-   color: #777;
+   color: var(--text-4);
    padding: 0 8px 6px;
    border-bottom: 1px solid var(--border);
    margin-bottom: 4px;
@@ -184,14 +194,14 @@ aside {
    padding: 7px 8px;
    border-radius: 5px;
    text-decoration: none;
-   color: #aaa;
+   color: var(--text-3);
    font-size: 12px;
    transition: all .1s;
    border-left: 2px solid transparent;
 }
 
 .nav-item:hover {
-   background: rgba(255,70,85,0.06);
+   background: var(--hover);
    color: var(--text);
    border-left-color: var(--border);
 }
@@ -260,6 +270,35 @@ aside {
 }
 #search-clear:hover { color: var(--text); }
 
+#sidebar-search::-webkit-search-cancel-button { display: none; }
+
+#search-kbd {
+   position: absolute;
+   right: 7px;
+   font-family: var(--mono);
+   font-size: 10px;
+   line-height: 1;
+   color: var(--muted);
+   border: 1px solid var(--border);
+   border-radius: 4px;
+   padding: 2px 5px;
+   pointer-events: none;
+}
+#sidebar-search:focus ~ #search-kbd { display: none; }
+
+.nav-item--focused {
+   background: var(--hover);
+   color: var(--text);
+   border-left-color: var(--accent);
+}
+
+#search-empty {
+   display: none;
+   padding: 12px 8px;
+   font-size: 12px;
+   color: var(--muted);
+}
+
 .nav-section--hidden { display: none; }
 .nav-item--hidden { display: none; }
 
@@ -278,6 +317,8 @@ aside {
    }
    .mobile-toggle { display: block; }
    #sidebar-list { display: none; }
+   #sidebar.searching #sidebar-list { display: block; }
+   #search-kbd { display: none; }
 }
 </style>
 
@@ -300,29 +341,81 @@ window.addEventListener('beforeunload', () => {
 
 const searchInput = document.getElementById('sidebar-search') as HTMLInputElement
 const searchClear = document.getElementById('search-clear') as HTMLButtonElement
+const searchKbd = document.getElementById('search-kbd') as HTMLElement
+const searchEmpty = document.getElementById('search-empty') as HTMLElement
 const sections = document.querySelectorAll<HTMLElement>('.nav-section')
+const items = Array.from(document.querySelectorAll<HTMLElement>('li[data-search]'))
+let focusedIndex = -1
+
+function visibleItems() {
+   return items.filter(item => !item.classList.contains('nav-item--hidden'))
+}
+
+function setFocused(index: number) {
+   items.forEach(item => item.querySelector('a')!.classList.remove('nav-item--focused'))
+   const visible = visibleItems()
+   focusedIndex = visible.length === 0 ? -1 : (index + visible.length) % visible.length
+   const link = visible[focusedIndex]?.querySelector('a')
+   link?.classList.add('nav-item--focused')
+   link?.scrollIntoView({block: 'nearest'})
+}
 
 function doSearch(query: string) {
-   const q = query.trim().toLowerCase()
-   searchClear.style.display = q ? 'block' : 'none'
+   // Every word has to match somewhere, so "party code" finds "Party Join By Code"
+   const terms = query.trim().toLowerCase().split(/\s+/).filter(t => t.length > 0)
+   searchClear.style.display = terms.length > 0 ? 'block' : 'none'
+   searchKbd.style.display = terms.length > 0 ? 'none' : ''
+   sidebar.classList.toggle('searching', terms.length > 0)
 
+   let anyVisibleOverall = false
    sections.forEach(section => {
-      const items = section.querySelectorAll<HTMLElement>('li')
       let anyVisible = false
-      items.forEach(item => {
-         const text = item.textContent?.toLowerCase() ?? ''
-         const match = !q || text.includes(q)
+      section.querySelectorAll<HTMLElement>('li[data-search]').forEach(item => {
+         const text = item.dataset.search!
+         const match = terms.every(term => text.includes(term))
          item.classList.toggle('nav-item--hidden', !match)
-         if (match) anyVisible = true
+         if(match) anyVisible = true
       })
       section.classList.toggle('nav-section--hidden', !anyVisible)
+      if(anyVisible) anyVisibleOverall = true
    })
+   searchEmpty.style.display = anyVisibleOverall ? 'none' : 'block'
+   setFocused(terms.length > 0 ? 0 : -1)
+}
+
+function clearSearch() {
+   searchInput.value = ''
+   doSearch('')
 }
 
 searchInput.addEventListener('input', () => doSearch(searchInput.value))
+searchInput.addEventListener('keydown', e => {
+   if(e.key === 'ArrowDown') {
+      e.preventDefault()
+      setFocused(focusedIndex + 1)
+   } else if(e.key === 'ArrowUp') {
+      e.preventDefault()
+      setFocused(focusedIndex - 1)
+   } else if(e.key === 'Enter') {
+      const link = visibleItems()[Math.max(focusedIndex, 0)]?.querySelector('a')
+      if(link && searchInput.value.trim().length > 0) link.click()
+   } else if(e.key === 'Escape') {
+      if(searchInput.value.length > 0) clearSearch()
+      else searchInput.blur()
+   }
+})
 searchClear.addEventListener('click', () => {
-   searchInput.value = ''
-   doSearch('')
+   clearSearch()
    searchInput.focus()
+})
+
+document.addEventListener('keydown', e => {
+   const target = e.target as HTMLElement
+   const typing = target.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName)
+   if((e.key === '/' && !typing) || (e.key.toLowerCase() === 'k' && (e.ctrlKey || e.metaKey))) {
+      e.preventDefault()
+      searchInput.focus()
+      searchInput.select()
+   }
 })
 </script>

@@ -26,6 +26,8 @@ if(endpoint) {
 	const renderer = new markedPlainText()
 	desc = `Valorant API endpoint ${endpoint.name} - ${marked.parseInline(endpoint.description, {renderer})}`
 }
+
+const canonicalURL = new URL(Astro.url.pathname, Astro.site)
 ---
 
 <!DOCTYPE html>
@@ -33,11 +35,21 @@ if(endpoint) {
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width" />
+		<meta name="color-scheme" content="dark light"/>
+		<meta name="theme-color" content="#0d0d0d" media="(prefers-color-scheme: dark)"/>
+		<meta name="theme-color" content="#fafafa" media="(prefers-color-scheme: light)"/>
+		<link rel="canonical" href={canonicalURL}/>
+		<meta property="og:type" content="website"/>
+		<meta property="og:site_name" content="Valorant API Docs"/>
+		<meta property="og:title" content={endpoint ? `${endpoint.method ?? 'GET'} ${endpoint.name}` : title}/>
+		<meta property="og:description" content={desc}/>
+		<meta property="og:url" content={canonicalURL}/>
+		<meta name="twitter:card" content="summary"/>
 		<link rel="icon" type="image/ico" href="/favicon.ico" />
 		<meta name="description" content={desc}/>
 		<link rel="preconnect" href="https://fonts.googleapis.com"/>
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-		<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet"/>
+		<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet"/>
 		<title>{title}</title>
 	</head>
 	<body class="min-h-screen md:grid md:grid-cols-main">
@@ -52,16 +64,51 @@ if(endpoint) {
 		--border: #1e1e1e;
 		--accent: #ff4655;
 		--accent-dim: rgba(255,70,85,0.12);
+		--hover: rgba(255,70,85,0.06);
+		--heading: #fff;
 		--text: #e8e8e8;
+		--text-2: #c8c8c8;
+		--text-3: #aaa;
+		--text-4: #777;
 		--muted: #555;
+		--method-get: #a78bfa;
+		--method-post: #34d399;
+		--method-put: #fb923c;
+		--method-delete: #ff4655;
+		--method-wss: #38bdf8;
+		--method-tcp: #fbbf24;
 		--mono: 'JetBrains Mono', monospace;
+		--sans: 'Geist', system-ui, -apple-system, 'Segoe UI', sans-serif;
 		--display: 'Syne', sans-serif;
+		color-scheme: dark;
+	}
+	@media (prefers-color-scheme: light) {
+		:root {
+			--bg: #fafafa;
+			--surface: #fff;
+			--border: #e4e4e7;
+			--accent: #e11d38;
+			--accent-dim: rgba(225,29,56,0.08);
+			--hover: rgba(225,29,56,0.05);
+			--heading: #09090b;
+			--text: #18181b;
+			--text-2: #3f3f46;
+			--text-3: #52525b;
+			--text-4: #71717a;
+			--muted: #8a8a93;
+			--method-get: #7c3aed;
+			--method-post: #059669;
+			--method-put: #c2410c;
+			--method-delete: #e11d38;
+			--method-wss: #0284c7;
+			--method-tcp: #b45309;
+			color-scheme: light;
+		}
 	}
 	html {
 		font-family: var(--mono);
 		background-color: var(--bg);
 		color: var(--text);
-		color-scheme: dark;
 	}
 	body {
 		background: var(--bg);

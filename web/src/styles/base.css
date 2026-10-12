@@ -5,13 +5,13 @@
         font-family: 'Syne', sans-serif;
         font-weight: 800;
         letter-spacing: -0.5px;
-        color: #fff;
+        color: var(--heading);
     }
 
     h2 {
         font-family: 'Syne', sans-serif;
         font-weight: 700;
-        color: #fff;
+        color: var(--heading);
         font-size: clamp(1.1rem, 0.7vw + 1rem, 1.35rem);
     }
 

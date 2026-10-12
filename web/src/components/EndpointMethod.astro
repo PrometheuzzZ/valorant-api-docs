@@ -9,13 +9,13 @@ export interface Props {
 function getMethodStyle(method: AugmentedValorantEndpoint['method']): string {
    switch(method) {
       case undefined:
-      case 'GET':    return 'color:#a78bfa'
-      case 'POST':   return 'color:#34d399'
-      case 'PUT':    return 'color:#fb923c'
-      case 'DELETE': return 'color:#ff4655'
-      case 'WSS':    return 'color:#38bdf8'
-      case 'TCP':    return 'color:#fbbf24'
-      default:       return 'color:#888'
+      case 'GET':    return 'color:var(--method-get)'
+      case 'POST':   return 'color:var(--method-post)'
+      case 'PUT':    return 'color:var(--method-put)'
+      case 'DELETE': return 'color:var(--method-delete)'
+      case 'WSS':    return 'color:var(--method-wss)'
+      case 'TCP':    return 'color:var(--method-tcp)'
+      default:       return 'color:var(--text-4)'
    }
 }
 

@@ -18,16 +18,55 @@ import ClientPlatform from '../../components/doc-fragments/ClientPlatform.astro'
 
 import githubDark from '../../themes/github-dark.json'
 import {join} from 'node:path'
+import {readdirSync, readFileSync} from 'node:fs'
 import {generateMock} from '@anatine/zod-mock'
 import {endpointToURL, getSlug, isHttpEndpoint, toCurl} from '../../lib/request'
 
-function safeGenerateMock(schema: any): string {
+const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+
+// Faker's raw output (huge integers, mixed-case UUIDs) looks nothing like real data, so nudge it towards plausible values
+function plausible(value: unknown, key: string, seed: number): unknown {
+    if(Array.isArray(value)) return value.map((v, i) => plausible(v, key, seed + i))
+    if(value !== null && typeof value === 'object') {
+        return Object.fromEntries(Object.entries(value).map(([k, v], i) => [k, plausible(v, k, seed * 31 + i)]))
+    }
+    if(typeof value === 'string' && uuidPattern.test(value)) return value.toLowerCase()
+    if(typeof value === 'number') {
+        const rand = Math.abs(Math.sin(seed + value)) // deterministic, so rebuilds don't churn
+        if(/time|millis|date|expir|version|timestamp/i.test(key)) return 1700000000000 + Math.floor(rand * 50000000000)
+        if(!Number.isInteger(value)) return Math.round(rand * 1000) / 10
+        return Math.floor(rand * 100)
+    }
+    return value
+}
+
+function hashString(str: string) {
+    let hash = 0
+    for(const char of str) hash = (hash * 31 + char.charCodeAt(0)) | 0
+    return Math.abs(hash)
+}
+
+function safeGenerateMock(schema: any, seedKey: string): string {
     try {
-        const result = generateMock(schema)
+        const seed = hashString(seedKey)
+        const result = plausible(generateMock(schema, {seed}), '', seed)
         const json = JSON.stringify(result, null, 2)
         return json ?? '// Unable to generate example'
     } catch {
         return '// Unable to generate example for this schema'
+    }
+}
+
+// Real (anonymized) responses that the types package tests its schemas against
+function readSampleResponse(slug: string): string | undefined {
+    try {
+        // Astro builds from the web directory (see package.json and vercel.json)
+        const dir = join(process.cwd(), '..', 'valorant-api-types', 'tests', 'endpoint-responses', slug)
+        const file = readdirSync(dir).filter(f => f.endsWith('.json')).sort()[0]
+        if(file === undefined) return undefined
+        return JSON.stringify(JSON.parse(readFileSync(join(dir, file), 'utf-8')), null, 2)
+    } catch {
+        return undefined
     }
 }
 
@@ -228,6 +267,11 @@ if(endpoint.riotRequirements !== undefined) {
 }
 
 const curlCommand = isHttpEndpoint(endpoint) ? toCurl(endpoint) : undefined
+const sampleResponse = endpoint.responses?.['200'] !== undefined ? readSampleResponse(slug!) : undefined
+
+const plainUrl = endpointUrl + (hasQuery ? '?' + Array.from(endpoint.query!.keys()).map(name => `${name}={${name}}`).join('&') : '')
+const typeName = endpoint.name.replace(/[^\w]/g, '')
+const codeThemes = {light: 'github-light', dark: githubDark} as const
 
 ---
 
@@ -238,9 +282,17 @@ const curlCommand = isHttpEndpoint(endpoint) ? toCurl(endpoint) : undefined
                 <EndpointMethod method={endpoint.method} class="ep-method"/>
                 {endpoint.name}
             </h1>
+            {endpoint.queryName !== undefined && <div class="ep-query-name">
+                <span class="ep-query-name-label">Internal name</span>
+                <SimpleCode>{endpoint.queryName}</SimpleCode>
+                <button class="copy-btn copy-btn--inline" data-copy={endpoint.queryName} aria-label="Copy internal name">Copy</button>
+            </div>}
         </header>
 
-        <code id="endpoint-url" class="ep-url" set:html={urlHtml}/>
+        <div class="ep-url-wrap">
+            <code id="endpoint-url" class="ep-url" set:html={urlHtml}/>
+            <button class="copy-btn copy-btn--inline ep-url-copy" data-copy={plainUrl} aria-label="Copy URL">Copy</button>
+        </div>
 
         <div class="prose-sane ep-description" id="description">
             <Fragment set:html={content}/>
@@ -251,7 +303,7 @@ const curlCommand = isHttpEndpoint(endpoint) ? toCurl(endpoint) : undefined
             <ul class="ep-list">
                 {Array.from(headerToHtml).map(([header, value]) => {
                     return <li>
-                        <SimpleCode set:html={`${header}: ${value}`}/>
+                        <SimpleCode class="ep-header-chip" set:html={`${header}: ${value}`}/>
                     </li>
                 })}
             </ul>
@@ -264,7 +316,7 @@ const curlCommand = isHttpEndpoint(endpoint) ? toCurl(endpoint) : undefined
                     <span class="tab-btn tab-btn--active">cURL</span>
                     <button class="copy-btn" data-copy={curlCommand}>Copy</button>
                 </div>
-                <Code code={curlCommand} lang="shell" wrap theme={githubDark} />
+                <Code code={curlCommand} lang="shell" wrap themes={codeThemes} defaultColor={false} />
             </div>
         </section>}
 
@@ -339,12 +391,13 @@ const curlCommand = isHttpEndpoint(endpoint) ? toCurl(endpoint) : undefined
                 <div class="tab-bar">
                     <button class="tab-btn tab-btn--active" data-tab="ts">TypeScript</button>
                     <button class="tab-btn" data-tab="json">JSON Example</button>
+                    <button class="copy-btn" data-copy-panel>Copy</button>
                 </div>
                 <div data-panel="ts">
-                    <Code code={printNode(createTypeAlias(zodToTs(endpoint.body, 'Body').node, endpoint.name.replaceAll(' ', '') + 'Body'))} lang="ts" wrap theme={githubDark} />
+                    <Code code={printNode(createTypeAlias(zodToTs(endpoint.body, 'Body').node, typeName + 'Body'))} lang="ts" wrap themes={codeThemes} defaultColor={false} />
                 </div>
                 <div data-panel="json" class="hidden">
-                    <Code code={safeGenerateMock(endpoint.body)} lang="json" wrap theme={githubDark} />
+                    <Code code={safeGenerateMock(endpoint.body, slug + ' body')} lang="json" wrap themes={codeThemes} defaultColor={false} />
                 </div>
             </div>
         </section>}
@@ -354,13 +407,17 @@ const curlCommand = isHttpEndpoint(endpoint) ? toCurl(endpoint) : undefined
             <div class="schema-tabs" data-tabs>
                 <div class="tab-bar">
                     <button class="tab-btn tab-btn--active" data-tab="ts">TypeScript</button>
-                    <button class="tab-btn" data-tab="json">JSON Example</button>
+                    <button class="tab-btn" data-tab="json">{sampleResponse !== undefined ? 'Real Response' : 'JSON Example'}</button>
+                    <button class="copy-btn" data-copy-panel>Copy</button>
                 </div>
                 <div data-panel="ts">
-                    <Code code={printNode(createTypeAlias(zodToTs(endpoint.responses['200'], 'Response').node, endpoint.name.replaceAll(' ', '') + 'Response'))} lang="ts" wrap theme={githubDark} />
+                    <Code code={printNode(createTypeAlias(zodToTs(endpoint.responses['200'], 'Response').node, typeName + 'Response'))} lang="ts" wrap themes={codeThemes} defaultColor={false} />
                 </div>
                 <div data-panel="json" class="hidden">
-                    <Code code={safeGenerateMock(endpoint.responses['200'])} lang="json" wrap theme={githubDark} />
+                    {sampleResponse !== undefined ?
+                        <p class="ep-sample-note">An anonymized response captured from the real API.</p> :
+                        <p class="ep-sample-note">Generated from the schema; values are placeholders.</p>}
+                    <Code code={sampleResponse ?? safeGenerateMock(endpoint.responses['200'], slug + ' response')} lang="json" wrap themes={codeThemes} defaultColor={false} />
                 </div>
             </div>
         </section>}
@@ -393,10 +450,16 @@ const curlCommand = isHttpEndpoint(endpoint) ? toCurl(endpoint) : undefined
         document.getElementById(decodeURIComponent(location.hash.slice(1)))?.querySelector('details')?.setAttribute('open', '')
     }
 
-    document.querySelectorAll<HTMLButtonElement>('[data-copy]').forEach(btn => {
+    document.querySelectorAll<HTMLButtonElement>('[data-copy], [data-copy-panel]').forEach(btn => {
         btn.addEventListener('click', async () => {
             try {
-                await navigator.clipboard.writeText(btn.dataset.copy!)
+                let text = btn.dataset.copy
+                if(text === undefined) {
+                    // Copy the code of whichever tab is showing
+                    const panel = Array.from(btn.closest('[data-tabs]')!.querySelectorAll<HTMLElement>('[data-panel]')).find(p => !p.classList.contains('hidden'))
+                    text = panel?.querySelector('pre')?.innerText ?? ''
+                }
+                await navigator.clipboard.writeText(text)
                 btn.textContent = 'Copied'
             } catch {
                 btn.textContent = 'Copy failed'
@@ -460,7 +523,7 @@ const curlCommand = isHttpEndpoint(endpoint) ? toCurl(endpoint) : undefined
     padding: 14px 18px;
     font-size: 14px;
     word-break: break-all;
-    color: #c8c8c8;
+    color: var(--text-2);
     margin-bottom: 28px;
 }
 
@@ -472,9 +535,10 @@ const curlCommand = isHttpEndpoint(endpoint) ? toCurl(endpoint) : undefined
 
 .ep-description {
     margin-bottom: 32px;
-    font-size: 16px;
-    color: #ccc;
-    line-height: 1.9;
+    font-family: var(--sans);
+    font-size: 17px;
+    color: var(--text-2);
+    line-height: 1.7;
 }
 
 .ep-section {
@@ -486,7 +550,7 @@ const curlCommand = isHttpEndpoint(endpoint) ? toCurl(endpoint) : undefined
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 2px;
-    color: #777;
+    color: var(--text-4);
     margin-bottom: 14px;
     padding-bottom: 8px;
     border-bottom: 1px solid var(--border);
@@ -515,10 +579,11 @@ const curlCommand = isHttpEndpoint(endpoint) ? toCurl(endpoint) : undefined
 }
 
 :global(.ep-var-desc) {
-    font-size: 15px;
-    color: #aaa;
+    font-family: var(--sans);
+    font-size: 15.5px;
+    color: var(--text-3);
     margin-top: 6px;
-    line-height: 1.8;
+    line-height: 1.7;
 }
 
 :global(.ep-var-desc a) { color: var(--accent); }
@@ -577,6 +642,75 @@ const curlCommand = isHttpEndpoint(endpoint) ? toCurl(endpoint) : undefined
 .tab-btn--active {
     color: var(--accent);
     border-bottom-color: var(--accent);
+}
+
+.ep-query-name {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 12px;
+    font-size: 13px;
+}
+
+.ep-query-name-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--muted);
+}
+
+.ep-url-wrap {
+    position: relative;
+    margin-bottom: 28px;
+}
+
+.ep-url-wrap .ep-url {
+    margin-bottom: 0;
+    padding-right: 76px;
+}
+
+.ep-url-copy {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+}
+
+:global(.ep-header-chip) {
+    word-break: normal !important;
+    overflow-wrap: anywhere;
+}
+
+.ep-sample-note {
+    font-family: var(--sans);
+    font-size: 13px;
+    color: var(--text-4);
+    padding: 10px 18px 0;
+    background: var(--surface);
+}
+
+/* Shiki renders both themes as CSS variables; pick one per colour scheme */
+:global(.astro-code),
+:global(.astro-code span) {
+    color: var(--shiki-dark) !important;
+    background-color: var(--shiki-dark-bg) !important;
+}
+@media (prefers-color-scheme: light) {
+    :global(.astro-code),
+    :global(.astro-code span) {
+        color: var(--shiki-light) !important;
+        background-color: var(--shiki-light-bg) !important;
+    }
+}
+
+.copy-btn.copy-btn--inline {
+    margin-left: 0;
+    padding: 4px 8px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background: var(--surface);
+    font-size: 10px;
 }
 
 .copy-btn {
