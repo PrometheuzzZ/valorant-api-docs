@@ -8,23 +8,23 @@ Types may be incomplete or incorrect, please open an issue if you find any probl
 
 ## Installation
 
-Install with `npm install @prometheuz/valorant-api-types` if using the endpoint data or `npm install @prometheuz/valorant-api-types --save-dev` if just using the types.
+Install with `npm install @prometheuzz/valorant-api-types` if using the endpoint data or `npm install @prometheuzz/valorant-api-types --save-dev` if just using the types.
 
 ## Usage
 
 Using just the raw return types:
 ```ts
-import {PresenceResponse} from '@prometheuz/valorant-api-types'
+import {PresenceResponse} from '@prometheuzz/valorant-api-types'
 
 async function getPresenceRaw(): Promise<PresenceResponse> {
     return (await fetch('...')).json()
 }
 ```
 
-Internally, @prometheuz/valorant-api-types uses [zod](https://github.com/colinhacks/zod) to document and transform return data.
+Internally, @prometheuzz/valorant-api-types uses [zod](https://github.com/colinhacks/zod) to document and transform return data.
 If you install zod as a dev dependency, the following code is equivalent to the above code and adds no runtime overhead:
 ```ts
-import {presenceEndpoint} from '@prometheuz/valorant-api-types'
+import {presenceEndpoint} from '@prometheuzz/valorant-api-types'
 import {z} from 'zod'
 
 async function getPresenceRaw(): Promise<z.input<typeof presenceEndpoint.responses['200']>> {
@@ -34,7 +34,7 @@ async function getPresenceRaw(): Promise<z.input<typeof presenceEndpoint.respons
 
 The zod types can be used to parse  and transform the raw data into a more usable format:
 ```ts
-import {presenceEndpoint} from '@prometheuz/valorant-api-types'
+import {presenceEndpoint} from '@prometheuzz/valorant-api-types'
 import {z} from 'zod'
 
 // presences[0].private -> base64-encoded json string
@@ -51,7 +51,7 @@ async function getPresence(): Promise<PresenceResponseProcessed > {
 
 The list of endpoints is exported and can be used to make your own docs or tools:
 ```ts
-import {endpoints} from '@prometheuz/valorant-api-types'
+import {endpoints} from '@prometheuzz/valorant-api-types'
 
 for(const endpoint of Object.values(endpoints)) {
     console.log(`${endpoint.name} - ${endpoint.description}`)

@@ -1,5 +1,5 @@
-import {endpoints} from '@prometheuz/valorant-api-types'
-import type {ValorantEndpoint} from '@prometheuz/valorant-api-types'
+import {endpoints} from '@prometheuzz/valorant-api-types'
+import type {ValorantEndpoint} from '@prometheuzz/valorant-api-types'
 import type {ZodType} from 'zod'
 import {zodToJsonSchema} from 'zod-to-json-schema'
 import typesPackageJson from '../../../valorant-api-types/package.json'
@@ -146,7 +146,7 @@ export async function GET() {
         info: {
             title: 'Valorant API (unofficial)',
             version: typesPackageJson.version,
-            description: 'Unofficial documentation of the Valorant client and server API, generated from the @prometheuz/valorant-api-types package. Each operation has its own server since endpoints live on different hosts.'
+            description: 'Unofficial documentation of the Valorant client and server API, generated from the @prometheuzz/valorant-api-types package. Each operation has its own server since endpoints live on different hosts.'
         },
         tags: Array.from(tags).sort().map(name => ({name})),
         components: {

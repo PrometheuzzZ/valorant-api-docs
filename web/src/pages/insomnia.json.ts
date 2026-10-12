@@ -1,5 +1,5 @@
-import {endpoints} from '@prometheuz/valorant-api-types'
-import type {ValorantEndpoint} from '@prometheuz/valorant-api-types'
+import {endpoints} from '@prometheuzz/valorant-api-types'
+import type {ValorantEndpoint} from '@prometheuzz/valorant-api-types'
 import typesPackageJson from '../../../valorant-api-types/package.json'
 
 function insertValorantPluginTemplates(url: string) {

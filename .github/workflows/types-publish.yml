@@ -1,4 +1,4 @@
-name: Publish @prometheuz/valorant-api-types package to npmjs
+name: Publish @prometheuzz/valorant-api-types package to npmjs
 on:
   push:
     tags:
