@@ -55,7 +55,7 @@ export const penaltiesEndpoint = {
                 ID: weakUUIDSchema,
                 Name: z.string(),
                 RatingName: z.string()
-            })),
+            })).optional(),
             Version: z.number()
         })
     }

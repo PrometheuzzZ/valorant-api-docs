@@ -9,7 +9,6 @@ import {
     ZodTupleItems,
     ZodTypeAny
 } from 'zod'
-import {errorUtil} from 'zod/lib/helpers/errorUtil'
 
 // From https://github.com/colinhacks/zod/issues/2062#issuecomment-1439286556
 
@@ -79,7 +78,7 @@ type DeepUnknownKeys<
 type DeepStrict<T extends ZodTypeAny> = DeepUnknownKeys<T, 'strict'>;
 export function deepStrict<T extends ZodTypeAny>(
     schema: T,
-    error?: errorUtil.ErrMessage
+    error?: Parameters<ZodObject<ZodRawShape>['strict']>[0]
 ): DeepStrict<T> {
     return deepApplyObject(schema, (s) => s.strict(error)) as DeepStrict<T>;
 }
