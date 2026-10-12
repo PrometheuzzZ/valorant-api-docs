@@ -16,7 +16,9 @@ import LockfilePassword from '../../components/doc-fragments/LockfilePassword.as
 import ClientPlatform from '../../components/doc-fragments/ClientPlatform.astro'
 
 import githubDark from '../../themes/github-dark.json'
+import {join} from 'node:path'
 import {generateMock} from '@anatine/zod-mock'
+import {endpointToURL, getSlug, isHttpEndpoint, toCurl} from '../../lib/request'
 
 function safeGenerateMock(schema: any): string {
     try {
@@ -35,10 +37,6 @@ interface VariableMeta {
     type?: any
 }
 
-function getSlug(str: string) {
-    return str.toLowerCase().replace(/ /g, '-')
-}
-
 const endpointsBySlug = new Map<string, AugmentedValorantEndpoint>()
 for(const endpoint of Object.values(endpoints)) {
     endpointsBySlug.set(getSlug(endpoint.name), endpoint)
@@ -52,16 +50,6 @@ export function getStaticPaths() {
         })
     }
     return staticPaths
-}
-
-function endpointToURL(endpoint: AugmentedValorantEndpoint): string {
-    switch(endpoint.type) {
-        case 'pd': return `https://pd.{shard}.a.pvp.net/${endpoint.suffix}`
-        case 'glz': return `https://glz-{region}-1.{shard}.a.pvp.net/${endpoint.suffix}`
-        case 'shared': return `https://shared.{shard}.a.pvp.net/${endpoint.suffix}`
-        case 'local': return `https://127.0.0.1:{port}/${endpoint.suffix}`
-        case 'other': return endpoint.suffix
-    }
 }
 
 function variableHtmlTemplate(variable: string, slug: string) {
@@ -225,6 +213,8 @@ if(endpoint.riotRequirements !== undefined) {
     }
 }
 
+const curlCommand = isHttpEndpoint(endpoint) ? toCurl(endpoint) : undefined
+
 ---
 
 <Layout title={`${endpoint.name} - Valorant API Docs`} endpointName={endpoint.name}>
@@ -251,6 +241,17 @@ if(endpoint.riotRequirements !== undefined) {
                     </li>
                 })}
             </ul>
+        </section>}
+
+        {curlCommand !== undefined && <section class="ep-section">
+            <h3 class="ep-section-title">Example Request</h3>
+            <div class="schema-tabs">
+                <div class="tab-bar">
+                    <span class="tab-btn tab-btn--active">cURL</span>
+                    <button class="copy-btn" data-copy={curlCommand}>Copy</button>
+                </div>
+                <Code code={curlCommand} lang="shell" wrap theme={githubDark} />
+            </div>
         </section>}
 
         {urlParameters.length > 0 && <section class="ep-section">
@@ -378,6 +379,18 @@ if(endpoint.riotRequirements !== undefined) {
             target.scrollIntoView({block: 'nearest'})
         }
     }))
+
+    document.querySelectorAll<HTMLButtonElement>('[data-copy]').forEach(btn => {
+        btn.addEventListener('click', async () => {
+            try {
+                await navigator.clipboard.writeText(btn.dataset.copy!)
+                btn.textContent = 'Copied'
+            } catch {
+                btn.textContent = 'Copy failed'
+            }
+            setTimeout(() => btn.textContent = 'Copy', 1500)
+        })
+    })
 
     document.querySelectorAll('[data-tabs]').forEach(tabs => {
         tabs.querySelectorAll('.tab-btn').forEach(btn => {
@@ -552,6 +565,22 @@ if(endpoint.riotRequirements !== undefined) {
     color: var(--accent);
     border-bottom-color: var(--accent);
 }
+
+.copy-btn {
+    margin-left: auto;
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 8px 16px;
+    background: transparent;
+    border: none;
+    color: var(--muted);
+    cursor: pointer;
+}
+
+.copy-btn:hover { color: var(--accent); }
 
 .hidden { display: none; }
 </style>
