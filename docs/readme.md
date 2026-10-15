@@ -21,7 +21,7 @@ An Insomnia workspace is available at <https://valdocs.prometheuz.me/insomnia.js
 - [Content](Content/readme.md) (1)
 - [AccountXP](AccountXP/readme.md) (1)
 - [playerLoadout](playerLoadout/readme.md) (2)
-- [MMR](MMR/readme.md) (3)
+- [MMR](MMR/readme.md) (4)
 - [MatchHistory](MatchHistory/readme.md) (1)
 - [MatchDetails](MatchDetails/readme.md) (1)
 - [Restrictions](Restrictions/readme.md) (4)
