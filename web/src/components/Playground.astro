@@ -1,0 +1,694 @@
+---
+import {buildRequest, highlightCode, snippetLanguages, type PlaygroundSpec, type PlaygroundVariable} from '../lib/playground'
+import {getSlug} from '../lib/request'
+
+export interface Props {
+    spec: PlaygroundSpec
+}
+
+const {spec} = Astro.props
+const initial = buildRequest(spec, {})
+
+const groups: {id: PlaygroundVariable['group'], label: string}[] = [
+    {id: 'path', label: 'URL parameters'},
+    {id: 'query', label: 'Query parameters'},
+    {id: 'header', label: 'Headers & auth'}
+]
+
+// Where to get the values that most endpoints need
+const sources: Record<string, {label: string, href: string}> = {
+    'auth token': {label: 'Entitlements Token', href: '/endpoint/entitlements-token'},
+    'entitlement token': {label: 'Entitlements Token', href: '/endpoint/entitlements-token'},
+    'puuid': {label: 'RSO User Info', href: '/endpoint/rso-user-info'},
+    'party id': {label: 'Party Player', href: '/endpoint/party-player'},
+    'pre-game match id': {label: 'Pre-Game Player', href: '/endpoint/pre-game-player'},
+    'current game match id': {label: 'Current Game Player', href: '/endpoint/current-game-player'},
+    'port': {label: 'lockfile', href: '#port'},
+    'lockfile password': {label: 'lockfile', href: '#lockfile-password'}
+}
+---
+
+<section class="card-code tryit" id="try-it" aria-label="Try it" data-playground>
+    <script type="application/json" data-spec set:html={JSON.stringify(spec).replace(/</g, '\\u003c')}/>
+    <div class="card-head">
+        <span class="card-title">
+            <span class="tryit-bolt" aria-hidden="true">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg>
+            </span>
+            Try it
+        </span>
+        <div class="card-actions">
+            {!spec.local && <div class="seg" role="radiogroup" aria-label="How to send the request">
+                <button type="button" class="seg-btn seg-btn--on" data-mode="proxy" role="radio" aria-checked="true" title="Send through this site's server; Riot doesn't allow requests straight from a browser">Proxy</button>
+                <button type="button" class="seg-btn" data-mode="direct" role="radio" aria-checked="false" title="Send straight from your browser; only works with a CORS-disabling extension">Direct</button>
+            </div>}
+            <button type="button" class="btn btn--small" data-clear title="Forget every value saved in this browser">Clear</button>
+        </div>
+    </div>
+
+    <div class="tryit-body">
+        {groups.map(group => {
+            const variables = spec.variables.filter(v => v.group === group.id)
+            if(variables.length === 0) return null
+            return <fieldset class="tryit-group">
+                <legend class="tryit-legend">{group.label}</legend>
+                {variables.map(variable => {
+                    const id = 'try-' + getSlug(variable.name).replace(/[^\w-]/g, '')
+                    const source = sources[variable.name]
+                    return <div class="tryit-field" data-field={variable.name}>
+                        <label class="tryit-label" for={id}>
+                            <code>{variable.name}</code>
+                            {variable.optional ? <span class="optional">optional</span> : <span class="required">required</span>}
+                            {source !== undefined && <a class="tryit-source" href={source.href}>from {source.label} →</a>}
+                        </label>
+                        <div class="tryit-control">
+                            {variable.kind === 'select' ?
+                                <select id={id} data-var={variable.name} class="tryit-input">
+                                    <option value="">Choose…</option>
+                                    {variable.options!.map(option => <option value={option}>{option}</option>)}
+                                </select> :
+                                <input id={id} data-var={variable.name} class="tryit-input"
+                                    type={variable.kind === 'secret' ? 'password' : 'text'}
+                                    placeholder={variable.defaultValue ?? `{${variable.name}}`}
+                                    data-default={variable.defaultValue}
+                                    autocomplete="off" spellcheck="false"/>}
+                            {variable.kind === 'secret' && <button type="button" class="icon-btn ghost" data-reveal aria-label={`Show ${variable.name}`} aria-pressed="false">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
+                            </button>}
+                            {variable.name === 'client version' && <button type="button" class="btn btn--small" data-latest-version title="Fetch the current version again from api.radiantconnect.ca">Latest</button>}
+                            {variable.defaultValue !== undefined && <button type="button" class="btn btn--small" data-use-default title="Go back to the automatic value">Reset</button>}
+                        </div>
+                        {(variable.defaultValue !== undefined || variable.name === 'client version') && <span class="tryit-auto" data-auto-note>
+                            {variable.name === 'client version' ? 'Filled in automatically with the latest version; you can change it.' : 'Filled in automatically; you can change it.'}
+                        </span>}
+                    </div>
+                })}
+            </fieldset>
+        })}
+
+        {spec.bodyExample !== undefined && <fieldset class="tryit-group">
+            <legend class="tryit-legend">
+                Body <span class="optional">application/json</span>
+                <button type="button" class="tryit-link" data-reset-body>Reset to example</button>
+            </legend>
+            <textarea class="tryit-body-input" data-body rows="8" spellcheck="false" aria-label="Request body">{spec.bodyExample}</textarea>
+        </fieldset>}
+
+        {spec.variables.length === 0 && spec.bodyExample === undefined && <p class="tryit-note">This endpoint doesn't need any parameters.</p>}
+    </div>
+
+    <div class="tryit-foot">
+        <label class="tryit-remember">
+            <input type="checkbox" data-remember/>
+            Save tokens and values in this browser
+        </label>
+        <button type="button" class="btn btn--primary tryit-send" data-send>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4v16l13-8z"/></svg>
+            Send {spec.method}
+        </button>
+    </div>
+    <p class="tryit-status" data-status role="status" aria-live="polite"></p>
+    <p class="tryit-note" data-note>
+        {spec.local ?
+            <>Sent straight from your browser to the Riot Client running on this computer. Open <a class="link" data-local-origin href="https://127.0.0.1/" target="_blank" rel="noopener">https://127.0.0.1:&#123;port&#125;/</a> once and accept its self-signed certificate first.</> :
+            <>Riot's servers don't accept requests from browsers, so this goes through this site's proxy. Your tokens are only forwarded to Riot, never stored on the server. What you enter is reused on every endpoint page in this tab; tick "Save" to keep it across visits.</>}
+    </p>
+</section>
+
+<section class="card-code" aria-label="Request">
+    <div class="card-head">
+        <span class="card-title">Request</span>
+        <div class="card-actions" data-tabs="request" role="tablist">
+            {snippetLanguages.map((lang, i) => <button type="button" class={'tab' + (i === 0 ? ' tab--on' : '')} data-tab={lang.id} role="tab">{lang.label}</button>)}
+            <button type="button" class="icon-btn ghost" data-copy-snippet aria-label="Copy request">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>
+            </button>
+        </div>
+    </div>
+    <div class="card-code-body">
+        {snippetLanguages.map((lang, i) => <pre class={'code' + (i === 0 ? '' : ' hidden')} data-panel={lang.id} data-snippet={lang.id} set:html={highlightCode(lang.build(initial, spec.local))}/>)}
+    </div>
+</section>
+
+<style>
+.tryit {
+    border-color: var(--accent-line);
+    box-shadow: 0 0 0 4px var(--accent-soft), var(--shadow);
+}
+.tryit-bolt {
+    width: 24px;
+    height: 24px;
+    border-radius: 7px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--accent);
+    color: var(--accent-ink);
+}
+.tryit-body {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    padding: 18px 20px 6px;
+}
+.tryit-group {
+    border: 0;
+    margin: 0;
+    padding: 0;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+.tryit-legend {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 0 0 8px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    border-bottom: 1px solid var(--line);
+}
+.tryit-legend .optional { letter-spacing: 0; text-transform: none; font-weight: 500; }
+.tryit-field { display: flex; flex-direction: column; gap: 6px; }
+.tryit-label {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 4px 10px;
+    font-size: 12px;
+}
+.tryit-label code { font-size: 12.5px; font-weight: 600; color: var(--heading); }
+.tryit-source { margin-left: auto; font-size: 11.5px; font-weight: 600; color: var(--accent); text-decoration: none; }
+.tryit-source:hover { color: var(--accent-hover); }
+.tryit-control { display: flex; align-items: center; gap: 6px; }
+.tryit-input, .tryit-body-input {
+    flex: 1;
+    min-width: 0;
+    height: 40px;
+    padding: 0 12px;
+    border-radius: 10px;
+    border: 1px solid var(--border-2);
+    background: var(--bg);
+    color: var(--heading);
+    font-family: var(--mono);
+    font-size: 12.5px;
+    outline: none;
+    transition: border-color .15s, box-shadow .15s;
+}
+.tryit-input::placeholder, .tryit-body-input::placeholder { color: var(--muted); opacity: .8; }
+.tryit-input:focus, .tryit-body-input:focus { border-color: var(--accent-line); box-shadow: 0 0 0 3px var(--accent-soft); }
+select.tryit-input { cursor: pointer; }
+.tryit-field--missing .tryit-input { border-color: color-mix(in srgb, var(--danger) 60%, transparent); }
+.tryit-body-input {
+    height: auto;
+    min-height: 120px;
+    padding: 10px 12px;
+    line-height: 1.6;
+    resize: vertical;
+    white-space: pre;
+}
+.tryit-link {
+    margin-left: auto;
+    background: none;
+    border: 0;
+    padding: 0;
+    color: var(--accent);
+    font-size: 11.5px;
+    font-weight: 600;
+    letter-spacing: 0;
+    text-transform: none;
+}
+[data-reveal][aria-pressed="true"] { color: var(--accent); }
+.tryit-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 16px 20px 0;
+}
+.tryit-remember {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-3);
+    cursor: pointer;
+}
+.tryit-remember input { accent-color: var(--accent); }
+.tryit-auto { font-size: 11.5px; font-weight: 500; color: var(--muted); }
+.tryit-field--custom .tryit-auto { visibility: hidden; }
+.tryit-send { min-width: 140px; }
+.tryit-status {
+    margin: 0;
+    padding: 10px 20px 0;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--danger);
+}
+.tryit-status:empty { display: none; }
+.tryit-status--ok { color: var(--success); }
+.tryit-note {
+    margin: 0;
+    padding: 12px 20px 18px;
+    font-size: 12px;
+    line-height: 1.55;
+    font-weight: 500;
+    color: var(--muted);
+}
+
+.seg {
+    display: inline-flex;
+    padding: 3px;
+    gap: 2px;
+    border-radius: 10px;
+    background: var(--bg);
+    border: 1px solid var(--border-2);
+}
+.seg-btn {
+    height: 26px;
+    padding: 0 10px;
+    border: 0;
+    border-radius: 7px;
+    background: transparent;
+    color: var(--text-3);
+    font-size: 11.5px;
+    font-weight: 600;
+}
+.seg-btn--on { background: var(--hover-2); color: var(--heading); box-shadow: inset 0 -2px 0 var(--accent); }
+</style>
+
+<script>
+import {buildRequest, captureValues, highlightCode, highlightJson, snippetLanguages, type PlaygroundSpec, type Values} from '../lib/playground'
+
+const storageKey = 'valdocs-playground-values'
+const rememberKey = 'valdocs-playground-remember'
+const modeKey = 'valdocs-playground-mode'
+const versionKey = 'valdocs-client-version'
+const versionMaxAge = 1000 * 60 * 60 * 3
+
+// The latest client version, cached so every page doesn't ask for it again
+async function latestClientVersion(force = false): Promise<string | undefined> {
+    if(!force) {
+        try {
+            const cached = JSON.parse(localStorage.getItem(versionKey) ?? 'null')
+            if(typeof cached?.version === 'string' && Date.now() - cached.at < versionMaxAge) return cached.version
+        } catch {}
+    }
+    const sources: [string, (data: any) => unknown][] = [
+        ['https://api.radiantconnect.ca/api/version/latest', data => data?.data?.riot_client_version],
+        ['https://valorant-api.com/v1/version', data => data?.data?.riotClientVersion]
+    ]
+    for(const [url, pick] of sources) {
+        try {
+            const res = await fetch(url)
+            const version = pick(await res.json())
+            if(typeof version !== 'string' || version === '') continue
+            try { localStorage.setItem(versionKey, JSON.stringify({version, at: Date.now()})) } catch {}
+            return version
+        } catch {}
+    }
+    return undefined
+}
+
+function safeGet(storage: Storage, key: string) {
+    try { return storage.getItem(key) } catch { return null }
+}
+function safeSet(storage: Storage, key: string, value: string | null) {
+    try {
+        if(value === null) storage.removeItem(key)
+        else storage.setItem(key, value)
+    } catch {}
+}
+function parseValues(raw: string | null): Values {
+    try {
+        const parsed = JSON.parse(raw ?? '{}')
+        return parsed !== null && typeof parsed === 'object' ? parsed : {}
+    } catch {
+        return {}
+    }
+}
+
+function maskSecret(value: string) {
+    return value.length > 14 ? `${value.slice(0, 6)}…${value.slice(-4)}` : '••••••'
+}
+
+function formatSize(bytes: number) {
+    if(bytes < 1024) return `${bytes} B`
+    if(bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`
+    return `${(bytes / 1024 / 1024).toFixed(2)} MB`
+}
+
+function escapeHtml(str: string) {
+    return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+}
+
+interface LiveResponse {
+    status: number
+    statusText: string
+    headers: [string, string][]
+    body: string
+    size: number
+    truncated?: boolean
+    timeMs: number
+}
+
+for(const root of document.querySelectorAll<HTMLElement>('[data-playground]')) {
+    const spec: PlaygroundSpec = JSON.parse(root.querySelector('[data-spec]')!.textContent!)
+    const inputs = Array.from(root.querySelectorAll<HTMLInputElement | HTMLSelectElement>('[data-var]'))
+    const bodyInput = root.querySelector<HTMLTextAreaElement>('[data-body]')
+    const rememberBox = root.querySelector<HTMLInputElement>('[data-remember]')!
+    const sendButton = root.querySelector<HTMLButtonElement>('[data-send]')!
+    const statusEl = root.querySelector<HTMLElement>('[data-status]')!
+    const snippetPanels = Array.from(document.querySelectorAll<HTMLElement>('[data-snippet]'))
+    const secrets = new Set(spec.variables.filter(v => v.kind === 'secret').map(v => v.name))
+    const revealed = new Set<string>()
+
+    // Saving tokens across visits is opt-in; within a tab they're always kept so other endpoints can reuse them
+    let remember = safeGet(localStorage, rememberKey) === 'true'
+    rememberBox.checked = remember
+    let mode = spec.local ? 'direct' : (safeGet(localStorage, modeKey) === 'direct' ? 'direct' : 'proxy')
+
+    // Values are shared by every endpoint page, so a puuid or token only has to be entered once
+    function loadValues(): Values {
+        return {...parseValues(safeGet(localStorage, storageKey)), ...parseValues(safeGet(sessionStorage, storageKey))}
+    }
+    let values = loadValues()
+
+    function saveValues() {
+        const json = JSON.stringify(values)
+        safeSet(sessionStorage, storageKey, json)
+        safeSet(localStorage, storageKey, remember ? json : null)
+    }
+
+    function currentValues(): Values {
+        const result: Values = {}
+        for(const input of inputs) {
+            const value = input.value.trim()
+            result[input.dataset.var!] = value !== '' ? value : (input.dataset.default ?? '')
+        }
+        return result
+    }
+
+    function renderSnippets() {
+        const filled = currentValues()
+        const shown: Values = {...filled}
+        for(const name of secrets) {
+            if(shown[name] && !revealed.has(name)) shown[name] = maskSecret(shown[name])
+        }
+        const body = bodyInput?.value
+        const display = buildRequest(spec, shown, body)
+        const real = buildRequest(spec, filled, body)
+        for(const panel of snippetPanels) {
+            const lang = snippetLanguages.find(l => l.id === panel.dataset.snippet)!
+            panel.innerHTML = highlightCode(lang.build(display, spec.local))
+            panel.dataset.copyText = lang.build(real, spec.local)
+        }
+        const port = filled['port']
+        const originLink = root.querySelector<HTMLAnchorElement>('[data-local-origin]')
+        if(originLink && port) {
+            originLink.href = `https://127.0.0.1:${port}/`
+            originLink.textContent = `https://127.0.0.1:${port}/`
+        }
+    }
+
+    // Automatic values (client platform, client version) are shown in the field but only stored once changed
+    function fillInputs() {
+        for(const input of inputs) {
+            const stored = values[input.dataset.var!]
+            input.value = stored ?? input.dataset.default ?? ''
+            markCustom(input)
+        }
+    }
+
+    function markCustom(input: HTMLInputElement | HTMLSelectElement) {
+        const custom = input.dataset.default !== undefined && input.value.trim() !== '' && input.value.trim() !== input.dataset.default
+        input.closest('.tryit-field')?.classList.toggle('tryit-field--custom', custom)
+    }
+
+    function onInput(input: HTMLInputElement | HTMLSelectElement) {
+        const value = input.value.trim()
+        if(value === '' || value === input.dataset.default) delete values[input.dataset.var!]
+        else values[input.dataset.var!] = value
+        input.closest('.tryit-field')?.classList.remove('tryit-field--missing')
+        markCustom(input)
+        saveValues()
+        renderSnippets()
+    }
+
+    // Other tabs (or the same page elsewhere) may have changed the shared values
+    window.addEventListener('storage', e => {
+        if(e.key !== storageKey) return
+        values = loadValues()
+        fillInputs()
+        renderSnippets()
+    })
+
+    for(const input of inputs) {
+        input.addEventListener('input', () => onInput(input))
+        input.addEventListener('change', () => onInput(input))
+    }
+    bodyInput?.addEventListener('input', renderSnippets)
+
+    root.querySelector('[data-reset-body]')?.addEventListener('click', () => {
+        bodyInput!.value = spec.bodyExample ?? ''
+        renderSnippets()
+    })
+
+    root.querySelectorAll<HTMLButtonElement>('[data-reveal]').forEach(button => {
+        const input = button.parentElement!.querySelector<HTMLInputElement>('[data-var]')!
+        button.addEventListener('click', () => {
+            const show = input.type === 'password'
+            input.type = show ? 'text' : 'password'
+            button.setAttribute('aria-pressed', String(show))
+            if(show) revealed.add(input.dataset.var!)
+            else revealed.delete(input.dataset.var!)
+            renderSnippets()
+        })
+    })
+
+    root.querySelectorAll<HTMLButtonElement>('[data-use-default]').forEach(button => {
+        const input = button.parentElement!.querySelector<HTMLInputElement>('[data-var]')!
+        button.addEventListener('click', () => {
+            input.value = input.dataset.default ?? ''
+            onInput(input)
+        })
+    })
+
+    const versionInput = root.querySelector<HTMLInputElement>('[data-var="client version"]')
+    async function applyLatestVersion(force: boolean) {
+        if(!versionInput) return
+        const version = await latestClientVersion(force)
+        if(version === undefined) {
+            if(force) setStatus('Could not fetch the latest client version', false)
+            return
+        }
+        versionInput.dataset.default = version
+        versionInput.placeholder = version
+        // Pressing "Latest" drops a version typed by hand
+        if(force) delete values['client version']
+        if(values['client version'] === version) delete values['client version']
+        saveValues()
+        if(values['client version'] === undefined) versionInput.value = version
+        markCustom(versionInput)
+        renderSnippets()
+    }
+    applyLatestVersion(false)
+
+    root.querySelector<HTMLButtonElement>('[data-latest-version]')?.addEventListener('click', async e => {
+        const button = e.currentTarget as HTMLButtonElement
+        button.disabled = true
+        await applyLatestVersion(true)
+        button.disabled = false
+    })
+
+    rememberBox.addEventListener('change', () => {
+        remember = rememberBox.checked
+        safeSet(localStorage, rememberKey, String(remember))
+        saveValues()
+    })
+
+    root.querySelector('[data-clear]')!.addEventListener('click', () => {
+        values = {}
+        safeSet(localStorage, storageKey, null)
+        safeSet(sessionStorage, storageKey, null)
+        fillInputs()
+        renderSnippets()
+        setStatus('Saved values cleared', true)
+    })
+
+    root.querySelectorAll<HTMLButtonElement>('[data-mode]').forEach(button => {
+        const sync = () => root.querySelectorAll<HTMLButtonElement>('[data-mode]').forEach(b => {
+            b.classList.toggle('seg-btn--on', b.dataset.mode === mode)
+            b.setAttribute('aria-checked', String(b.dataset.mode === mode))
+        })
+        sync()
+        button.addEventListener('click', () => {
+            mode = button.dataset.mode!
+            safeSet(localStorage, modeKey, mode)
+            sync()
+        })
+    })
+
+    function setStatus(message: string, ok: boolean) {
+        statusEl.textContent = message
+        statusEl.classList.toggle('tryit-status--ok', ok)
+    }
+
+    // ---- Response card ----
+    const liveTab = document.querySelector<HTMLButtonElement>('[data-tab="live"]')
+    const livePanel = document.querySelector<HTMLElement>('[data-live]')
+    const statusPill = document.querySelector<HTMLElement>('[data-response-status]')
+    const statusText = document.querySelector<HTMLElement>('[data-response-status-text]')
+
+    function showLive(res: LiveResponse | {error: string}) {
+        if(!liveTab || !livePanel) return
+        liveTab.classList.remove('hidden')
+        liveTab.click()
+        const meta = document.querySelector<HTMLElement>('[data-live-meta]')!
+        const headersEl = livePanel.querySelector<HTMLElement>('[data-live-headers]')!
+        const bodyEl = livePanel.querySelector<HTMLElement>('[data-live-body]')!
+        const captureEl = livePanel.querySelector<HTMLElement>('[data-live-capture]')!
+        captureEl.replaceChildren()
+        captureEl.classList.add('hidden')
+
+        if('error' in res) {
+            statusPill?.setAttribute('data-state', 'error')
+            if(statusText) statusText.textContent = 'Failed'
+            meta.textContent = res.error
+            headersEl.classList.add('hidden')
+            bodyEl.textContent = ''
+            bodyEl.dataset.copyText = res.error
+            return
+        }
+
+        const ok = res.status >= 200 && res.status < 300
+        statusPill?.setAttribute('data-state', ok ? 'ok' : 'error')
+        if(statusText) statusText.textContent = `${res.status} ${res.statusText}`.trim()
+        meta.textContent = `${res.timeMs} ms · ${formatSize(res.size)}${res.truncated ? ' · truncated' : ''}`
+
+        headersEl.classList.toggle('hidden', res.headers.length === 0)
+        headersEl.querySelector('summary')!.textContent = `Response headers (${res.headers.length})`
+        headersEl.querySelector('pre')!.innerHTML = res.headers
+            .map(([name, value]) => `<span class="tf">${escapeHtml(name)}</span><span class="tp">:</span> ${escapeHtml(value)}`).join('\n')
+
+        let text = res.body
+        let parsed: unknown = undefined
+        try {
+            parsed = JSON.parse(res.body)
+            text = JSON.stringify(parsed, null, 2)
+        } catch {}
+        bodyEl.dataset.copyText = text
+        if(text === '') bodyEl.innerHTML = '<span class="tc">// Empty body</span>'
+        else if(parsed !== undefined && text.length < 400_000) bodyEl.innerHTML = highlightJson(text)
+        else bodyEl.textContent = text
+
+        // Offer to reuse tokens and IDs the response handed out
+        if(parsed !== undefined && ok) {
+            const found = Object.entries(captureValues(parsed)).filter(([name, value]) => values[name] !== value)
+            if(found.length > 0) {
+                captureEl.classList.remove('hidden')
+                const label = document.createElement('span')
+                label.textContent = 'Use from response:'
+                captureEl.append(label)
+                for(const [name, value] of found) {
+                    const button = document.createElement('button')
+                    button.type = 'button'
+                    button.className = 'btn btn--small'
+                    button.textContent = name
+                    button.title = secrets.has(name) ? maskSecret(value) : value
+                    button.addEventListener('click', () => {
+                        values[name] = value
+                        saveValues()
+                        fillInputs()
+                        renderSnippets()
+                        button.disabled = true
+                        button.textContent = `${name} ✓`
+                    })
+                    captureEl.append(button)
+                }
+            }
+        }
+    }
+
+    async function send() {
+        const filled = currentValues()
+        const req = buildRequest(spec, filled, bodyInput?.value)
+        root.querySelectorAll('.tryit-field--missing').forEach(el => el.classList.remove('tryit-field--missing'))
+        if(req.missing.length > 0) {
+            for(const name of req.missing) root.querySelector(`[data-field="${CSS.escape(name)}"]`)?.classList.add('tryit-field--missing')
+            setStatus(`Fill in ${req.missing.join(', ')}`, false)
+            return
+        }
+        if(req.body !== undefined && req.body.trim() !== '') {
+            try {
+                JSON.parse(req.body)
+            } catch {
+                setStatus('The body is not valid JSON', false)
+                return
+            }
+        }
+
+        const headers = req.headers.slice()
+        if(req.basicAuth) headers.push(['Authorization', 'Basic ' + btoa(`${req.basicAuth.user}:${req.basicAuth.password}`)])
+        const body = req.method === 'GET' || req.body === undefined || req.body.trim() === '' ? undefined : req.body
+
+        sendButton.disabled = true
+        setStatus('Sending…', true)
+        const start = performance.now()
+        try {
+            let result: LiveResponse
+            if(mode === 'proxy') {
+                const res = await fetch('/api/proxy', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({url: req.url, method: req.method, headers, body})
+                })
+                const data = await res.json().catch(() => ({error: `The proxy answered with ${res.status}; it only runs on the deployed site and the dev server`}))
+                if('error' in data) throw new Error(data.error)
+                result = data
+            } else {
+                const res = await fetch(req.url, {method: req.method, headers, body})
+                const text = await res.text()
+                result = {
+                    status: res.status,
+                    statusText: res.statusText,
+                    headers: Array.from(res.headers.entries()),
+                    body: text,
+                    size: new Blob([text]).size,
+                    timeMs: Math.round(performance.now() - start)
+                }
+            }
+            setStatus('', true)
+            showLive(result)
+        } catch(e) {
+            const message = e instanceof TypeError ?
+                (spec.local ?
+                    'The browser could not reach the Riot Client. Make sure the game is running, the port is right and the certificate was accepted; the client may also refuse requests from websites.' :
+                    'The browser blocked the request (CORS). Switch to Proxy, or use a CORS-disabling extension.') :
+                (e instanceof Error ? e.message : 'Request failed')
+            setStatus(message, false)
+            showLive({error: message})
+        } finally {
+            sendButton.disabled = false
+        }
+    }
+
+    sendButton.addEventListener('click', send)
+    root.addEventListener('keydown', e => {
+        if(e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+            e.preventDefault()
+            send()
+        }
+    })
+
+    fillInputs()
+    renderSnippets()
+}
+</script>

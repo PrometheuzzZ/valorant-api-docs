@@ -1,4 +1,5 @@
 import type {AugmentedValorantEndpoint} from '../types/AugmentedValorantEndpoint'
+import {describeVariable, findPlaceholders, type PlaygroundSpec, type PlaygroundVariable} from './playground'
 
 export function getSlug(str: string) {
     return str.toLowerCase().replace(/ /g, '-')
@@ -59,4 +60,32 @@ export function toCurl(endpoint: AugmentedValorantEndpoint): string {
     }
 
     return lines.join(' \\\n  ')
+}
+
+// What the "Try it" panel needs to build the request in the browser
+export function toPlaygroundSpec(endpoint: AugmentedValorantEndpoint, bodyExample?: string): PlaygroundSpec {
+    const url = endpointToURL(endpoint)
+    const headers = getRequestHeaders(endpoint)
+    const query = Array.from(endpoint.query?.entries() ?? []).map(([name, type]) => ({name, optional: type.isOptional()}))
+    const basicAuth = endpoint.riotRequirements?.localAuth ? {user: 'riot', password: '{lockfile password}'} : undefined
+
+    const variables = new Map<string, PlaygroundVariable>()
+    const add = (name: string, group: PlaygroundVariable['group'], extra: Partial<PlaygroundVariable> = {}) => {
+        if(!variables.has(name)) variables.set(name, describeVariable(name, group, extra))
+    }
+    findPlaceholders(url).forEach(name => add(name, 'path'))
+    query.forEach(param => add(param.name, 'query', {optional: param.optional}))
+    headers.forEach(([, value]) => findPlaceholders(value).forEach(name => add(name, 'header')))
+    if(basicAuth) add('lockfile password', 'header')
+
+    return {
+        method: endpoint.method ?? 'GET',
+        url,
+        query,
+        headers,
+        basicAuth,
+        bodyExample,
+        local: endpoint.type === 'local',
+        variables: Array.from(variables.values())
+    }
 }

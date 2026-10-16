@@ -1,14 +1,13 @@
 ---
 import {endpoints} from '../types/AugmentedValorantEndpoint'
 import EndpointMethod from './EndpointMethod.astro'
-import RepoLink from './RepoLink.astro'
 import {type AugmentedValorantEndpoint} from '../types/AugmentedValorantEndpoint'
-import {endpointToURL} from '../lib/request'
+import {endpointToURL, getSlug} from '../lib/request'
 
 
 const categories = new Map<string, AugmentedValorantEndpoint[]>()
 for(const endpoint of Object.values(endpoints)) {
-    const categoryName = Array.isArray(endpoint.category) ? endpoint.category.join(' - ') : endpoint.category ?? ''
+    const categoryName = Array.isArray(endpoint.category) ? endpoint.category.join(' — ') : endpoint.category ?? 'Other'
     if(!categories.has(categoryName)) {
         categories.set(categoryName, [])
     }
@@ -16,7 +15,7 @@ for(const endpoint of Object.values(endpoints)) {
 }
 
 function getEndpointSlug(endpoint: AugmentedValorantEndpoint) {
-   return '/endpoint/' + endpoint.name.toLowerCase().replace(/ /g, '-')
+   return '/endpoint/' + getSlug(endpoint.name)
 }
 
 // Everything a search should match: the name, method, URL, internal name, category and description
@@ -27,312 +26,227 @@ function searchText(endpoint: AugmentedValorantEndpoint, category: string) {
 }
 
 const {endpointName} = Astro.props
+const isHome = Astro.url.pathname === '/'
 ---
 
-<input type="checkbox" id="toggler" class="hidden"/>
-
-<aside id="sidebar" aria-label="Sidebar">
-   <div class="sidebar-header">
-      <a href="/" class="sidebar-brand">
-         <span class="brand-name">Valorant API</span>
-         <span class="brand-sub">unofficial docs</span>
-      </a>
-      <span class="repo-link-wrap">
-         <RepoLink user="PrometheuzzZ" repo="valorant-api-docs"/>
-      </span>
-
-      <div class="mobile-toggle">
-         <label for="toggler" aria-controls="sidebar">
-            Menu
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 1 16 16" width="14" height="14" fill="currentColor" id="opener-arrow">
-               <path fill-rule="evenodd" d="M6.22 3.22a.75.75 0 011.06 0l4.25 4.25a.75.75 0 010 1.06l-4.25 4.25a.75.75 0 01-1.06-1.06L9.94 8 6.22 4.28a.75.75 0 010-1.06z"></path>
-            </svg>
-         </label>
-      </div>
-
-      <div class="search-wrap">
-         <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-         </svg>
-         <input id="sidebar-search" type="search" placeholder="Search endpoints..." title="Search by name, URL, internal name or description" autocomplete="off" spellcheck="false" aria-keyshortcuts="/ Control+K"/>
-         <kbd id="search-kbd" title="Press / or Ctrl+K to search">/</kbd>
-         <button id="search-clear" aria-label="Clear search">✕</button>
-      </div>
+<aside id="sidebar" aria-label="Endpoints">
+   <div class="sidebar-head">
+      <span class="sidebar-title">Endpoints</span>
+      <span class="sidebar-count"><span class="live-dot"></span>{Object.keys(endpoints).length} documented</span>
    </div>
 
-   <ul id="sidebar-list">
-      <li id="search-empty">No endpoints found</li>
-      <li>
-         <a href="/" class={'nav-item' + (Astro.url.pathname === '/' ? ' nav-item--active active-endpoint' : '')}>
-            <span class="nav-label">Home</span>
-         </a>
-      </li>
-      {Array.from(categories).map(([category, endpoints]) => {
+   <nav id="sidebar-list">
+      <p id="search-empty">No endpoints found</p>
+      <a href="/" class={'nav-row nav-row--home' + (isHome ? ' nav-row--active active-endpoint' : '')}>
+         <span class="nav-home-icon" aria-hidden="true">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 11 9-7 9 7"/><path d="M5 10v10h14V10"/></svg>
+         </span>
+         <span class="nm">Getting started</span>
+      </a>
+      {Array.from(categories).map(([category, categoryEndpoints]) => {
+         const containsActive = categoryEndpoints.some(endpoint => endpoint.name === endpointName)
          return (
-            <li class="nav-section">
-               <span class="nav-category">{category}</span>
-               <ul>
-                  {endpoints.map(endpoint => {
+            <details class="nav-section" data-category={category} open={containsActive ? true : undefined} data-has-active={containsActive ? '' : undefined}>
+               <summary class="nav-group ghost">
+                  <span class="nav-group-name">{category}</span>
+                  <span class="nav-group-meta">
+                     <span class="nav-group-count">{categoryEndpoints.length}</span>
+                     <svg class="nav-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+                  </span>
+               </summary>
+               <ul class="nav-items">
+                  {categoryEndpoints.map(endpoint => {
+                     const active = endpointName === endpoint.name
                      return (
                         <li data-search={searchText(endpoint, category)}>
-                           <a href={getEndpointSlug(endpoint)} class={'nav-item' + (endpointName === endpoint.name ? ' nav-item--active active-endpoint' : '')}>
-                              <span class="nav-label">
-                                 <EndpointMethod method={endpoint.method}/>
-                                 {endpoint.name}
-                              </span>
+                           <a href={getEndpointSlug(endpoint)} class={'nav-row' + (active ? ' nav-row--active active-endpoint' : '')} aria-current={active ? 'page' : undefined}>
+                              <EndpointMethod method={endpoint.method} badge/>
+                              <span class="nm">{endpoint.name}</span>
                            </a>
                         </li>
                      )
                   })}
                </ul>
-            </li>
+            </details>
          )
       })}
-   </ul>
+   </nav>
 </aside>
 
 <style>
 aside {
-   background: var(--surface);
-   border-right: 1px solid var(--border);
+   flex: 0 0 284px;
+   width: 284px;
    position: sticky;
-   top: 0;
-   left: 0;
-   z-index: 40;
-   height: 100vh;
+   top: var(--topbar-h);
+   height: calc(100vh - var(--topbar-h));
    overflow-y: auto;
-   scrollbar-width: thin;
-   scrollbar-color: var(--border) transparent;
+   padding: 24px 14px 48px 20px;
+   border-right: 1px solid var(--line);
 }
 
-.sidebar-header {
-   position: sticky;
-   top: 0;
-   background: var(--surface);
-   border-bottom: 1px solid var(--border);
-   padding: 20px 16px 16px;
-   z-index: 1;
+.sidebar-head {
+   display: flex;
+   align-items: center;
+   justify-content: space-between;
+   padding: 0 10px 16px;
 }
-
-.sidebar-brand {
-   display: block;
-   text-decoration: none;
-   margin-bottom: 4px;
-}
-
-.brand-name {
-   display: block;
-   font-family: 'Syne', sans-serif;
-   font-weight: 800;
-   font-size: 16px;
-   color: var(--heading);
-   letter-spacing: -0.3px;
-}
-
-.brand-sub {
-   display: block;
-   font-size: 10px;
-   text-transform: uppercase;
-   letter-spacing: 2px;
-   color: var(--muted);
-   margin-top: 2px;
-}
-
-.repo-link-wrap {
-   display: block;
-   margin-top: 8px;
+.sidebar-title {
    font-size: 11px;
+   font-weight: 700;
+   letter-spacing: 0.12em;
+   text-transform: uppercase;
+   color: var(--muted);
 }
-
-.mobile-toggle {
-   display: none;
-   margin-top: 10px;
-}
-
-.mobile-toggle label {
-   display: inline-flex;
+.sidebar-count {
+   display: flex;
    align-items: center;
    gap: 6px;
    font-size: 11px;
-   text-transform: uppercase;
-   letter-spacing: 1px;
-   color: var(--muted);
-   cursor: pointer;
-   padding: 5px 10px;
-   border: 1px solid var(--border);
-   border-radius: 5px;
-   background: transparent;
-   transition: all .15s;
+   font-weight: 600;
+   color: var(--text-3);
 }
-.mobile-toggle label:hover { border-color: var(--accent); color: var(--accent); }
+.live-dot {
+   width: 6px;
+   height: 6px;
+   border-radius: 50%;
+   background: var(--success);
+   box-shadow: 0 0 8px var(--success);
+}
 
 #sidebar-list {
-   padding: 12px 8px;
-   list-style: none;
-   display: block;
+   display: flex;
+   flex-direction: column;
+   gap: 6px;
 }
 
-.nav-section {
-   margin-top: 16px;
-}
+.nav-section { padding-bottom: 2px; }
 
-.nav-category {
-   display: block;
-   font-size: 10px;
+.nav-group {
+   display: flex;
+   align-items: center;
+   justify-content: space-between;
+   gap: 8px;
+   min-height: 38px;
+   padding: 0 10px;
+   border-radius: 10px;
+   color: var(--text-2);
+   font-size: 11px;
    font-weight: 700;
+   letter-spacing: 0.08em;
    text-transform: uppercase;
-   letter-spacing: 1.5px;
-   color: var(--text-4);
-   padding: 0 8px 6px;
-   border-bottom: 1px solid var(--border);
-   margin-bottom: 4px;
-}
-
-.nav-item {
-   display: flex;
-   align-items: center;
-   padding: 7px 8px;
-   border-radius: 5px;
-   text-decoration: none;
-   color: var(--text-3);
-   font-size: 12px;
-   transition: all .1s;
-   border-left: 2px solid transparent;
-}
-
-.nav-item:hover {
-   background: var(--hover);
-   color: var(--text);
-   border-left-color: var(--border);
-}
-
-.nav-item--active {
-   background: var(--accent-dim);
-   color: var(--accent);
-   border-left-color: var(--accent);
-}
-
-.nav-item--active:hover {
-   background: var(--accent-dim);
-   color: var(--accent);
-}
-
-.nav-label {
-   display: flex;
-   align-items: center;
-   gap: 4px;
-   flex-wrap: wrap;
-   text-transform: uppercase;
-}
-
-.search-wrap {
-   position: relative;
-   display: flex;
-   align-items: center;
-   margin-top: 10px;
-}
-
-.search-icon {
-   position: absolute;
-   left: 9px;
-   color: var(--muted);
-   pointer-events: none;
-   flex-shrink: 0;
-}
-
-#sidebar-search {
-   width: 100%;
-   background: var(--bg);
-   border: 1px solid var(--border);
-   border-radius: 6px;
-   padding: 6px 28px 6px 28px;
-   font-size: 12px;
-   font-family: var(--mono);
-   color: var(--text);
-   outline: none;
-   transition: border-color .15s;
-}
-
-#sidebar-search::placeholder { color: var(--muted); }
-#sidebar-search:focus { border-color: var(--accent); }
-
-#search-clear {
-   position: absolute;
-   right: 7px;
-   background: none;
-   border: none;
-   color: var(--muted);
    cursor: pointer;
-   font-size: 10px;
-   padding: 2px 4px;
-   display: none;
-   line-height: 1;
+   list-style: none;
+   user-select: none;
 }
-#search-clear:hover { color: var(--text); }
+.nav-group::-webkit-details-marker { display: none; }
+.nav-group-meta { display: flex; align-items: center; gap: 8px; flex: none; }
+.nav-group-count { font-family: var(--mono); font-size: 10px; letter-spacing: 0; color: var(--muted); }
+.nav-chevron { transition: transform .2s; transform: rotate(-90deg); }
+.nav-section[open] .nav-chevron { transform: rotate(0deg); }
 
-#sidebar-search::-webkit-search-cancel-button { display: none; }
-
-#search-kbd {
-   position: absolute;
-   right: 7px;
-   font-family: var(--mono);
-   font-size: 10px;
-   line-height: 1;
-   color: var(--muted);
-   border: 1px solid var(--border);
-   border-radius: 4px;
-   padding: 2px 5px;
-   pointer-events: none;
+.nav-items {
+   list-style: none;
+   margin: 2px 0 6px;
+   padding: 0;
+   display: flex;
+   flex-direction: column;
+   gap: 1px;
 }
-#sidebar-search:focus ~ #search-kbd { display: none; }
 
-.nav-item--focused {
-   background: var(--hover);
-   color: var(--text);
-   border-left-color: var(--accent);
+.nav-row {
+   display: flex;
+   align-items: center;
+   gap: 10px;
+   min-height: 36px;
+   padding: 0 10px;
+   border-radius: 10px;
+   text-decoration: none;
+   transition: background .15s;
+}
+.nav-row:hover, .nav-row--focused { background: var(--hover); }
+.nav-row:hover .nm, .nav-row--focused .nm { color: var(--heading); }
+.nav-row--focused { box-shadow: inset 0 0 0 1px var(--border-2); }
+.nav-row--active, .nav-row--active:hover {
+   background: var(--accent-soft);
+   box-shadow: inset 0 0 0 1px var(--accent-line);
+}
+.nav-row--active .nm { color: var(--heading); font-weight: 700; }
+.nav-row--home { margin-bottom: 8px; }
+.nav-home-icon {
+   flex: none;
+   width: 46px;
+   display: flex;
+   justify-content: center;
+   color: var(--accent);
+}
+
+.nm {
+   font-size: 13px;
+   font-weight: 500;
+   color: var(--text-2);
+   white-space: nowrap;
+   overflow: hidden;
+   text-overflow: ellipsis;
 }
 
 #search-empty {
    display: none;
-   padding: 12px 8px;
-   font-size: 12px;
+   margin: 0;
+   padding: 12px 10px;
+   font-size: 13px;
    color: var(--muted);
 }
 
-.nav-section--hidden { display: none; }
-.nav-item--hidden { display: none; }
+.nav-section--hidden, .nav-item--hidden { display: none; }
 
-#toggler:checked ~ #sidebar #sidebar-list {
-   display: block;
-}
-
-#toggler:checked ~ #sidebar #opener-arrow {
-   transform: rotate(90deg);
-}
-
-@media (max-width: 768px) {
+@media (max-width: 900px) {
    aside {
       position: static;
+      width: 100%;
+      flex-basis: auto;
       height: auto;
+      padding: 12px 16px;
+      border-right: 0;
+      border-bottom: 1px solid var(--line);
+      display: none;
    }
-   .mobile-toggle { display: block; }
-   #sidebar-list { display: none; }
-   #sidebar.searching #sidebar-list { display: block; }
-   #search-kbd { display: none; }
+   :global(#toggler:checked ~ .shell) aside,
+   aside.searching { display: block; }
 }
 </style>
 
 <script>
 const sidebar = document.getElementById('sidebar')!
+const sections = Array.from(document.querySelectorAll<HTMLDetailsElement>('.nav-section'))
+const openKey = 'sidebar-open-groups'
+
+// Remember which groups were expanded; the group with the current endpoint is always open
+function readOpenGroups(): string[] {
+   try {
+      return JSON.parse(localStorage.getItem(openKey) ?? '[]')
+   } catch {
+      return []
+   }
+}
+const savedOpen = new Set(readOpenGroups())
+for(const section of sections) {
+   if(savedOpen.has(section.dataset.category!)) section.open = true
+}
+let restoring = false
+function saveOpenGroups() {
+   if(restoring || sidebar.classList.contains('searching')) return
+   try {
+      localStorage.setItem(openKey, JSON.stringify(sections.filter(s => s.open).map(s => s.dataset.category)))
+   } catch {}
+}
+sections.forEach(section => section.addEventListener('toggle', saveOpenGroups))
 
 const previousTop = sessionStorage.getItem('sidebar-scroll')
 if(previousTop !== null) {
    sidebar.scrollTop = parseInt(previousTop)
 } else {
-   const active = document.getElementsByClassName('active-endpoint')[0]
-   if(active !== undefined) {
-      active.scrollIntoView({block: 'center'})
-   }
+   document.querySelector('#sidebar .active-endpoint')?.scrollIntoView({block: 'center'})
 }
 
 window.addEventListener('beforeunload', () => {
@@ -343,44 +257,55 @@ const searchInput = document.getElementById('sidebar-search') as HTMLInputElemen
 const searchClear = document.getElementById('search-clear') as HTMLButtonElement
 const searchKbd = document.getElementById('search-kbd') as HTMLElement
 const searchEmpty = document.getElementById('search-empty') as HTMLElement
-const sections = document.querySelectorAll<HTMLElement>('.nav-section')
 const items = Array.from(document.querySelectorAll<HTMLElement>('li[data-search]'))
 let focusedIndex = -1
+let openBeforeSearch: boolean[] | null = null
 
 function visibleItems() {
    return items.filter(item => !item.classList.contains('nav-item--hidden'))
 }
 
 function setFocused(index: number) {
-   items.forEach(item => item.querySelector('a')!.classList.remove('nav-item--focused'))
+   items.forEach(item => item.querySelector('a')!.classList.remove('nav-row--focused'))
    const visible = visibleItems()
    focusedIndex = visible.length === 0 ? -1 : (index + visible.length) % visible.length
    const link = visible[focusedIndex]?.querySelector('a')
-   link?.classList.add('nav-item--focused')
+   link?.classList.add('nav-row--focused')
    link?.scrollIntoView({block: 'nearest'})
 }
 
 function doSearch(query: string) {
    // Every word has to match somewhere, so "party code" finds "Party Join By Code"
    const terms = query.trim().toLowerCase().split(/\s+/).filter(t => t.length > 0)
-   searchClear.style.display = terms.length > 0 ? 'block' : 'none'
-   searchKbd.style.display = terms.length > 0 ? 'none' : ''
-   sidebar.classList.toggle('searching', terms.length > 0)
+   const searching = terms.length > 0
+   searchClear.style.display = searching ? 'block' : 'none'
+   searchKbd.style.display = searching ? 'none' : ''
+
+   // Expand every group while searching and put them back afterwards
+   if(searching && openBeforeSearch === null) openBeforeSearch = sections.map(s => s.open)
+   sidebar.classList.toggle('searching', searching)
 
    let anyVisibleOverall = false
-   sections.forEach(section => {
+   sections.forEach((section, i) => {
       let anyVisible = false
       section.querySelectorAll<HTMLElement>('li[data-search]').forEach(item => {
-         const text = item.dataset.search!
-         const match = terms.every(term => text.includes(term))
+         const match = terms.every(term => item.dataset.search!.includes(term))
          item.classList.toggle('nav-item--hidden', !match)
          if(match) anyVisible = true
       })
       section.classList.toggle('nav-section--hidden', !anyVisible)
+      if(searching) section.open = true
+      else if(openBeforeSearch !== null) section.open = openBeforeSearch[i]
       if(anyVisible) anyVisibleOverall = true
    })
+   if(!searching && openBeforeSearch !== null) {
+      restoring = true
+      openBeforeSearch = null
+      // toggle events fire asynchronously
+      setTimeout(() => restoring = false)
+   }
    searchEmpty.style.display = anyVisibleOverall ? 'none' : 'block'
-   setFocused(terms.length > 0 ? 0 : -1)
+   setFocused(searching ? 0 : -1)
 }
 
 function clearSearch() {
@@ -404,7 +329,8 @@ searchInput.addEventListener('keydown', e => {
       else searchInput.blur()
    }
 })
-searchClear.addEventListener('click', () => {
+searchClear.addEventListener('click', e => {
+   e.preventDefault()
    clearSearch()
    searchInput.focus()
 })
