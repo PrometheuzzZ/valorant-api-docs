@@ -26,7 +26,8 @@ export const ownedItemsEndpoint = {
         '`3f296c07-64c3-494c-923b-fe692a4fa1bd` | Cards\n' +
         '`e7c63390-eda7-46e0-bb7a-a6abdacd2433` | Skins\n' +
         '`3ad1b2b2-acdb-4524-852f-954a76ddae0a` | Skin Variants\n' +
-        '`de7caa6b-adf7-4588-bbd1-143831e786c6` | Titles  ',
+        '`de7caa6b-adf7-4588-bbd1-143831e786c6` | Titles\n' +
+        '`03a572de-4234-31ed-d344-ababa488f981` | Totems  ',
     queryName: 'Store_GetEntitlements',
     category: 'Store',
     type: 'pd',
