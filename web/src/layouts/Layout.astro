@@ -59,9 +59,7 @@ const isHome = Astro.url.pathname === '/'
 		<header class="topbar">
 			<div class="topbar-inner">
 				<a href="/" class="brand" aria-label="Valorant API Docs home">
-					<span class="brand-mark">
-						<img src="/logo.png" width="26" height="26" alt="" aria-hidden="true"/>
-					</span>
+					<img class="brand-mark" src="/logo.png" width="34" height="34" alt="" aria-hidden="true"/>
 					<span class="brand-text">
 						<span class="brand-name">Valorant API</span>
 						<span class="brand-sub">Unofficial docs</span>
@@ -244,13 +242,9 @@ const isHome = Astro.url.pathname === '/'
 		margin: 0 auto;
 	}
 	.brand { display: flex; align-items: center; gap: 12px; color: var(--heading); text-decoration: none; }
-	.brand-mark {
-		width: 34px; height: 34px; border-radius: 10px; flex: none; overflow: hidden;
-		background: var(--accent); color: var(--accent-ink);
-		display: flex; align-items: center; justify-content: center;
-		box-shadow: 0 0 24px var(--accent-glow);
-	}
-	.brand-mark img { display: block; width: 26px; height: 26px; object-fit: contain; }
+	.brand-mark { display: block; flex: none; width: 34px; height: 34px; border-radius: 10px; object-fit: contain; }
+	/* The logo is white; make it dark on the light theme */
+	@media (prefers-color-scheme: light) { .brand-mark { filter: invert(1); } }
 	.brand-text { display: flex; flex-direction: column; gap: 2px; }
 	.brand-name { font-size: 16px; font-weight: 800; letter-spacing: -0.02em; }
 	.brand-sub { font-size: 10px; font-weight: 600; letter-spacing: 0.14em; color: var(--muted); text-transform: uppercase; }
