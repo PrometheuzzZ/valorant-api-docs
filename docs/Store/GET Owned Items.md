@@ -22,7 +22,8 @@ Category names and IDs:
 `3f296c07-64c3-494c-923b-fe692a4fa1bd` | Cards
 `e7c63390-eda7-46e0-bb7a-a6abdacd2433` | Skins
 `3ad1b2b2-acdb-4524-852f-954a76ddae0a` | Skin Variants
-`de7caa6b-adf7-4588-bbd1-143831e786c6` | Titles  
+`de7caa6b-adf7-4588-bbd1-143831e786c6` | Titles
+`03a572de-4234-31ed-d344-ababa488f981` | Totems  
 
 Method: `GET`  
 URL: `https://pd.{shard}.a.pvp.net/store/v1/entitlements/{puuid}/{ItemTypeID}`  
