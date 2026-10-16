@@ -12,7 +12,7 @@ export const updateBloomlinePlayerBonsaiEndpoint = {
     queryName: 'Bloomline_UpdateBloomlinePlayerForBonsai',
     category: 'Bloomline',
     type: 'pd',
-    method: 'PUT',
+    method: 'POST',
     suffix: 'bloomline/v0/players/{puuid}/bonsai/{agent id}',
     riotRequirements: {
         token: true,
