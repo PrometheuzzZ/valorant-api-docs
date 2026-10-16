@@ -71,6 +71,16 @@ function readSampleResponse(slug: string): string | undefined {
     }
 }
 
+// Real request bodies, kept next to the sample responses
+function readSampleBody(slug: string): string | undefined {
+    try {
+        const file = join(process.cwd(), '..', 'valorant-api-types', 'tests', 'endpoint-requests', `${slug}.json`)
+        return JSON.stringify(JSON.parse(readFileSync(file, 'utf-8')), null, 2)
+    } catch {
+        return undefined
+    }
+}
+
 interface VariableMeta {
     name: string
     slug: string
@@ -271,7 +281,7 @@ const httpEndpoint = isHttpEndpoint(endpoint)
 // Local client endpoints only answer on the user's own machine, so they get code samples but no Try it panel
 const tryable = httpEndpoint && endpoint.type !== 'local'
 const sampleResponse = endpoint.responses?.['200'] !== undefined ? readSampleResponse(slug!) : undefined
-const bodyExample = endpoint.body !== undefined ? safeGenerateMock(endpoint.body, slug + ' body') : undefined
+const bodyExample = endpoint.body !== undefined ? (readSampleBody(slug!) ?? safeGenerateMock(endpoint.body, slug + ' body')) : undefined
 const playgroundSpec = httpEndpoint ?
     toPlaygroundSpec(endpoint, bodyExample === undefined ? undefined : (bodyExample.startsWith('//') ? '{}' : bodyExample)) :
     undefined

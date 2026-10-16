@@ -114,6 +114,10 @@ import {playerGoldstarsEndpoint} from './endpoints/goldstars/PlayerGoldstars'
 import {activityLookupEndpoint} from './endpoints/activities/ActivityLookup'
 import {sharedJoinLinkEndpoint} from './endpoints/activities/SharedJoinLink'
 import {disableJoinLinkEndpoint} from './endpoints/activities/DisableJoinLink'
+import {bloomlinePlayerEndpoint} from './endpoints/bloomline/BloomlinePlayer'
+import {bloomlinePlayerBonsaiEndpoint} from './endpoints/bloomline/BloomlinePlayerBonsai'
+import {updateBloomlinePlayerBonsaiEndpoint} from './endpoints/bloomline/UpdateBloomlinePlayerBonsai'
+import {bloomlineValidQueuesEndpoint} from './endpoints/bloomline/BloomlineValidQueues'
 
 export const endpoints = {
     fetchContentEndpoint,
@@ -207,6 +211,11 @@ export const endpoints = {
     activityLookupEndpoint,
     sharedJoinLinkEndpoint,
     disableJoinLinkEndpoint,
+
+    bloomlinePlayerEndpoint,
+    bloomlinePlayerBonsaiEndpoint,
+    updateBloomlinePlayerBonsaiEndpoint,
+    bloomlineValidQueuesEndpoint,
 
     itemUpgradesEndpoint,
     contractsEndpoint,
