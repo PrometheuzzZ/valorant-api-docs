@@ -37,6 +37,7 @@ An Insomnia workspace is available at <https://valdocs.prometheuz.me/insomnia.js
 - [Mailbox](Mailbox/readme.md) (3)
 - [Goldstars](Goldstars/readme.md) (2)
 - [Activities](Activities/readme.md) (3)
+- [Bloomline](Bloomline/readme.md) (4)
 - [ItemProgressionDefinitionsV2](ItemProgressionDefinitionsV2/readme.md) (1)
 - [Contracts](Contracts/readme.md) (3)
 - [Local Endpoints](Local%20Endpoints/readme.md) (14)
