@@ -21,7 +21,7 @@ import {schemaToFields, schemaType, type SchemaField} from '../../lib/schema'
 import {join} from 'node:path'
 import {readdirSync, readFileSync} from 'node:fs'
 import {generateMock} from '@anatine/zod-mock'
-import {endpointToURL, getSlug, isHttpEndpoint, toPlaygroundSpec} from '../../lib/request'
+import {endpointToURL, getCategoryLabel, getSlug, isHttpEndpoint, toPlaygroundSpec} from '../../lib/request'
 
 const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 
@@ -268,6 +268,8 @@ if(endpoint.riotRequirements !== undefined) {
 }
 
 const httpEndpoint = isHttpEndpoint(endpoint)
+// Local client endpoints only answer on the user's own machine, so they get code samples but no Try it panel
+const tryable = httpEndpoint && endpoint.type !== 'local'
 const sampleResponse = endpoint.responses?.['200'] !== undefined ? readSampleResponse(slug!) : undefined
 const bodyExample = endpoint.body !== undefined ? safeGenerateMock(endpoint.body, slug + ' body') : undefined
 const playgroundSpec = httpEndpoint ?
@@ -278,7 +280,7 @@ const plainUrl = endpointUrl + (hasQuery ? '?' + Array.from(endpoint.query!.keys
 const typeName = endpoint.name.replace(/[^\w]/g, '')
 const codeThemes = {light: 'github-light', dark: valdocsDark} as const
 
-const categoryLabel = Array.isArray(endpoint.category) ? endpoint.category.join(' — ') : endpoint.category ?? 'Other'
+const categoryLabel = getCategoryLabel(endpoint)
 
 const serverLabel = (() => {
     switch(endpoint.type) {
@@ -388,7 +390,7 @@ const issueLink = `${repo}/issues/new?title=${encodeURIComponent(`${endpoint.met
                     </button>
                 </section>
 
-                {httpEndpoint && <a href="#try-it" class="try-jump">
+                {tryable && <a href="#try-it" class="try-jump">
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg>
                     Try this request in the browser with your own values
                 </a>}
@@ -525,7 +527,7 @@ const issueLink = `${repo}/issues/new?title=${encodeURIComponent(`${endpoint.met
             </article>
 
             <aside class="ep-code" aria-label="Examples">
-                {playgroundSpec !== undefined && <Playground spec={playgroundSpec}/>}
+                {playgroundSpec !== undefined && <Playground spec={playgroundSpec} interactive={tryable}/>}
 
                 {endpoint.body !== undefined && <section class="card-code" aria-label="Request body">
                     <div class="card-head">
@@ -544,7 +546,7 @@ const issueLink = `${repo}/issues/new?title=${encodeURIComponent(`${endpoint.met
                     </div>
                 </section>}
 
-                {(responseSchema !== undefined || httpEndpoint) && <section class="card-code" aria-label="Response">
+                {(responseSchema !== undefined || tryable) && <section class="card-code" aria-label="Response">
                     <div class="card-head">
                         <span class="card-title">
                             Response
@@ -652,7 +654,8 @@ const issueLink = `${repo}/issues/new?title=${encodeURIComponent(`${endpoint.met
             const card = button.closest('.card-code')!
             const panel = Array.from(card.querySelectorAll<HTMLElement>('[data-panel]')).find(p => !p.classList.contains('hidden'))
             const source = panel?.querySelector<HTMLElement>('[data-copy-text]') ?? panel
-            copyText(button, source?.dataset.copyText ?? panel?.querySelector('pre:last-of-type')?.textContent ?? '')
+            const pre = panel?.matches('pre') ? panel : panel?.querySelector('pre:last-of-type')
+            copyText(button, source?.dataset.copyText ?? pre?.textContent ?? '')
         })
     })
 

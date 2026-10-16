@@ -89,3 +89,13 @@ export function toPlaygroundSpec(endpoint: AugmentedValorantEndpoint, bodyExampl
         variables: Array.from(variables.values())
     }
 }
+
+// Shorter names for categories whose internal name is unwieldy in the sidebar
+const categoryDisplayNames: Record<string, string> = {
+    'ItemProgressionDefinitionsV2': 'ItemProgression'
+}
+
+export function getCategoryLabel(endpoint: AugmentedValorantEndpoint): string {
+    const parts = Array.isArray(endpoint.category) ? endpoint.category : [endpoint.category ?? 'Other']
+    return parts.map(part => categoryDisplayNames[part] ?? part).join(' — ')
+}

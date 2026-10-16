@@ -4,9 +4,11 @@ import {getSlug} from '../lib/request'
 
 export interface Props {
     spec: PlaygroundSpec
+    // Without it only the static code samples are shown
+    interactive?: boolean
 }
 
-const {spec} = Astro.props
+const {spec, interactive = true} = Astro.props
 const initial = buildRequest(spec, {})
 
 const groups: {id: PlaygroundVariable['group'], label: string}[] = [
@@ -28,7 +30,7 @@ const sources: Record<string, {label: string, href: string}> = {
 }
 ---
 
-<section class="card-code tryit" id="try-it" aria-label="Try it" data-playground>
+{interactive && <section class="card-code tryit" id="try-it" aria-label="Try it" data-playground>
     <script type="application/json" data-spec set:html={JSON.stringify(spec).replace(/</g, '\\u003c')}/>
     <div class="card-head">
         <span class="card-title">
@@ -113,7 +115,7 @@ const sources: Record<string, {label: string, href: string}> = {
             <>Sent straight from your browser to the Riot Client running on this computer. Open <a class="link" data-local-origin href="https://127.0.0.1/" target="_blank" rel="noopener">https://127.0.0.1:&#123;port&#125;/</a> once and accept its self-signed certificate first.</> :
             <>Riot's servers don't accept requests from browsers, so this goes through this site's proxy. Your tokens are only forwarded to Riot, never stored on the server. What you enter is reused on every endpoint page in this tab; tick "Save" to keep it across visits.</>}
     </p>
-</section>
+</section>}
 
 <section class="card-code" aria-label="Request">
     <div class="card-head">
