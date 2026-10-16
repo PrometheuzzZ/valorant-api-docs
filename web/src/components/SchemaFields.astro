@@ -1,0 +1,91 @@
+---
+import type {SchemaField} from '../lib/schema'
+
+export interface Props {
+    fields: SchemaField[]
+    nested?: boolean
+}
+
+const {fields, nested} = Astro.props
+---
+
+<div class={nested ? 'fields fields--nested' : 'fields'}>
+    {fields.map(field => (
+        <div class="field">
+            <div class="field-head">
+                <code class="field-name">{field.name}</code>
+                <span class={`pill pill--${field.tone}`}>{field.type}</span>
+                {field.nullable && <span class="field-flag">nullable</span>}
+                {field.optional && <span class="field-flag">optional</span>}
+            </div>
+            {field.description !== undefined && <p class="field-desc">{field.description}</p>}
+            {field.values !== undefined && field.values.length > 1 && <div class="field-values">
+                {field.values.slice(0, 24).map(value => <code class="chip">{value}</code>)}
+                {field.values.length > 24 && <span class="field-flag">+{field.values.length - 24} more</span>}
+            </div>}
+            {field.children !== undefined && field.children.length > 0 && <details class="field-children">
+                <summary class="nested-toggle">
+                    <span class="nested-show">Show nested attributes</span>
+                    <span class="nested-hide">Hide nested attributes</span>
+                    <span class="nested-count">{field.children.length}</span>
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
+                </summary>
+                <Astro.self fields={field.children} nested/>
+            </details>}
+        </div>
+    ))}
+</div>
+
+<style>
+.fields { display: flex; flex-direction: column; }
+.fields--nested {
+    margin: 8px 0 0 6px;
+    padding-left: 18px;
+    border-left: 1px solid var(--border-2);
+}
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--line);
+}
+.fields--nested > .field { padding: 12px 0; border-bottom: 0; gap: 6px; }
+.fields:not(.fields--nested) > .field:last-child { border-bottom: 0; }
+.field-head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.field-name {
+    font-family: var(--mono);
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--heading);
+    word-break: break-all;
+}
+.fields--nested .field-name { font-size: 13px; color: var(--tok-field); }
+.field-desc { margin: 0; font-size: 14px; line-height: 1.6; font-weight: 500; color: var(--text-2); }
+.fields--nested .field-desc { font-size: 13px; color: var(--text-3); }
+.field-flag { font-size: 12px; font-weight: 600; color: var(--muted); }
+.field-values { display: flex; flex-wrap: wrap; gap: 6px; }
+
+.nested-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    height: 34px;
+    padding: 0 14px;
+    border-radius: 10px;
+    border: 1px solid var(--accent-line);
+    background: var(--accent-soft);
+    color: var(--accent);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    list-style: none;
+    user-select: none;
+}
+.nested-toggle::-webkit-details-marker { display: none; }
+.nested-toggle svg { transition: transform .2s; }
+.nested-count { font-family: var(--mono); font-size: 11px; opacity: .75; }
+.field-children[open] > .nested-toggle svg { transform: rotate(45deg); }
+.nested-hide, .field-children[open] > .nested-toggle .nested-show { display: none; }
+.field-children[open] > .nested-toggle .nested-hide { display: inline; }
+</style>

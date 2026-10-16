@@ -5,8 +5,6 @@ import {marked} from 'marked'
 import EndpointMethod from '../../components/EndpointMethod.astro'
 import {createTypeAlias, printNode, zodToTs} from 'zod-to-ts'
 import {Code} from 'astro/components'
-import SimpleCode from '../../components/SimpleCode.astro'
-import VariableItem from '../../components/VariableItem.astro'
 
 import Shard from '../../components/doc-fragments/Shard.astro'
 import Region from '../../components/doc-fragments/Region.astro'
@@ -16,11 +14,14 @@ import ClientVersion from '../../components/doc-fragments/ClientVersion.astro'
 import LockfilePassword from '../../components/doc-fragments/LockfilePassword.astro'
 import ClientPlatform from '../../components/doc-fragments/ClientPlatform.astro'
 
-import githubDark from '../../themes/github-dark.json'
+import Playground from '../../components/Playground.astro'
+import SchemaFields from '../../components/SchemaFields.astro'
+import valdocsDark from '../../themes/valdocs-dark.json'
+import {schemaToFields, schemaType, type SchemaField} from '../../lib/schema'
 import {join} from 'node:path'
 import {readdirSync, readFileSync} from 'node:fs'
 import {generateMock} from '@anatine/zod-mock'
-import {endpointToURL, getSlug, isHttpEndpoint, toCurl} from '../../lib/request'
+import {endpointToURL, getCategoryLabel, getSlug, isHttpEndpoint, toPlaygroundSpec} from '../../lib/request'
 
 const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 
@@ -65,6 +66,16 @@ function readSampleResponse(slug: string): string | undefined {
         const file = readdirSync(dir).filter(f => f.endsWith('.json')).sort()[0]
         if(file === undefined) return undefined
         return JSON.stringify(JSON.parse(readFileSync(join(dir, file), 'utf-8')), null, 2)
+    } catch {
+        return undefined
+    }
+}
+
+// Real request bodies, kept next to the sample responses
+function readSampleBody(slug: string): string | undefined {
+    try {
+        const file = join(process.cwd(), '..', 'valorant-api-types', 'tests', 'endpoint-requests', `${slug}.json`)
+        return JSON.stringify(JSON.parse(readFileSync(file, 'utf-8')), null, 2)
     } catch {
         return undefined
     }
@@ -266,468 +277,698 @@ if(endpoint.riotRequirements !== undefined) {
     }
 }
 
-const curlCommand = isHttpEndpoint(endpoint) ? toCurl(endpoint) : undefined
+const httpEndpoint = isHttpEndpoint(endpoint)
+// Local client endpoints only answer on the user's own machine, so they get code samples but no Try it panel
+const tryable = httpEndpoint && endpoint.type !== 'local'
 const sampleResponse = endpoint.responses?.['200'] !== undefined ? readSampleResponse(slug!) : undefined
+const bodyExample = endpoint.body !== undefined ? (readSampleBody(slug!) ?? safeGenerateMock(endpoint.body, slug + ' body')) : undefined
+const playgroundSpec = httpEndpoint ?
+    toPlaygroundSpec(endpoint, bodyExample === undefined ? undefined : (bodyExample.startsWith('//') ? '{}' : bodyExample)) :
+    undefined
 
 const plainUrl = endpointUrl + (hasQuery ? '?' + Array.from(endpoint.query!.keys()).map(name => `${name}={${name}}`).join('&') : '')
 const typeName = endpoint.name.replace(/[^\w]/g, '')
-const codeThemes = {light: 'github-light', dark: githubDark} as const
+const codeThemes = {light: 'github-light', dark: valdocsDark} as const
 
+const categoryLabel = getCategoryLabel(endpoint)
+
+const serverLabel = (() => {
+    switch(endpoint.type) {
+        case 'pd': return 'PD · shard'
+        case 'glz': return 'GLZ · region + shard'
+        case 'shared': return 'Shared · shard'
+        case 'local': return 'Local client'
+        case 'other': {
+            try {
+                return new URL(endpoint.suffix.replace(/\{[^}]+\}/g, 'x')).hostname.replace(/^x\./, '')
+            } catch {
+                return endpoint.method === 'TCP' ? 'XMPP chat server' : 'External'
+            }
+        }
+    }
+})()
+
+const authLabel = (() => {
+    const req = endpoint.riotRequirements ?? {}
+    if(req.localAuth) return 'Basic · lockfile'
+    if(req.token && req.entitlement) return 'Bearer + Entitlements'
+    if(req.token) return 'Bearer'
+    if(req.entitlement) return 'Entitlements'
+    return 'None'
+})()
+
+// Short hint for the header list, taken from the variable the header value uses
+function headerHint(valueHtml: string): string | undefined {
+    if(valueHtml.startsWith('Basic')) return 'Base64 of riot:{lockfile password}, from the Riot Client lockfile'
+    const name = /\{([^}]+)\}/.exec(valueHtml)?.[1]
+    return name === undefined ? undefined : commonVariableHints.get(name)
+}
+
+const enumOptions: Record<string, string[]> = {
+    shard: ['na', 'pbe', 'eu', 'ap', 'kr'],
+    region: ['na', 'latam', 'br', 'eu', 'ap', 'kr'],
+    cluster: ['euc1', 'usw2', 'apse1', 'apne1']
+}
+
+function variableType(meta: VariableMeta): Pick<SchemaField, 'type' | 'tone' | 'values'> {
+    if(enumOptions[meta.name] !== undefined) return {type: 'enum', tone: 'object', values: enumOptions[meta.name]}
+    if(meta.type !== undefined) return schemaType(meta.type)
+    if(meta.name === 'port') return {type: 'number', tone: 'number'}
+    if(/puuid|party id|match id|agent id/.test(meta.name)) return {type: 'string · uuid', tone: 'string'}
+    return {type: 'string', tone: 'string'}
+}
+
+// Where the shared values come from
+const variableSources: Record<string, {label: string, href: string}> = {
+    'entitlement token': {label: 'Entitlements Token', href: '/endpoint/entitlements-token'},
+    'auth token': {label: 'Authentication', href: '/endpoint/auth-request'},
+    'client version': {label: 'Sessions', href: '/endpoint/sessions'},
+    'lockfile password': {label: 'Riot Client lockfile', href: '#lockfile-password'}
+}
+
+const responseSchema = endpoint.responses?.['200']
+const response = responseSchema !== undefined ? schemaToFields(responseSchema) : undefined
+const body = endpoint.body !== undefined ? schemaToFields(endpoint.body) : undefined
+
+const allEndpoints = Object.values(endpoints)
+const index = allEndpoints.indexOf(endpoint)
+const previous = index > 0 ? allEndpoints[index - 1] : undefined
+const next = index < allEndpoints.length - 1 ? allEndpoints[index + 1] : undefined
+
+const repo = 'https://github.com/PrometheuzzZ/valorant-api-docs'
+const sourceSearch = `https://github.com/search?type=code&q=${encodeURIComponent(`repo:PrometheuzzZ/valorant-api-docs path:valorant-api-types/src "${endpoint.name}"`)}`
+const issueLink = `${repo}/issues/new?title=${encodeURIComponent(`${endpoint.method ?? 'GET'} ${endpoint.name}: `)}`
 ---
 
 <Layout title={`${endpoint.name} - Valorant API Docs`} endpointName={endpoint.name}>
-    <main class="ep-main">
-        <header class="ep-header">
-            <h1 class="ep-title">
-                <EndpointMethod method={endpoint.method} class="ep-method"/>
-                {endpoint.name}
-            </h1>
-            {endpoint.queryName !== undefined && <div class="ep-query-name">
-                <span class="ep-query-name-label">Internal name</span>
-                <SimpleCode>{endpoint.queryName}</SimpleCode>
-                <button class="copy-btn copy-btn--inline" data-copy={endpoint.queryName} aria-label="Copy internal name">Copy</button>
-            </div>}
-        </header>
+    <main class="ep">
+        <div class="ep-grid">
+            <article class="ep-doc">
+                <section class="ep-title-block">
+                    <div class="crumbs">
+                        <a href="/">API Reference</a>
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+                        <span>{categoryLabel}</span>
+                    </div>
+                    <div class="ep-title-row">
+                        <EndpointMethod method={endpoint.method} large/>
+                        <h1 class="ep-title">{endpoint.name}</h1>
+                    </div>
+                    <div class="prose-sane ep-description" id="description">
+                        <Fragment set:html={content}/>
+                    </div>
+                    <div class="meta-chips">
+                        {endpoint.queryName !== undefined && <span class="meta-chip">
+                            Internal name
+                            <code>{endpoint.queryName}</code>
+                            <button type="button" class="icon-btn ghost meta-copy" data-copy={endpoint.queryName} aria-label="Copy internal name">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>
+                            </button>
+                        </span>}
+                        <span class="meta-chip">Server <span class="meta-value">{serverLabel}</span></span>
+                        <span class="meta-chip">Auth <span class="meta-value">{authLabel}</span></span>
+                    </div>
+                </section>
 
-        <div class="ep-url-wrap">
-            <code id="endpoint-url" class="ep-url" set:html={urlHtml}/>
-            <button class="copy-btn copy-btn--inline ep-url-copy" data-copy={plainUrl} aria-label="Copy URL">Copy</button>
-        </div>
+                <section class="url-bar" aria-label="Endpoint URL">
+                    <EndpointMethod method={endpoint.method}/>
+                    <span class="url-sep" aria-hidden="true"></span>
+                    <code id="endpoint-url" class="url-text" set:html={urlHtml}/>
+                    <button type="button" class="btn url-copy" data-copy={plainUrl} data-label="Copy">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>
+                        <span>Copy</span>
+                    </button>
+                </section>
 
-        <div class="prose-sane ep-description" id="description">
-            <Fragment set:html={content}/>
-        </div>
+                {tryable && <a href="#try-it" class="try-jump">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg>
+                    Try this request in the browser with your own values
+                </a>}
 
-        {headerToHtml.size > 0 && <section class="ep-section">
-            <h3 class="ep-section-title">Headers</h3>
-            <ul class="ep-list">
-                {Array.from(headerToHtml).map(([header, value]) => {
-                    return <li>
-                        <SimpleCode class="ep-header-chip" set:html={`${header}: ${value}`}/>
-                    </li>
-                })}
-            </ul>
-        </section>}
-
-        {curlCommand !== undefined && <section class="ep-section">
-            <h3 class="ep-section-title">Example Request</h3>
-            <div class="schema-tabs">
-                <div class="tab-bar">
-                    <span class="tab-btn tab-btn--active">cURL</span>
-                    <button class="copy-btn" data-copy={curlCommand}>Copy</button>
-                </div>
-                <Code code={curlCommand} lang="shell" wrap themes={codeThemes} defaultColor={false} />
-            </div>
-        </section>}
-
-        {urlParameters.length > 0 && <section class="ep-section">
-            <h3 class="ep-section-title">URL Parameters</h3>
-            <ul class="ep-list ep-list--vars">
-                {urlParameters.map(variable => {
-                    const meta = variablesToReplace.get(variable)!
-
-                    return <VariableItem id={meta.slug} label={variable} hint={commonVariableHints.get(meta.name)}>
-                        {(() => {
-                            switch(meta.name) {
-                                case 'shard':
-                                    return <Shard/>
-                                case 'region':
-                                    return <Region/>
-                                case 'cluster':
-                                    return <Cluster/>
-                                case 'port':
-                                    return <Port/>
-                                default:
-                                    return (meta.descriptionHtml === undefined) ? null : <Fragment set:html={meta.descriptionHtml}/>
-                            }
-                        })()}
-                    </VariableItem>
-                })}
-            </ul>
-        </section>}
-
-        {hasQuery && <section class="ep-section">
-            <h3 class="ep-section-title">Query Parameters</h3>
-            <ul class="ep-list ep-list--vars">
-                {Array.from(endpoint.query!.entries()).map(([name, type]) => {
-                    return <li id={getSlug(name)} class="ep-var">
-                        <div>
-                            <SimpleCode>{name}</SimpleCode>
-                            <span class="ep-badge">{type.isOptional() ? 'optional' : 'required'}</span>
+                {headerToHtml.size > 0 && <section class="doc-section">
+                    <div class="doc-section-head">
+                        <h2>Headers</h2>
+                        <span class="doc-section-meta">{headerToHtml.size} required</span>
+                    </div>
+                    {Array.from(headerToHtml).map(([header, value]) => {
+                        const hint = headerHint(value)
+                        return <div class="row">
+                            <div class="row-head">
+                                <code class="row-name">{header}</code>
+                                <span class="pill pill--string">string</span>
+                                <span class="required">required</span>
+                            </div>
+                            <div class="row-value">
+                                Value <code class="var-code" set:html={value}/>{hint !== undefined && <span>— {hint}</span>}
+                            </div>
                         </div>
-                        <div class="ep-var-desc" set:html={marked.parse(type.description ?? variablesToReplace.get(`{${name}}`)?.descriptionHtml ?? '')}/>
-                    </li>
-                })}
-            </ul>
-        </section>}
+                    })}
+                </section>}
 
-        {otherVariables.length > 0 && <section class="ep-section">
-            <h3 class="ep-section-title">Other Variables</h3>
-            <ul class="ep-list ep-list--vars">
-                {otherVariables.map(variableName => {
-                    const variable = variablesToReplace.get(variableName)!
+                {urlParameters.length > 0 && <section class="doc-section">
+                    <div class="doc-section-head">
+                        <h2>URL parameters</h2>
+                        <span class="doc-section-meta">Path</span>
+                    </div>
+                    {urlParameters.map(variable => {
+                        const meta = variablesToReplace.get(variable)!
+                        const type = variableType(meta)
+                        const hint = commonVariableHints.get(meta.name)
+                        const fragment = ['shard', 'region', 'cluster', 'port'].includes(meta.name)
+                        return <div class="row" id={meta.slug}>
+                            <div class="row-head">
+                                <code class="row-name">{meta.name}</code>
+                                <span class={`pill pill--${type.tone}`}>{type.type}</span>
+                                <span class="required">required</span>
+                            </div>
+                            {hint !== undefined && <p class="row-desc">{hint}.</p>}
+                            {!fragment && meta.descriptionHtml !== undefined && <div class="row-desc" set:html={meta.descriptionHtml}/>}
+                            {type.values !== undefined && <div class="row-values">{type.values.map(value => <code class="chip">{value}</code>)}</div>}
+                            {fragment && <details class="more">
+                                <summary>How to get it</summary>
+                                <div class="row-desc var-more">
+                                    {meta.name === 'shard' && <Shard/>}
+                                    {meta.name === 'region' && <Region/>}
+                                    {meta.name === 'cluster' && <Cluster/>}
+                                    {meta.name === 'port' && <Port/>}
+                                </div>
+                            </details>}
+                        </div>
+                    })}
+                </section>}
 
-                    return <VariableItem id={getSlug(variable.slug)} label={variable.name} hint={commonVariableHints.get(variable.name)}>
-                        {(() => {
-                            switch(variable.name) {
-                                case 'client version':
-                                    return <ClientVersion/>
-                                case 'lockfile password':
-                                    return <LockfilePassword/>
-                                case 'client platform':
-                                    return <ClientPlatform/>
-                                default:
-                                    return (variable.descriptionHtml === undefined) ? null : <Fragment set:html={variable.descriptionHtml}/>
-                            }
-                        })()}
-                    </VariableItem>
-                })}
-            </ul>
-        </section>}
+                {hasQuery && <section class="doc-section">
+                    <div class="doc-section-head">
+                        <h2>Query parameters</h2>
+                        <span class="doc-section-meta">Query string</span>
+                    </div>
+                    {Array.from(endpoint.query!.entries()).map(([name, type]) => {
+                        const info = schemaType(type)
+                        const desc = type.description ?? variablesToReplace.get(`{${name}}`)?.descriptionHtml
+                        return <div class="row" id={getSlug(name)}>
+                            <div class="row-head">
+                                <code class="row-name">{name}</code>
+                                <span class={`pill pill--${info.tone}`}>{info.type}</span>
+                                {type.isOptional() ? <span class="optional">optional</span> : <span class="required">required</span>}
+                            </div>
+                            {desc !== undefined && <div class="row-desc" set:html={marked.parse(desc)}/>}
+                        </div>
+                    })}
+                </section>}
 
-        {endpoint.body !== undefined && <section class="ep-section">
-            <h3 class="ep-section-title">Body</h3>
-            <div class="schema-tabs" data-tabs>
-                <div class="tab-bar">
-                    <button class="tab-btn tab-btn--active" data-tab="ts">TypeScript</button>
-                    <button class="tab-btn" data-tab="json">JSON Example</button>
-                    <button class="copy-btn" data-copy-panel>Copy</button>
-                </div>
-                <div data-panel="ts">
-                    <Code code={printNode(createTypeAlias(zodToTs(endpoint.body, 'Body').node, typeName + 'Body'))} lang="ts" wrap themes={codeThemes} defaultColor={false} />
-                </div>
-                <div data-panel="json" class="hidden">
-                    <Code code={safeGenerateMock(endpoint.body, slug + ' body')} lang="json" wrap themes={codeThemes} defaultColor={false} />
-                </div>
-            </div>
-        </section>}
+                {otherVariables.length > 0 && <section class="doc-section">
+                    <div class="doc-section-head">
+                        <h2>Other variables</h2>
+                        <span class="doc-section-meta">Where to get them</span>
+                    </div>
+                    <div class="var-cards">
+                        {otherVariables.map(variableName => {
+                            const variable = variablesToReplace.get(variableName)!
+                            const source = variableSources[variable.name]
+                            return <div class="var-card" id={getSlug(variable.slug)}>
+                                <code class="var-card-name">{variable.name}</code>
+                                <span class="var-card-hint">{commonVariableHints.get(variable.name)}.</span>
+                                <details class="more">
+                                    <summary>Details</summary>
+                                    <div class="row-desc var-more">
+                                        {variable.name === 'client version' && <ClientVersion/>}
+                                        {variable.name === 'lockfile password' && <LockfilePassword/>}
+                                        {variable.name === 'client platform' && <ClientPlatform/>}
+                                        {!['client version', 'lockfile password', 'client platform'].includes(variable.name) && variable.descriptionHtml !== undefined && <Fragment set:html={variable.descriptionHtml}/>}
+                                    </div>
+                                </details>
+                                {source !== undefined && <a class="var-card-link" href={source.href}>
+                                    {source.label}
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
+                                </a>}
+                            </div>
+                        })}
+                    </div>
+                </section>}
 
-        {endpoint.responses?.['200'] && <section class="ep-section">
-            <h3 class="ep-section-title">Response</h3>
-            <div class="schema-tabs" data-tabs>
-                <div class="tab-bar">
-                    <button class="tab-btn tab-btn--active" data-tab="ts">TypeScript</button>
-                    <button class="tab-btn" data-tab="json">{sampleResponse !== undefined ? 'Real Response' : 'JSON Example'}</button>
-                    <button class="copy-btn" data-copy-panel>Copy</button>
+                {body !== undefined && <section class="doc-section">
+                    <div class="doc-section-head">
+                        <h2>Body</h2>
+                        <span class="doc-section-meta"><span class={`pill pill--${body.root.tone}`}>{body.root.type}</span> application/json</span>
+                    </div>
+                    {body.fields.length > 0 ? <SchemaFields fields={body.fields}/> : <p class="row-desc">See the TypeScript definition.</p>}
+                </section>}
+
+                {response !== undefined && <section class="doc-section">
+                    <div class="doc-section-head">
+                        <h2>Response</h2>
+                        <span class="doc-section-meta"><span class="status-code">200</span> application/json</span>
+                    </div>
+                    {response.fields.length > 0 ?
+                        <SchemaFields fields={response.fields}/> :
+                        <div class="row"><div class="row-head"><span class={`pill pill--${response.root.tone}`}>{response.root.type}</span></div>{response.root.description !== undefined && <p class="row-desc">{response.root.description}</p>}</div>}
+                </section>}
+
+                <nav class="pager" aria-label="Pagination">
+                    {previous !== undefined ? <a href={`/endpoint/${getSlug(previous.name)}`} class="pager-card">
+                        <span class="pager-label">← Previous</span>
+                        <span class="pager-name">{previous.name}</span>
+                    </a> : <span/>}
+                    {next !== undefined && <a href={`/endpoint/${getSlug(next.name)}`} class="pager-card pager-card--next">
+                        <span class="pager-label">Next →</span>
+                        <span class="pager-name">{next.name}</span>
+                    </a>}
+                </nav>
+            </article>
+
+            <aside class="ep-code" aria-label="Examples">
+                {playgroundSpec !== undefined && <Playground spec={playgroundSpec} interactive={tryable}/>}
+
+                {endpoint.body !== undefined && <section class="card-code" aria-label="Request body">
+                    <div class="card-head">
+                        <span class="card-title">Body</span>
+                        <div class="card-actions" data-tabs="body" role="tablist">
+                            <button type="button" class="tab tab--on" data-tab="json" role="tab">JSON example</button>
+                            <button type="button" class="tab" data-tab="ts" role="tab">TypeScript</button>
+                            <button type="button" class="icon-btn ghost" data-copy-panel aria-label="Copy body">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-scroll">
+                        <div data-panel="json"><Code code={bodyExample!} lang="json" wrap themes={codeThemes} defaultColor={false}/></div>
+                        <div data-panel="ts" class="hidden"><Code code={printNode(createTypeAlias(zodToTs(endpoint.body, 'Body').node, typeName + 'Body'))} lang="ts" wrap themes={codeThemes} defaultColor={false}/></div>
+                    </div>
+                </section>}
+
+                {(responseSchema !== undefined || tryable) && <section class="card-code" aria-label="Response">
+                    <div class="card-head">
+                        <span class="card-title">
+                            Response
+                            <span class="resp-status" data-response-status data-state={responseSchema !== undefined ? 'ok' : 'idle'}><span class="resp-dot"></span><span data-response-status-text>{responseSchema !== undefined ? '200 OK' : 'No schema'}</span></span>
+                        </span>
+                        <div class="card-actions" data-tabs="response" role="tablist">
+                            <button type="button" class={'tab hidden'} data-tab="live" role="tab">Live</button>
+                            {responseSchema !== undefined && <>
+                                <button type="button" class="tab tab--on" data-tab="json" role="tab">{sampleResponse !== undefined ? 'Real response' : 'JSON example'}</button>
+                                <button type="button" class="tab" data-tab="ts" role="tab">TypeScript</button>
+                            </>}
+                            <button type="button" class="icon-btn ghost" data-copy-panel aria-label="Copy response">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-note" data-note-for="json">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01"/><path d="M11 12h1v5h1"/></svg>
+                        {sampleResponse !== undefined ? 'An anonymized response captured from the real API.' : 'Generated from the schema; values are placeholders.'}
+                    </div>
+                    <div class="card-note hidden" data-note-for="ts">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01"/><path d="M11 12h1v5h1"/></svg>
+                        TypeScript definition of the response body.
+                    </div>
+                    <div class="card-note hidden" data-note-for="live">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg>
+                        <span data-live-meta>Response to your request.</span>
+                    </div>
+                    <div class="card-scroll">
+                        <div data-panel="live" data-live class={responseSchema !== undefined ? 'hidden' : ''}>
+                            <div class="live-capture hidden" data-live-capture></div>
+                            <details class="live-headers hidden" data-live-headers>
+                                <summary>Response headers</summary>
+                                <pre class="code code--wrap"></pre>
+                            </details>
+                            <pre class="code live-body" data-live-body>{responseSchema === undefined ? '// Send a request to see the response' : ''}</pre>
+                        </div>
+                        {responseSchema !== undefined && <>
+                            <div data-panel="json"><Code code={sampleResponse ?? safeGenerateMock(responseSchema, slug + ' response')} lang="json" wrap themes={codeThemes} defaultColor={false}/></div>
+                            <div data-panel="ts" class="hidden"><Code code={printNode(createTypeAlias(zodToTs(responseSchema, 'Response').node, typeName + 'Response'))} lang="ts" wrap themes={codeThemes} defaultColor={false}/></div>
+                        </>}
+                    </div>
+                </section>}
+
+                <div class="card help-card">
+                    <span class="help-icon" aria-hidden="true">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a9 9 0 1 0 9 9"/><path d="M21 3 12 12"/><path d="M15 3h6v6"/></svg>
+                    </span>
+                    <span class="help-text">
+                        <span class="help-title">Found something outdated?</span>
+                        <span class="help-sub">Open an issue or edit the endpoint definition on GitHub.</span>
+                    </span>
+                    <span class="help-actions">
+                        <a href={issueLink} class="btn">Open issue</a>
+                        <a href={sourceSearch} class="btn">Edit</a>
+                    </span>
                 </div>
-                <div data-panel="ts">
-                    <Code code={printNode(createTypeAlias(zodToTs(endpoint.responses['200'], 'Response').node, typeName + 'Response'))} lang="ts" wrap themes={codeThemes} defaultColor={false} />
-                </div>
-                <div data-panel="json" class="hidden">
-                    {sampleResponse !== undefined ?
-                        <p class="ep-sample-note">An anonymized response captured from the real API.</p> :
-                        <p class="ep-sample-note">Generated from the schema; values are placeholders.</p>}
-                    <Code code={sampleResponse ?? safeGenerateMock(endpoint.responses['200'], slug + ' response')} lang="json" wrap themes={codeThemes} defaultColor={false} />
-                </div>
-            </div>
-        </section>}
+            </aside>
+        </div>
     </main>
 </Layout>
 
 <script>
-    // Scroll to the bottom of the element instead of the top (prevents obscuring the url when the to-be-scrolled-to element is at the top of the page)
-    document.querySelectorAll('a[href^="#"]').forEach(b => b.addEventListener('click', e => {
-        const target = document.getElementById(b.getAttribute('href')!.slice(1))
+    // Open the explanation of a variable when one of its links is followed
+    function openTarget(id: string) {
+        const target = document.getElementById(id)
+        target?.querySelectorAll('details.more').forEach(d => d.setAttribute('open', ''))
+        return target
+    }
+    document.querySelectorAll('a[href^="#"]').forEach(link => link.addEventListener('click', e => {
+        const target = openTarget(decodeURIComponent(link.getAttribute('href')!.slice(1)))
         if(target) {
-            target.querySelector('details')?.setAttribute('open', '')
             e.preventDefault()
-            history.pushState({}, '', b.getAttribute('href')!)
-
-            // From https://github.com/whatwg/html/issues/639#issuecomment-285452237
-            // go back and then come forward again immediately, to force :target to update.
-            history.back()
-            const onpopstate = window.onpopstate
-            window.onpopstate = function() {
-                history.forward()
-                window.onpopstate = onpopstate
-            }
-
-            target.scrollIntoView({block: 'nearest'})
+            history.replaceState({}, '', link.getAttribute('href')!)
+            target.scrollIntoView({block: 'start', behavior: 'smooth'})
+            target.classList.remove('flash')
+            void target.offsetWidth
+            target.classList.add('flash')
         }
     }))
+    if(location.hash) openTarget(decodeURIComponent(location.hash.slice(1)))
 
-    if(location.hash) {
-        document.getElementById(decodeURIComponent(location.hash.slice(1)))?.querySelector('details')?.setAttribute('open', '')
+    async function copyText(button: HTMLElement, text: string) {
+        const label = button.querySelector('span')
+        const original = label?.textContent
+        try {
+            await navigator.clipboard.writeText(text)
+            if(label && button.dataset.label) label.textContent = 'Copied'
+            button.classList.add('is-copied')
+        } catch {
+            if(label && button.dataset.label) label.textContent = 'Copy failed'
+        }
+        setTimeout(() => {
+            if(label && original) label.textContent = original
+            button.classList.remove('is-copied')
+        }, 1400)
     }
 
-    document.querySelectorAll<HTMLButtonElement>('[data-copy], [data-copy-panel]').forEach(btn => {
-        btn.addEventListener('click', async () => {
-            try {
-                let text = btn.dataset.copy
-                if(text === undefined) {
-                    // Copy the code of whichever tab is showing
-                    const panel = Array.from(btn.closest('[data-tabs]')!.querySelectorAll<HTMLElement>('[data-panel]')).find(p => !p.classList.contains('hidden'))
-                    text = panel?.querySelector('pre')?.innerText ?? ''
-                }
-                await navigator.clipboard.writeText(text)
-                btn.textContent = 'Copied'
-            } catch {
-                btn.textContent = 'Copy failed'
-            }
-            setTimeout(() => btn.textContent = 'Copy', 1500)
+    document.querySelectorAll<HTMLElement>('[data-copy]').forEach(button => {
+        button.addEventListener('click', () => copyText(button, button.dataset.copy!))
+    })
+    // Copy whichever tab of the card is showing
+    document.querySelectorAll<HTMLElement>('[data-copy-panel], [data-copy-snippet]').forEach(button => {
+        button.addEventListener('click', () => {
+            const card = button.closest('.card-code')!
+            const panel = Array.from(card.querySelectorAll<HTMLElement>('[data-panel]')).find(p => !p.classList.contains('hidden'))
+            const source = panel?.querySelector<HTMLElement>('[data-copy-text]') ?? panel
+            const pre = panel?.matches('pre') ? panel : panel?.querySelector('pre:last-of-type')
+            copyText(button, source?.dataset.copyText ?? pre?.textContent ?? '')
         })
     })
 
-    document.querySelectorAll('[data-tabs]').forEach(tabs => {
-        tabs.querySelectorAll('.tab-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const target = (btn as HTMLElement).dataset.tab!
-                tabs.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('tab-btn--active'))
-                btn.classList.add('tab-btn--active')
-                tabs.querySelectorAll('[data-panel]').forEach(panel => {
-                    (panel as HTMLElement).classList.toggle('hidden', (panel as HTMLElement).dataset.panel !== target)
-                })
+    const langKey = 'valdocs-snippet-lang'
+    document.querySelectorAll<HTMLElement>('[data-tabs]').forEach(bar => {
+        const card = bar.closest('.card-code')!
+        const select = (tab: string) => {
+            bar.querySelectorAll<HTMLElement>('[data-tab]').forEach(b => {
+                b.classList.toggle('tab--on', b.dataset.tab === tab)
+                b.setAttribute('aria-selected', String(b.dataset.tab === tab))
             })
-        })
+            card.querySelectorAll<HTMLElement>('[data-panel]').forEach(p => p.classList.toggle('hidden', p.dataset.panel !== tab))
+            card.querySelectorAll<HTMLElement>('[data-note-for]').forEach(n => n.classList.toggle('hidden', n.dataset.noteFor !== tab))
+        }
+        bar.querySelectorAll<HTMLElement>('[data-tab]').forEach(button => button.addEventListener('click', () => {
+            select(button.dataset.tab!)
+            if(bar.dataset.tabs === 'request') {
+                try { localStorage.setItem(langKey, button.dataset.tab!) } catch {}
+            }
+        }))
+        // The snippet language is remembered across pages
+        if(bar.dataset.tabs === 'request') {
+            let saved: string | null = null
+            try { saved = localStorage.getItem(langKey) } catch {}
+            if(saved !== null && bar.querySelector(`[data-tab="${saved}"]`)) select(saved)
+        }
     })
 </script>
 
 <style>
-.ep-main {
-    padding: 40px 56px;
-    max-width: 1100px;
-    margin: 0 auto;
-    width: 100%;
+.ep { padding: 40px 48px 64px; }
+.ep-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 48px;
+    align-items: flex-start;
+}
+.ep-doc {
+    flex: 1 1 480px;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+}
+.ep-code {
+    flex: 1 1 420px;
+    min-width: 0;
+    max-width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
 }
 
-.ep-header {
-    margin-bottom: 24px;
-    padding-bottom: 24px;
-    border-bottom: 1px solid var(--border);
-}
-
+.ep-title-block { display: flex; flex-direction: column; gap: 18px; }
+.crumbs { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 600; color: var(--muted); }
+.crumbs a { color: var(--muted); text-decoration: none; }
+.crumbs a:hover { color: var(--heading); }
+.crumbs span { color: var(--accent); }
+.ep-title-row { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
 .ep-title {
-    font-size: 36px;
-    font-family: var(--display);
+    font-size: clamp(30px, 3.2vw, 44px);
+    line-height: 1.05;
     font-weight: 800;
+    letter-spacing: -0.035em;
+    overflow-wrap: anywhere;
+}
+.ep-description { max-width: 680px; }
+
+.meta-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.meta-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 36px;
+    padding: 0 12px;
+    border-radius: 10px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-3);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+.meta-chip code, .meta-value { font-size: 12px; letter-spacing: 0; text-transform: none; color: var(--heading); }
+.meta-chip:has(.meta-copy) { padding-right: 5px; }
+.meta-copy { width: 26px; height: 26px; border-radius: 7px; }
+:global(.is-copied) { color: var(--success) !important; }
+
+.url-bar {
     display: flex;
     align-items: center;
-    gap: 12px;
-    flex-wrap: wrap;
-    letter-spacing: -0.5px;
-    color: var(--text);
-}
-
-:global(.ep-method) {
-    font-size: 16px !important;
-    font-family: var(--mono);
-    font-weight: 700;
-}
-
-.ep-url {
-    display: block;
+    gap: 14px;
+    padding: 6px 6px 6px 16px;
     background: var(--surface);
-    border: 1px solid var(--border);
-    border-left: 3px solid var(--accent);
-    border-radius: 6px;
-    padding: 14px 18px;
-    font-size: 14px;
-    word-break: break-all;
-    color: var(--text-2);
-    margin-bottom: 28px;
+    border: 1px solid var(--border-2);
+    border-radius: 14px;
+    box-shadow: 0 0 0 4px var(--line), 0 24px 48px -24px var(--accent-glow);
 }
-
-:global(.ep-url a) {
+.url-sep { width: 1px; height: 22px; background: var(--border-2); flex: none; }
+.url-text {
+    flex: 1;
+    min-width: 0;
+    overflow-x: auto;
+    white-space: nowrap;
+    font-size: 13.5px;
+    color: var(--tok-field);
+    padding: 10px 0;
+}
+.url-text :global(a) { color: var(--accent); text-decoration: none; }
+.url-text :global(a:hover) { text-decoration: underline; }
+.url-copy { flex: none; }
+.try-jump {
+    align-self: flex-start;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: -24px;
+    padding: 8px 12px;
+    border-radius: 10px;
+    background: var(--accent-soft);
+    border: 1px solid var(--accent-line);
     color: var(--accent);
+    font-size: 12.5px;
+    font-weight: 600;
     text-decoration: none;
 }
-:global(.ep-url a:hover) { text-decoration: underline; }
+.try-jump:hover { color: var(--accent-hover); }
 
-.ep-description {
-    margin-bottom: 32px;
-    font-family: var(--sans);
-    font-size: 17px;
-    color: var(--text-2);
-    line-height: 1.7;
-}
-
-.ep-section {
-    margin-top: 32px;
-}
-
-.ep-section-title {
-    font-size: 11px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    color: var(--text-4);
-    margin-bottom: 14px;
-    padding-bottom: 8px;
+.doc-section { display: flex; flex-direction: column; }
+.doc-section-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    padding-bottom: 14px;
     border-bottom: 1px solid var(--border);
 }
+.doc-section-head h2 { font-size: 20px; font-weight: 700; letter-spacing: -0.02em; }
+.doc-section-meta { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 600; color: var(--muted); }
+.status-code { font-family: var(--mono); color: var(--success); background: color-mix(in srgb, var(--success) 12%, transparent); border-radius: 6px; padding: 3px 8px; }
 
-.ep-list {
+.row {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 18px 0;
+    border-bottom: 1px solid var(--line);
+    scroll-margin-top: calc(var(--topbar-h) + 16px);
+}
+.row:last-child { border-bottom: 0; }
+.row-head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.row-name { font-size: 13.5px; font-weight: 600; color: var(--heading); }
+.row-value { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; font-size: 14px; font-weight: 500; color: var(--text-2); }
+.row-desc { margin: 0; font-size: 14px; line-height: 1.6; font-weight: 500; color: var(--text-2); }
+.row-desc :global(a) { color: var(--accent); }
+.row-desc :global(p) { margin: 0 0 6px; }
+.row-values { display: flex; flex-wrap: wrap; gap: 6px; }
+
+.more summary {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--accent);
+    cursor: pointer;
     list-style: none;
-    padding: 0;
+}
+.more summary::-webkit-details-marker { display: none; }
+.more summary::after { content: '+'; font-family: var(--mono); transition: transform .2s; }
+.more[open] summary::after { transform: rotate(45deg); }
+.more .row-desc { margin-top: 10px; }
+
+:global(.flash) { animation: flash 1.4s ease-out; }
+@keyframes flash {
+    0% { background: var(--accent-soft); box-shadow: 0 0 0 8px var(--accent-soft); }
+    100% { background: transparent; box-shadow: 0 0 0 8px transparent; }
+}
+
+.var-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; padding-top: 18px; }
+.var-card {
     display: flex;
     flex-direction: column;
     gap: 8px;
-}
-
-.ep-list--vars {
-    gap: 14px;
-}
-
-:global(.ep-var) {
-    border-left: 2px solid var(--border);
-    padding-left: 14px;
-    transition: border-color .15s;
-}
-
-:global(.ep-var:target) {
-    border-left-color: var(--accent);
-}
-
-:global(.ep-var-desc) {
-    font-family: var(--sans);
-    font-size: 15.5px;
-    color: var(--text-3);
-    margin-top: 6px;
-    line-height: 1.7;
-}
-
-:global(.ep-var-desc a) { color: var(--accent); }
-
-.ep-badge {
-    display: inline-block;
-    margin-left: 8px;
-    font-size: 9px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    padding: 1px 6px;
-    border-radius: 3px;
-    border: 1px solid var(--border);
-    color: var(--muted);
-    vertical-align: middle;
-}
-
-:global(.astro-code) {
-    padding: 16px 18px !important;
-    border-radius: 0 0 6px 6px !important;
-    border: 1px solid var(--border) !important;
-    border-top: none !important;
-    font-size: 13px !important;
-}
-
-.schema-tabs {
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    overflow: hidden;
-}
-
-.tab-bar {
-    display: flex;
+    padding: 18px;
+    border-radius: 16px;
     background: var(--surface);
-    border-bottom: 1px solid var(--border);
+    border: 1px solid var(--border);
+    scroll-margin-top: calc(var(--topbar-h) + 16px);
+    transition: border-color .15s, background .15s;
 }
+.var-card:hover { border-color: var(--border-2); }
+.var-card:has(details[open]) { grid-column: 1 / -1; }
+.var-card-name { font-size: 13px; font-weight: 600; color: var(--heading); }
+.var-card-hint { font-size: 13px; line-height: 1.5; font-weight: 500; color: var(--text-2); }
+.var-card-link { display: inline-flex; align-items: center; gap: 6px; margin-top: 2px; font-size: 12px; font-weight: 600; color: var(--accent); text-decoration: none; }
+.var-card-link:hover { color: var(--accent-hover); }
 
-.tab-btn {
-    font-family: var(--mono);
-    font-size: 11px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    padding: 8px 16px;
-    background: transparent;
-    border: none;
-    color: var(--muted);
-    cursor: pointer;
-    border-bottom: 2px solid transparent;
-    margin-bottom: -1px;
-    transition: all .15s;
-}
-
-.tab-btn:hover { color: var(--text); }
-
-.tab-btn--active {
-    color: var(--accent);
-    border-bottom-color: var(--accent);
-}
-
-.ep-query-name {
+.pager { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; padding-top: 8px; }
+.pager-card {
     display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-top: 12px;
-    font-size: 13px;
-}
-
-.ep-query-name-label {
-    font-size: 10px;
-    text-transform: uppercase;
-    letter-spacing: 1.5px;
-    color: var(--muted);
-}
-
-.ep-url-wrap {
-    position: relative;
-    margin-bottom: 28px;
-}
-
-.ep-url-wrap .ep-url {
-    margin-bottom: 0;
-    padding-right: 76px;
-}
-
-.ep-url-copy {
-    position: absolute;
-    top: 50%;
-    right: 10px;
-    transform: translateY(-50%);
-}
-
-:global(.ep-header-chip) {
-    word-break: normal !important;
-    overflow-wrap: anywhere;
-}
-
-.ep-sample-note {
-    font-family: var(--sans);
-    font-size: 13px;
-    color: var(--text-4);
-    padding: 10px 18px 0;
+    flex-direction: column;
+    gap: 6px;
+    padding: 18px 20px;
+    border-radius: 16px;
     background: var(--surface);
+    border: 1px solid var(--border);
+    text-decoration: none;
+    transition: border-color .15s, background .15s;
 }
+.pager-card:hover { border-color: var(--border-2); background: var(--surface-2); }
+.pager-card--next { align-items: flex-end; text-align: right; }
+.pager-label { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+.pager-name { font-size: 15px; font-weight: 700; color: var(--heading); }
 
+.card-scroll { max-height: 640px; overflow: auto; }
+.card-scroll > [data-panel] { padding: 18px 20px; }
+.card-scroll :global(.astro-code) {
+    margin: 0;
+    padding: 0 !important;
+    background: transparent !important;
+    font-size: 12.5px !important;
+    line-height: 1.8;
+}
 /* Shiki renders both themes as CSS variables; pick one per colour scheme */
-:global(.astro-code),
-:global(.astro-code span) {
+.card-scroll :global(.astro-code),
+.card-scroll :global(.astro-code span) {
     color: var(--shiki-dark) !important;
-    background-color: var(--shiki-dark-bg) !important;
+    background-color: transparent !important;
+    font-style: var(--shiki-dark-font-style) !important;
 }
 @media (prefers-color-scheme: light) {
-    :global(.astro-code),
-    :global(.astro-code span) {
+    .card-scroll :global(.astro-code),
+    .card-scroll :global(.astro-code span) {
         color: var(--shiki-light) !important;
-        background-color: var(--shiki-light-bg) !important;
+        font-style: var(--shiki-light-font-style) !important;
     }
 }
 
-.copy-btn.copy-btn--inline {
-    margin-left: 0;
-    padding: 4px 8px;
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    background: var(--surface);
-    font-size: 10px;
-}
-
-.copy-btn {
-    margin-left: auto;
+.resp-status {
+    --c: var(--muted);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
     font-family: var(--mono);
     font-size: 11px;
     font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    padding: 8px 16px;
-    background: transparent;
-    border: none;
-    color: var(--muted);
-    cursor: pointer;
+    color: var(--c);
+    background: color-mix(in srgb, var(--c) 12%, transparent);
+    border-radius: 6px;
+    padding: 3px 8px;
 }
+.resp-status[data-state="ok"] { --c: var(--success); }
+.resp-status[data-state="error"] { --c: var(--danger); }
+.resp-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--c); }
 
-.copy-btn:hover { color: var(--accent); }
+.live-body { white-space: pre-wrap; word-break: break-word; }
+.live-capture {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 14px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    background: var(--accent-soft);
+    border: 1px solid var(--accent-line);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--accent);
+}
+.live-capture :global(span) { margin-right: 4px; }
+.live-headers { margin-bottom: 14px; }
+.live-headers summary { font-size: 12px; font-weight: 600; color: var(--text-3); cursor: pointer; }
+.live-headers pre { margin-top: 8px; font-size: 11.5px; }
 
-.hidden { display: none; }
+.help-card { display: flex; align-items: center; flex-wrap: wrap; gap: 14px; padding: 16px 18px; }
+.help-icon {
+    flex: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--accent-soft);
+    color: var(--accent);
+}
+.help-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1 1 180px; }
+.help-title { font-size: 13px; font-weight: 700; color: var(--heading); }
+.help-sub { font-size: 12px; font-weight: 500; color: var(--text-3); }
+.help-actions { display: flex; gap: 6px; }
+
+@media (max-width: 900px) {
+    .ep { padding: 28px 16px 48px; }
+    .ep-grid { gap: 32px; }
+    .ep-doc { gap: 32px; }
+    .ep-code { flex-basis: 100%; }
+    .url-bar { flex-wrap: wrap; padding: 10px 12px; gap: 10px; }
+    .url-text { flex-basis: 100%; order: 3; white-space: normal; word-break: break-all; padding: 4px 0; }
+    .url-sep { display: none; }
+    .url-copy { margin-left: auto; }
+    .try-jump { margin-top: -16px; }
+}
 </style>

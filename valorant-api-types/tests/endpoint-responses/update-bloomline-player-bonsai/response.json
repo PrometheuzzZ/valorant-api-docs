@@ -1,0 +1,32 @@
+{
+    "Subject": "3f6c1a2e-8d4b-5e7f-9a01-2b3c4d5e6f70",
+    "Bonsais": [
+        {
+            "BonsaiID": "9f0d8ba9-4140-b941-57d3-a7ad57c6b417",
+            "HypeID": "f63e73c0-4ae9-f52a-8c0b-769d8402df36",
+            "BackgroundID": "1ade0649-407c-57ad-2e7f-fc8260ec6274",
+            "ClipID": "1bd4f77a-47d2-a6c6-01c7-8c8644e5bab0",
+            "BorderID": "0e0af84a-4562-0bf8-1638-338a74ee1b29",
+            "Flourish": {
+                "PointsVersion": -1
+            },
+            "NumberModules": [
+                {
+                    "ModuleID": "8f0715d6-6f28-447c-936d-6756532d6135",
+                    "NumberID": "3305cf00-4f62-c556-0b0d-f89dde22e3e3",
+                    "Value": 0
+                },
+                {
+                    "ModuleID": "3c70f382-8e9b-4151-ac41-59638442dfbf",
+                    "NumberID": "00000000-0000-0000-0000-000000000000",
+                    "Value": 0
+                },
+                {
+                    "ModuleID": "a3c0b606-b1b4-41ca-8202-6b947fb6675b",
+                    "NumberID": "00000000-0000-0000-0000-000000000000",
+                    "Value": 0
+                }
+            ]
+        }
+    ]
+}

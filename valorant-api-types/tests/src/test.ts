@@ -39,6 +39,26 @@ import {deepStrict} from './deepStrict'
         }
     }
 
+    // Real request bodies, shown as the body example on the docs site
+    const requestsDir = path.join(__dirname, '..', 'endpoint-requests')
+    for(const requestFile of (await fs.readdir(requestsDir).catch(() => [] as string[])).filter(f => f.endsWith('.json'))) {
+        const slugName = requestFile.slice(0, -'.json'.length)
+        const endpoint = endpointArray.find(e => e.name.toLowerCase().replace(/ /g, '-') === slugName)
+        if(endpoint?.body === undefined) {
+            failures++
+            console.log(`❌ endpoint-requests/${requestFile} doesn't match an endpoint with a body`)
+            continue
+        }
+        const result = deepStrict(endpoint.body).safeParse(JSON.parse(await fs.readFile(path.join(requestsDir, requestFile), 'utf-8')))
+        if(result.success) {
+            console.log(`✅ Parsed request body ${requestFile}`)
+        } else {
+            failures++
+            console.log(`❌ Failed to parse request body ${requestFile}`)
+            console.error(JSON.stringify(result.error.issues, null, 4))
+        }
+    }
+
     const orphaned = responsesDirectories.filter(d => !d.includes('.') && !usedDirectories.has(d))
     if(orphaned.length > 0) {
         failures++

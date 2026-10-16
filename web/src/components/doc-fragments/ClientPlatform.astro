@@ -3,11 +3,12 @@ import {Code} from 'astro/components'
 import SimpleCode from "../SimpleCode.astro";
 
 import githubDark from '../../themes/github-dark.json'
+import {defaultClientPlatform} from '../../lib/playground'
 
 const examplePlatform = `{
     "platformType": "PC",
     "platformOS": "Windows",
-    "platformOSVersion": "10.0.19042.1.256.64bit",
+    "platformOSVersion": "10.0.26200.1.256.64bit",
     "platformChipset": "Unknown"
 }`
 
@@ -16,6 +17,6 @@ const examplePlatform = `{
 <p>
     A string representing the platform of the client. Base-64 encoded JSON with the following fields:
     <Code code={examplePlatform} lang="json" wrap theme={githubDark}/>
-    <SimpleCode>ew0KCSJwbGF0Zm9ybVR5cGUiOiAiUEMiLA0KCSJwbGF0Zm9ybU9TIjogIldpbmRvd3MiLA0KCSJwbGF0Zm9ybU9TVmVyc2lvbiI6ICIxMC4wLjE5MDQyLjEuMjU2LjY0Yml0IiwNCgkicGxhdGZvcm1DaGlwc2V0IjogIlVua25vd24iDQp9</SimpleCode>
+    <SimpleCode>{defaultClientPlatform}</SimpleCode>
     is a value that works.
 </p>

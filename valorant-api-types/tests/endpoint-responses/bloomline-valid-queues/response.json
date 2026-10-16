@@ -1,0 +1,24 @@
+{
+    "ProcessedQueues": [
+        "spikerush",
+        "competitive",
+        "unrated",
+        "swiftplay",
+        "premier",
+        "hurm",
+        "console_spikerush",
+        "console_competitive",
+        "console_unrated",
+        "console_swiftplay",
+        "console_hurm"
+    ],
+    "PerformanceScoreQueues": [
+        "competitive",
+        "unrated",
+        "premier",
+        "swiftplay",
+        "console_competitive",
+        "console_unrated",
+        "console_swiftplay"
+    ]
+}
