@@ -17,7 +17,7 @@ Every HTTP endpoint page has a "Try it" panel that sends the request from the br
 Values like the shard, puuid and tokens are shared by every endpoint page (session storage, or local storage when "Save" is ticked);
 the client platform and the latest client version (from `api.radiantconnect.ca`, cached for 3 hours) are filled in automatically.
 
-Riot's servers don't send CORS headers, so remote requests go through [`/api/proxy`](../api/proxy.mjs),
+Riot's servers don't send CORS headers, so remote requests go through [`/api/proxy`](api/proxy.js),
 a Vercel function that only forwards to Riot hosts and doesn't store anything. `npm run dev` serves the same handler.
 Local client endpoints (`127.0.0.1`) are called directly from the browser.
 

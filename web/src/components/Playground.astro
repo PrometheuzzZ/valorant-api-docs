@@ -652,7 +652,9 @@ for(const root of document.querySelectorAll<HTMLElement>('[data-playground]')) {
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({url: req.url, method: req.method, headers, body})
                 })
-                const data = await res.json().catch(() => ({error: `The proxy answered with ${res.status}; it only runs on the deployed site and the dev server`}))
+                const data = await res.json().catch(() => ({error: res.status === 404 ?
+                    'The proxy (/api/proxy) is not deployed on this site. Use Direct with a CORS-disabling extension, or run npm run dev.' :
+                    `The proxy answered with ${res.status}`}))
                 if('error' in data) throw new Error(data.error)
                 result = data
             } else {
