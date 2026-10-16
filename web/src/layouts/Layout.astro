@@ -6,6 +6,7 @@ import {endpoints, ValorantEndpoint} from '@prometheuzz/valorant-api-types'
 //@ts-ignore
 import markedPlainText from 'marked-plaintext'
 import {marked} from 'marked'
+import Analytics from '@vercel/analytics/astro'
 
 export interface Props {
 	title: string
@@ -53,6 +54,7 @@ const isHome = Astro.url.pathname === '/'
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 		<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
 		<title>{title}</title>
+		<Analytics />
 	</head>
 	<body>
 		<input type="checkbox" id="toggler" class="sr-only" aria-hidden="true" tabindex="-1"/>
