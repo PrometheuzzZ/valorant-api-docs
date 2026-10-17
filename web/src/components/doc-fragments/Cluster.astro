@@ -1,0 +1,30 @@
+---
+import SimpleCode from "../SimpleCode.astro";
+
+const clusters = new Map<string, string>([
+    ['euc1', 'Europe'],
+    ['usw2', 'North America / Brazil / LATAM / PBE'],
+    ['apse1', 'Asia Pacific / Oceania'],
+    ['apne1', 'Japan / Korea'],
+])
+---
+
+<p>
+    There are {clusters.size} SGP clusters:
+    <table class="m-1 border rounded border-separate border-spacing-x-3 border-spacing-y-1">
+        <thead class="font-semibold">
+            <tr>
+                <th>Cluster ID</th>
+                <th>Region</th>
+            </tr>
+        </thead>
+        <tbody>
+            {Array.from(clusters.entries()).map(([id, name]) => (
+                <tr>
+                    <td><SimpleCode>{id}</SimpleCode></td>
+                    <td>{name}</td>
+                </tr>
+            ))}
+        </tbody>
+    </table>
+</p>

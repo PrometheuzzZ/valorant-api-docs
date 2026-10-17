@@ -1,0 +1,13 @@
+[
+    {
+        "mailId": "facbd973-761f-4e5f-8ee6-c8e6e4e9d811",
+        "puuid": "ce586d80-382b-54a1-8e90-ef51153f8592",
+        "message": "{\"product\":\"valorant\",\"category\":\"COMMS_ABUSE_TEXT\",\"recipientType\":\"\",\"offenderRiotId\":\"mamkatvoya#08047\"}",
+        "product": "valorant",
+        "region": null,
+        "tags": ["ga-reporter-feedback-notification"],
+        "mailType": "ACK_REQUIRED",
+        "state": "ACKNOWLEDGED",
+        "createdAt": 1787817230000
+    }
+]

@@ -1,0 +1,21 @@
+---
+export interface Props {
+    class?: string
+}
+
+const classStr = Astro.props.class || ''
+---
+<code class={'inline-code' + (classStr.length > 0 ? ' ' : '') + classStr}><slot/></code>
+
+<style>
+.inline-code {
+    background: var(--surface-3);
+    border: 1px solid var(--border-2);
+    border-radius: 6px;
+    padding: 1px 7px;
+    font-family: var(--mono);
+    font-size: 0.85em;
+    color: var(--heading);
+    overflow-wrap: anywhere;
+}
+</style>

@@ -1,0 +1,52 @@
+---
+import type { AugmentedValorantEndpoint } from '../types/AugmentedValorantEndpoint'
+
+export interface Props {
+    method: AugmentedValorantEndpoint['method']
+    class?: string
+    // Fixed-width pill used in the sidebar
+    badge?: boolean
+    // Large pill used in the endpoint title
+    large?: boolean
+}
+
+const {method, badge, large} = Astro.props
+const name = method || 'GET'
+const classes = ['method', `method--${name.toLowerCase()}`, badge && 'method--badge', large && 'method--large', Astro.props.class].filter(Boolean).join(' ')
+---
+<span class={classes}>{name}</span>
+
+<style>
+.method {
+    --c: var(--text-3);
+    flex: none;
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: var(--c);
+}
+.method--get { --c: var(--method-get); }
+.method--post { --c: var(--method-post); }
+.method--put { --c: var(--method-put); }
+.method--delete { --c: var(--method-delete); }
+.method--wss { --c: var(--method-wss); }
+.method--tcp { --c: var(--method-tcp); }
+
+.method--badge, .method--large {
+    background: color-mix(in srgb, var(--c) 11%, transparent);
+    text-align: center;
+}
+.method--badge {
+    width: 46px;
+    font-size: 10px;
+    padding: 3px 0;
+    border-radius: 6px;
+}
+.method--large {
+    font-size: 13px;
+    padding: 6px 10px;
+    border-radius: 8px;
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--c) 24%, transparent);
+}
+</style>

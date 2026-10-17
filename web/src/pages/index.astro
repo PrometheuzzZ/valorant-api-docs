@@ -1,0 +1,256 @@
+---
+import InsomniaButton from '../components/InsomniaButton.astro';
+import SimpleCode from '../components/SimpleCode.astro';
+import Layout from '../layouts/Layout.astro';
+
+const insomniaImportURL = `insomnia://app/import?uri=${Astro.url.origin}/insomnia.json`
+
+let contentCatalogBranch: string | null = null
+let contentCatalogURL: string | null = null
+try {
+    const res = await fetch('https://valorant-api.com/v1/version')
+    if (res.ok) {
+        const data = await res.json()
+        contentCatalogBranch = data?.data?.branch ?? null
+        if (contentCatalogBranch) {
+            contentCatalogURL = `https://valorant.dyn.riotcdn.net/x/content-catalog/PublicContentCatalog-${contentCatalogBranch}.zip`
+        }
+    }
+} catch {}
+---
+
+<Layout title="Valorant API Docs">
+	<main class="main-content">
+		<header class="page-header">
+			<h1>Valorant API Docs</h1>
+			<span class="page-subtitle">unofficial · community maintained</span>
+		</header>
+
+		<div class="card">
+			<p>
+				This site documents the Valorant API endpoints the client uses internally.
+				These endpoints are <strong>not</strong> officially supported.
+				Use common sense and you won't get banned.
+			</p>
+			<p style="margin-top: 0.75rem">
+				Join the Discord: <a class="link" href="https://discord.gg/a9yzrw3KAm">discord.gg/a9yzrw3KAm</a>
+			</p>
+		</div>
+
+		<section class="section">
+			<h2 class="section-title">Getting Started</h2>
+			<div class="card">
+				<p>The easiest way to explore the API is with a REST client like Insomnia.</p>
+				<ol class="steps">
+					<li>
+						<span class="step-num">01</span>
+						<div>
+							Download Insomnia: <a class="link" href="https://insomnia.rest/download">insomnia.rest/download</a>
+							<div class="note">
+								Recent versions require a Kong account.
+								For an account-free fork see <a class="link" href="https://github.com/ArchGPT/insomnium">insomnium</a>.
+							</div>
+						</div>
+					</li>
+					<li>
+						<span class="step-num">02</span>
+						<div>
+							<InsomniaButton href="insomnia://plugins/install?name=insomnia-plugin-valorant">Add insomnia-plugin-valorant</InsomniaButton>
+							<div class="note">
+								Autocompletes auth info, lockfile data, player info.
+								See <a class="link" href="https://github.com/techchrism/insomnia-plugin-valorant">github.com/techchrism/insomnia-plugin-valorant</a>
+							</div>
+						</div>
+					</li>
+					<li>
+						<span class="step-num">03</span>
+						<div>
+							<InsomniaButton href={insomniaImportURL}>Import Workspace</InsomniaButton>
+						</div>
+					</li>
+				</ol>
+				<p class="note" style="margin-top:1rem">Right-click a request → "Generate Code" to get code in any language.</p>
+				<p class="note" style="margin-top:0.5rem">
+					An <a class="link" href="/openapi.json">OpenAPI 3.1 spec</a> is also available for Postman, Bruno, or client generators like <a class="link" href="https://openapi-generator.tech">openapi-generator</a>.
+				</p>
+			</div>
+		</section>
+
+		<section class="section">
+			<h2 class="section-title">Investigating Endpoints</h2>
+			<div class="card">
+				<p>
+					Endpoints are found in the ShooterGame log at<br/>
+					<SimpleCode>%LocalAppData%\VALORANT\Saved\Logs\ShooterGame.log</SimpleCode>
+				</p>
+				<p style="margin-top:0.75rem">
+					Use <a class="link" href="https://github.com/techchrism/valorant-log-endpoint-scraper">Valorant Log Endpoint Scraper</a> to quickly export endpoints from the log.
+				</p>
+			</div>
+		</section>
+
+		<section class="section">
+			<h2 class="section-title">Other Links</h2>
+			<div class="card">
+				<ul class="credit-list">
+					<li>RumbleMike's <a class="link" href="https://github.com/HeyM1ke/ValorantClientAPI">ValorantClientAPI</a></li>
+					<li>Hidan's <a class="link" href="https://gist.github.com/Kavan72/b6e0bfdf21d610148f64df878b8a2cc5">endpoint gist</a></li>
+					<li>Many contributors in the Discord</li>
+					<li>
+						<strong>HenrikDev API</strong> — third-party Valorant API wrapper
+						<ul class="sublist">
+							<li><a class="link" href="https://api.henrikdev.xyz/dashboard/">api.henrikdev.xyz/dashboard</a> — register and manage your API key</li>
+							<li><a class="link" href="https://docs.henrikdev.xyz">docs.henrikdev.xyz</a> — full API documentation</li>
+						</ul>
+					</li>
+					<li>
+						<strong>VALORANT API</strong> — static game data (agents, skins, maps, etc.)
+						<ul class="sublist">
+							<li><a class="link" href="https://valorant-api.com/">valorant-api.com</a></li>
+						</ul>
+					</li>
+					<li>
+						<strong>Official Public Content Catalog</strong> — static data zip updated each patch
+						<ul class="sublist">
+							<li>
+								{contentCatalogURL ? (
+									<>URL: <a class="link" href={contentCatalogURL}><SimpleCode>{contentCatalogURL}</SimpleCode></a></>
+								) : (
+									<>URL: <SimpleCode>https://valorant.dyn.riotcdn.net/x/content-catalog/PublicContentCatalog-&#123;branch&#125;.zip</SimpleCode></>
+								)}
+							</li>
+							{contentCatalogBranch ? (
+								<li>Current branch: <code class="inline-code">{contentCatalogBranch}</code> (fetched at build time from <a class="link" href="https://valorant-api.com/v1/version">valorant-api.com/v1/version</a>)</li>
+							) : (
+								<li>Get <code class="inline-code">&#123;branch&#125;</code> from <a class="link" href="https://valorant-api.com/v1/version">valorant-api.com/v1/version</a> → <code class="inline-code">data.branch</code></li>
+							)}
+							<li><a class="link" href="https://developer.riotgames.com/docs/valorant#rso-integration_assets">Riot developer docs</a></li>
+						</ul>
+					</li>
+					<li>
+						<strong>ContentTypeID / CapID / ItemTypeID Map</strong>
+						<ul class="sublist">
+							<li><a class="link" href="https://gist.github.com/floxay/d1dffae56e24e1d1f86cfe62814120e6">gist by floxay</a></li>
+						</ul>
+					</li>
+				</ul>
+			</div>
+		</section>
+	</main>
+</Layout>
+
+<style>
+.main-content {
+	padding: 40px 48px;
+	max-width: 800px;
+	margin: 0 auto;
+	width: 100%;
+}
+
+.page-header {
+	margin-bottom: 32px;
+}
+
+.page-header h1 {
+	font-size: 44px;
+	font-weight: 800;
+	letter-spacing: -0.035em;
+	margin-bottom: 4px;
+}
+
+.page-subtitle {
+	font-size: 11px;
+	text-transform: uppercase;
+	letter-spacing: 2px;
+	color: var(--muted);
+}
+
+.card {
+	background: var(--surface);
+	border: 1px solid var(--border);
+	border-radius: 8px;
+	padding: 20px 24px;
+	font-family: var(--sans);
+	font-size: 15px;
+	line-height: 1.7;
+	color: var(--text-2);
+}
+
+.card strong { color: var(--text); }
+
+.section {
+	margin-top: 32px;
+}
+
+.section-title {
+	font-size: 10px;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 2px;
+	color: var(--text-4);
+	margin-bottom: 10px;
+	padding-bottom: 8px;
+	border-bottom: 1px solid var(--border);
+}
+
+.steps {
+	list-style: none;
+	padding: 0;
+	margin-top: 12px;
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+}
+
+.steps li {
+	display: flex;
+	gap: 16px;
+	align-items: flex-start;
+}
+
+.step-num {
+	font-size: 10px;
+	font-weight: 700;
+	color: var(--accent);
+	flex-shrink: 0;
+	margin-top: 2px;
+	letter-spacing: 1px;
+}
+
+.note {
+	font-size: 12.5px;
+	color: var(--muted);
+	margin-top: 4px;
+}
+
+.credit-list {
+	list-style: none;
+	padding: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+.credit-list > li {
+	margin-top: 12px;
+}
+
+.credit-list > li:first-child {
+	margin-top: 0;
+}
+
+.credit-list li::before {
+	content: '→ ';
+	color: var(--accent);
+}
+
+.sublist {
+	list-style: none;
+	padding: 0;
+	margin-top: 4px;
+	padding-left: 16px;
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+}
+</style>

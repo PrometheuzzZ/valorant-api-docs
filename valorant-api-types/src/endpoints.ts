@@ -1,0 +1,256 @@
+import {fetchContentEndpoint} from './endpoints/pvp/FetchContent'
+import {accountXPEndpoint} from './endpoints/pvp/AccountXP'
+import {playerLoadoutEndpoint} from './endpoints/pvp/PlayerLoadout'
+import {setPlayerLoadoutEndpoint} from './endpoints/pvp/SetPlayerLoadout'
+import {playerMMREndpoint} from './endpoints/pvp/PlayerMMR'
+import {matchHistoryEndpoint} from './endpoints/pvp/MatchHistory'
+import {matchDetailsEndpoint} from './endpoints/pvp/MatchDetails'
+import {competitiveUpdatesEndpoint} from './endpoints/pvp/CompetitiveUpdates'
+import {leaderboardEndpoint} from './endpoints/pvp/Leaderboard'
+import {penaltiesEndpoint} from './endpoints/pvp/Penalties'
+import {activeFutureInterventionsEndpoint} from './endpoints/pvp/ActiveFutureInterventions'
+import {playerReportTokenEndpoint} from './endpoints/pvp/PlayerReportToken'
+import {playerAvoidListEndpoint} from './endpoints/pvp/PlayerAvoidList'
+import {itemUpgradesEndpoint} from './endpoints/contracts/ItemUpgrades'
+import {configEndpoint} from './endpoints/pvp/Config'
+import {partyEndpoint} from './endpoints/party/Party'
+import {partyPlayerEndpoint} from './endpoints/party/PartyPlayer'
+import {partyRemovePlayerEndpoint} from './endpoints/party/PartyRemovePlayer'
+import {partySetMemberReadyEndpoint} from './endpoints/party/PartySetMemberReady'
+import {refreshCompetitiveTierEndpoint} from './endpoints/party/RefreshCompetitiveTier'
+import {refreshPlayerIdentityEndpoint} from './endpoints/party/RefreshPlayerIdentity'
+import {refreshPingsEndpoint} from './endpoints/party/RefreshPings'
+import {changeQueueEndpoint} from './endpoints/party/ChangeQueue'
+import {startCustomGameEndpoint} from './endpoints/party/StartCustomGame'
+import {startSoloExperienceEndpoint} from './endpoints/party/StartSoloExperience'
+import {enterMatchmakingQueueEndpoint} from './endpoints/party/EnterMatchmakingQueue'
+import {leaveMatchmakingQueueEndpoint} from './endpoints/party/LeaveMatchmakingQueue'
+import {setPartyAccessibilityEndpoint} from './endpoints/party/SetPartyAccessibility'
+import {setCustomGameSettingsEndpoint} from './endpoints/party/SetCustomGameSettings'
+import {customGameMembershipEndpoint} from './endpoints/party/CustomGameMembership'
+import {setPlayerModeratorStatusEndpoint} from './endpoints/party/SetPlayerModeratorStatus'
+import {setPlayerBroadcastHUDStatusEndpoint} from './endpoints/party/SetPlayerBroadcastHUDStatus'
+import {partyInviteEndpoint} from './endpoints/party/PartyInvite'
+import {partyRequestEndpoint} from './endpoints/party/PartyRequest'
+import {partyDeclineEndpoint} from './endpoints/party/PartyDecline'
+import {customGameConfigsEndpoint} from './endpoints/party/CustomGameConfigs'
+import {partyChatTokenEndpoint} from './endpoints/party/PartyChatToken'
+import {partyVoiceTokenEndpoint} from './endpoints/party/PartyVoiceToken'
+import {pricesEndpoint} from './endpoints/store/Prices'
+import {storefront2Endpoint} from './endpoints/store/Storefront2'
+import {createOrderEndpoint} from './endpoints/store/CreateOrder'
+import {getOrderEndpoint} from './endpoints/store/GetOrder'
+import {walletEndpoint} from './endpoints/store/Wallet'
+import {ownedItemsEndpoint} from './endpoints/store/OwnedItems'
+import {allOwnedItemsEndpoint} from './endpoints/store/AllOwnedItems'
+import {giftPurchaserEligibilityEndpoint} from './endpoints/store/GiftPurchaserEligibility'
+import {giftRecipientEligibilityEndpoint} from './endpoints/store/GiftRecipientEligibility'
+import {agentStorefrontEndpoint} from './endpoints/store/AgentStorefront'
+import {pregamePlayerEndpoint} from './endpoints/pregame/PregamePlayer'
+import {pregameMatchEndpoint} from './endpoints/pregame/PregameMatch'
+import {pregameLoadoutsEndpoint} from './endpoints/pregame/PregameLoadouts'
+import {selectCharacterEndpoint} from './endpoints/pregame/SelectCharacter'
+import {lockCharacterEndpoint} from './endpoints/pregame/LockCharacter'
+import {pregameQuitEndpoint} from './endpoints/pregame/PregameQuit'
+import {currentGamePlayerEndpoint} from './endpoints/currentgame/CurrentGamePlayer'
+import {currentGameMatchEndpoint} from './endpoints/currentgame/CurrentGameMatch'
+import {currentGameLoadoutsEndpoint} from './endpoints/currentgame/CurrentGameLoadouts'
+import {currentGameQuitEndpoint} from './endpoints/currentgame/CurrentGameQuit'
+import {contractsEndpoint} from './endpoints/contracts/Contracts'
+import {activateContractEndpoint} from './endpoints/contracts/ActivateContract'
+import {contractMatchEndpoint} from './endpoints/contracts/ContractMatch'
+import {localHelpEndpoint} from './endpoints/local/LocalHelp'
+import {sessionsEndpoint} from './endpoints/local/Sessions'
+import {rsoUserInfoEndpoint} from './endpoints/local/RSOUserInfo'
+import {clientRegionEndpoint} from './endpoints/local/ClientRegion'
+import {accountAliasEndpoint} from './endpoints/local/AccountAlias'
+import {entitlementsTokenEndpoint} from './endpoints/local/EntitlementsToken'
+import {chatSessionEndpoint} from './endpoints/local/ChatSession'
+import {friendsEndpoint} from './endpoints/local/Friends'
+import {presenceEndpoint} from './endpoints/local/Presence'
+import {friendRequestsEndpoint} from './endpoints/local/FriendRequests'
+import {partyChatInfoEndpoint} from './endpoints/local/chat/PartyChatInfo'
+import {pregameChatInfoEndpoint} from './endpoints/local/chat/PregameChatInfo'
+import {currentGameChatInfoEndpoint} from './endpoints/local/chat/CurrentGameChatInfo'
+import {allChatInfoEndpoint} from './endpoints/local/chat/AllChatInfo'
+import {chatParticipantsEndpoint} from './endpoints/local/chat/ChatParticipants'
+import {sendChatEndpoint} from './endpoints/local/chat/SendChat'
+import {chatHistoryEndpoint} from './endpoints/local/chat/ChatHistory'
+import {localSwaggerDocsEndpoint} from './endpoints/local/LocalSwaggerDocs'
+import {authCookiesEndpoint} from './endpoints/auth/AuthCookies'
+import {authRequestEndpoint} from './endpoints/auth/AuthRequest'
+import {multiFactorAuthenticationEndpoint} from './endpoints/auth/MultiFactorAuthentication'
+import {cookieReauthEndpoint} from './endpoints/auth/CookieReauth'
+import {entitlementEndpoint} from './endpoints/auth/Entitlement'
+import {playerInfoEndpoint} from './endpoints/auth/PlayerInfo'
+import {nameServiceEndpoint} from "./endpoints/pvp/NameService";
+import {playerSessionEndpoint} from './endpoints/pvp/PlayerSession'
+import {playerRegionIndexEndpoint} from './endpoints/pvp/PlayerRegionIndex'
+import {sendFriendRequestEndpoint} from './endpoints/local/SendFriendRequest'
+import {removeFriendRequestEndpoint} from './endpoints/local/RemoveFriendRequest'
+import {riotGeoEndpoint} from './endpoints/auth/RiotGeo'
+import {pasTokenEndpoint} from './endpoints/auth/PASToken'
+import {riotClientConfigEndpoint} from './endpoints/auth/RiotClientConfig'
+import {partyDisableCodeEndpoint} from './endpoints/party/PartyDisableCode'
+import {partyGenerateCodeEndpoint} from './endpoints/party/PartyGenerateCode'
+import {partyJoinByCodeEndpoint} from './endpoints/party/PartyJoinByCode'
+import {premierPlayerEndpoint} from './endpoints/premier/PremierPlayer'
+import {premierPlayerCrestsEndpoint} from './endpoints/premier/PremierPlayerCrests'
+import {premierEligibilityEndpoint} from './endpoints/premier/PremierEligibility'
+import {premierSeasonsEndpoint} from './endpoints/premier/PremierSeasons'
+import {premierSeasonActiveEndpoint} from './endpoints/premier/PremierSeasonActive'
+import {premierConferencesEndpoint} from './endpoints/premier/PremierConferences'
+import {premierRosterEndpoint} from './endpoints/premier/PremierRoster'
+import {esportsUpcomingMatchesEndpoint} from './endpoints/esports/EsportsUpcomingMatches'
+import {esportsMatchesEndpoint} from './endpoints/esports/EsportsMatches'
+import {premierRosterMatchHistoryEndpoint} from './endpoints/premier/PremierRosterMatchHistory'
+import {premierRosterPublicInfoEndpoint} from './endpoints/premier/PremierRosterPublicInfo'
+import {premierRosterSetCustomizationEndpoint} from './endpoints/premier/PremierRosterSetCustomization'
+import {mailboxEndpoint} from './endpoints/mailbox/Mailbox'
+import {mailEndpoint} from './endpoints/mailbox/Mail'
+import {deleteMailEndpoint} from './endpoints/mailbox/DeleteMail'
+import {goldstarsEndpoint} from './endpoints/goldstars/Goldstars'
+import {playerGoldstarsEndpoint} from './endpoints/goldstars/PlayerGoldstars'
+import {activityLookupEndpoint} from './endpoints/activities/ActivityLookup'
+import {sharedJoinLinkEndpoint} from './endpoints/activities/SharedJoinLink'
+import {disableJoinLinkEndpoint} from './endpoints/activities/DisableJoinLink'
+import {bloomlinePlayerEndpoint} from './endpoints/bloomline/BloomlinePlayer'
+import {bloomlinePlayerBonsaiEndpoint} from './endpoints/bloomline/BloomlinePlayerBonsai'
+import {updateBloomlinePlayerBonsaiEndpoint} from './endpoints/bloomline/UpdateBloomlinePlayerBonsai'
+import {bloomlineValidQueuesEndpoint} from './endpoints/bloomline/BloomlineValidQueues'
+
+export const endpoints = {
+    fetchContentEndpoint,
+    accountXPEndpoint,
+    playerLoadoutEndpoint,
+    setPlayerLoadoutEndpoint,
+    playerMMREndpoint,
+    matchHistoryEndpoint,
+    matchDetailsEndpoint,
+    competitiveUpdatesEndpoint,
+    playerRegionIndexEndpoint,
+    leaderboardEndpoint,
+    penaltiesEndpoint,
+    activeFutureInterventionsEndpoint,
+    playerReportTokenEndpoint,
+    playerAvoidListEndpoint,
+    configEndpoint,
+    nameServiceEndpoint,
+    playerSessionEndpoint,
+
+    partyEndpoint,
+    partyPlayerEndpoint,
+    partyRemovePlayerEndpoint,
+    partySetMemberReadyEndpoint,
+    refreshCompetitiveTierEndpoint,
+    refreshPlayerIdentityEndpoint,
+    refreshPingsEndpoint,
+    changeQueueEndpoint,
+    startCustomGameEndpoint,
+    startSoloExperienceEndpoint,
+    enterMatchmakingQueueEndpoint,
+    leaveMatchmakingQueueEndpoint,
+    setPartyAccessibilityEndpoint,
+    setCustomGameSettingsEndpoint,
+    customGameMembershipEndpoint,
+    setPlayerModeratorStatusEndpoint,
+    setPlayerBroadcastHUDStatusEndpoint,
+    partyInviteEndpoint,
+    partyRequestEndpoint,
+    partyDeclineEndpoint,
+    customGameConfigsEndpoint,
+    partyChatTokenEndpoint,
+    partyVoiceTokenEndpoint,
+    partyDisableCodeEndpoint,
+    partyGenerateCodeEndpoint,
+    partyJoinByCodeEndpoint,
+
+    storefront2Endpoint,
+    createOrderEndpoint,
+    getOrderEndpoint,
+    walletEndpoint,
+    ownedItemsEndpoint,
+    allOwnedItemsEndpoint,
+    giftPurchaserEligibilityEndpoint,
+    giftRecipientEligibilityEndpoint,
+    agentStorefrontEndpoint,
+
+    pregamePlayerEndpoint,
+    pregameMatchEndpoint,
+    pregameLoadoutsEndpoint,
+    selectCharacterEndpoint,
+    lockCharacterEndpoint,
+    pregameQuitEndpoint,
+
+    currentGamePlayerEndpoint,
+    currentGameMatchEndpoint,
+    currentGameLoadoutsEndpoint,
+    currentGameQuitEndpoint,
+
+    premierPlayerEndpoint,
+    premierPlayerCrestsEndpoint,
+    premierEligibilityEndpoint,
+    premierSeasonsEndpoint,
+    premierSeasonActiveEndpoint,
+    premierConferencesEndpoint,
+    esportsUpcomingMatchesEndpoint,
+    esportsMatchesEndpoint,
+
+    premierRosterEndpoint,
+    premierRosterMatchHistoryEndpoint,
+    premierRosterPublicInfoEndpoint,
+    premierRosterSetCustomizationEndpoint,
+
+    mailboxEndpoint,
+    mailEndpoint,
+    deleteMailEndpoint,
+
+    goldstarsEndpoint,
+    playerGoldstarsEndpoint,
+
+    activityLookupEndpoint,
+    sharedJoinLinkEndpoint,
+    disableJoinLinkEndpoint,
+
+    bloomlinePlayerEndpoint,
+    bloomlinePlayerBonsaiEndpoint,
+    updateBloomlinePlayerBonsaiEndpoint,
+    bloomlineValidQueuesEndpoint,
+
+    itemUpgradesEndpoint,
+    contractsEndpoint,
+    activateContractEndpoint,
+    contractMatchEndpoint,
+
+    localHelpEndpoint,
+    sessionsEndpoint,
+    rsoUserInfoEndpoint,
+    clientRegionEndpoint,
+    accountAliasEndpoint,
+    entitlementsTokenEndpoint,
+    chatSessionEndpoint,
+    friendsEndpoint,
+    sendFriendRequestEndpoint,
+    removeFriendRequestEndpoint,
+    presenceEndpoint,
+    friendRequestsEndpoint,
+    localSwaggerDocsEndpoint,
+
+    partyChatInfoEndpoint,
+    pregameChatInfoEndpoint,
+    currentGameChatInfoEndpoint,
+    allChatInfoEndpoint,
+    chatParticipantsEndpoint,
+    sendChatEndpoint,
+    chatHistoryEndpoint,
+
+    authCookiesEndpoint,
+    authRequestEndpoint,
+    multiFactorAuthenticationEndpoint,
+    cookieReauthEndpoint,
+    entitlementEndpoint,
+    playerInfoEndpoint,
+    riotGeoEndpoint,
+    pasTokenEndpoint,
+    riotClientConfigEndpoint
+}

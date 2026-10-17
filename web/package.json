@@ -1,0 +1,32 @@
+{
+	"name": "web",
+	"type": "module",
+	"version": "0.0.1",
+	"scripts": {
+		"dev": "astro dev",
+		"start": "astro dev",
+		"build": "astro build",
+		"generate-docs": "tsx scripts/generate-markdown-docs.ts",
+		"preview": "astro preview",
+		"astro": "astro"
+	},
+	"dependencies": {
+		"@astrojs/tailwind": "^6.0.2",
+		"@prometheuzz/valorant-api-types": "*",
+		"@vercel/analytics": "^2.0.1",
+		"astro": "^5.18.2",
+		"tailwindcss": "^3.3.5"
+	},
+	"devDependencies": {
+		"@anatine/zod-mock": "^3.14.0",
+		"@faker-js/faker": "^9.9.0",
+		"@tailwindcss/typography": "^0.5.10",
+		"@types/marked": "^5.0.2",
+		"marked": "^11.0.0",
+		"marked-plaintext": "^0.0.2",
+		"tsx": "^4.23.15",
+		"zod": "^3.20.2",
+		"zod-to-json-schema": "^3.25.2",
+		"zod-to-ts": "^1.2.0"
+	}
+}

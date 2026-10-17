@@ -1,0 +1,68 @@
+---
+export interface Props {
+    user: string
+    repo: string
+}
+
+const {user, repo} = Astro.props
+
+---
+
+<a href={`https://github.com/${user}/${repo}`} class="ghost repo-link">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z"/></svg>
+    <span class="repo-label">Star on GitHub</span>
+    <span id="starcount" class="repo-count" data-user={user} data-repo={repo}>…</span>
+</a>
+
+<style>
+.repo-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    height: 40px;
+    padding: 0 12px;
+    border-radius: 10px;
+    border: 1px solid var(--border-2);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    text-decoration: none;
+}
+.repo-count {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--heading);
+    background: var(--hover-2);
+    border-radius: 6px;
+    padding: 2px 7px;
+}
+@media (max-width: 900px) {
+    .repo-label { display: none; }
+}
+</style>
+
+<script>
+    const starElement = document.getElementById('starcount')!
+    const user = starElement.dataset.user
+    const repo = starElement.dataset.repo
+    const cacheKey = `stars-cache-${user}-${repo}`
+    let starData: {from: number, stars: number} | null = null
+    try {
+        starData = JSON.parse(localStorage.getItem(cacheKey) ?? 'null')
+    } catch {}
+
+    if(starData === null || starData.from < (Date.now() - (1000 * 60 * 60 * 24))) {
+        fetch(`https://api.github.com/repos/${user}/${repo}`)
+            .then(res => res.json())
+            .then(data => {
+                if(typeof data.stargazers_count !== 'number') return
+                try {
+                    localStorage.setItem(cacheKey, JSON.stringify({from: Date.now(), stars: data.stargazers_count}))
+                } catch {}
+                starElement.innerText = String(data.stargazers_count)
+            })
+            .catch(() => starElement.innerText = '★')
+    } else {
+        starElement.innerText = String(starData.stars)
+    }
+</script>

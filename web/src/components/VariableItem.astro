@@ -1,0 +1,54 @@
+---
+import SimpleCode from './SimpleCode.astro'
+
+export interface Props {
+    id: string
+    label: string
+    // Shared variables get a one-line hint and have their full explanation collapsed
+    hint?: string
+}
+
+const {id, label, hint} = Astro.props
+---
+
+{hint === undefined ?
+    <li id={id} class="ep-var">
+        <SimpleCode>{label}</SimpleCode>
+        <div class="ep-var-desc"><slot/></div>
+    </li> :
+    <li id={id} class="ep-var">
+        <details class="ep-var-details">
+            <summary>
+                <SimpleCode>{label}</SimpleCode>
+                <span class="ep-var-hint">{hint}</span>
+            </summary>
+            <div class="ep-var-desc"><slot/></div>
+        </details>
+    </li>}
+
+<style>
+summary {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px 10px;
+    cursor: pointer;
+    list-style: none;
+}
+summary::-webkit-details-marker { display: none; }
+
+summary::before {
+    content: '▸';
+    color: var(--muted);
+    font-size: 12px;
+    transition: transform .15s;
+}
+details[open] > summary::before { transform: rotate(90deg); }
+
+.ep-var-hint {
+    font-family: var(--sans);
+    font-size: 14.5px;
+    color: var(--muted);
+}
+summary:hover .ep-var-hint { color: var(--text); }
+</style>

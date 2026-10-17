@@ -1,0 +1,197 @@
+{
+    "subject": "b0f21027-98be-48aa-b516-64e3e9f73641",
+    "platformGroup": "pc",
+    "seasonId": "d816f426-48ea-f052-117f-9697a155b319",
+    "regionData": {
+        "1c18ab1f-420d-0d8b-71d0-77ad3c439115": {
+            "regionId": "1c18ab1f-420d-0d8b-71d0-77ad3c439115",
+            "values": {
+                "winRate": 0.7442248011297629,
+                "attackWinRate": 0.8194528007974797,
+                "defenseWinRate": 0.6282926679404189,
+                "tempValueF": 296.9871594219897,
+                "regionIndex": 263.03202213421855,
+                "totalGames": 2,
+                "computedFromValidSeasons": true
+            },
+            "deltaValues": {
+                "winRate": 0,
+                "attackWinRate": 0,
+                "defenseWinRate": 0,
+                "tempValueF": 0,
+                "regionIndex": 0,
+                "totalGames": 0,
+                "computedFromValidSeasons": false
+            },
+            "bestMatch": {
+                "matchId": "d98959a5-d38d-401a-95e3-0540989f017f",
+                "agentId": "dade69b4-4f5a-8528-247b-219e5a1facd6",
+                "actIndexBefore": 0,
+                "actIndexAfter": 343.4173879366114,
+                "tempValueF": 440.6610966876659,
+                "attackWinRate": 1,
+                "defenseWinRate": 0.9166666666666666,
+                "outcome": "Win"
+            },
+            "matchHistory": [
+                {
+                    "matchId": "b36cb409-b0ea-4af8-8e37-54e3e7064190",
+                    "agentId": "dade69b4-4f5a-8528-247b-219e5a1facd6",
+                    "actIndexBefore": 343.4173879366114,
+                    "actIndexAfter": 263.03202213421855,
+                    "tempValueF": 159.80130672310696,
+                    "attackWinRate": 0.6470588235294118,
+                    "defenseWinRate": 0.35294117647058826,
+                    "outcome": "Draw"
+                },
+                {
+                    "matchId": "d98959a5-d38d-401a-95e3-0540989f017f",
+                    "agentId": "dade69b4-4f5a-8528-247b-219e5a1facd6",
+                    "actIndexBefore": 0,
+                    "actIndexAfter": 343.4173879366114,
+                    "tempValueF": 440.6610966876659,
+                    "attackWinRate": 1,
+                    "defenseWinRate": 0.9166666666666666,
+                    "outcome": "Win"
+                }
+            ],
+            "topAgents": [
+                {
+                    "agentId": "dade69b4-4f5a-8528-247b-219e5a1facd6"
+                }
+            ],
+            "version": 20
+        },
+        "224b0a95-48b9-f703-1bd8-67aca101a61f": {
+            "regionId": "224b0a95-48b9-f703-1bd8-67aca101a61f",
+            "values": {
+                "winRate": 0.6669038008188667,
+                "attackWinRate": 0.5963551288316845,
+                "defenseWinRate": 0.6137169320242872,
+                "tempValueF": 307.48852617612783,
+                "regionIndex": 296.5826383706216,
+                "totalGames": 3,
+                "computedFromValidSeasons": true
+            },
+            "deltaValues": {
+                "winRate": 0,
+                "attackWinRate": 0,
+                "defenseWinRate": 0,
+                "tempValueF": 0,
+                "regionIndex": 0,
+                "totalGames": 0,
+                "computedFromValidSeasons": false
+            },
+            "bestMatch": {
+                "matchId": "45d3f353-c57b-45e7-8193-9c88f5e2d510",
+                "agentId": "41fb69c1-4189-7b37-f117-bcaf1e96f1bf",
+                "actIndexBefore": 171.0284953198202,
+                "actIndexAfter": 296.5826383706216,
+                "tempValueF": 366.2807837092251,
+                "attackWinRate": 1,
+                "defenseWinRate": 0.75,
+                "outcome": "Win"
+            },
+            "matchHistory": [
+                {
+                    "matchId": "45d3f353-c57b-45e7-8193-9c88f5e2d510",
+                    "agentId": "41fb69c1-4189-7b37-f117-bcaf1e96f1bf",
+                    "actIndexBefore": 171.0284953198202,
+                    "actIndexAfter": 296.5826383706216,
+                    "tempValueF": 366.2807837092251,
+                    "attackWinRate": 1,
+                    "defenseWinRate": 0.75,
+                    "outcome": "Win"
+                },
+                {
+                    "matchId": "551333ac-957b-4310-9235-0b5f2d6c6669",
+                    "agentId": "41fb69c1-4189-7b37-f117-bcaf1e96f1bf",
+                    "actIndexBefore": 168.24837178348253,
+                    "actIndexAfter": 171.0284953198202,
+                    "tempValueF": 310.6777200153789,
+                    "attackWinRate": 0.2222222222222222,
+                    "defenseWinRate": 0.5,
+                    "outcome": "Lose"
+                },
+                {
+                    "matchId": "f7ab08fc-1e52-47d1-b8bf-22e931ecac91",
+                    "agentId": "41fb69c1-4189-7b37-f117-bcaf1e96f1bf",
+                    "actIndexBefore": 0,
+                    "actIndexAfter": 168.24837178348253,
+                    "tempValueF": 239.66368553680394,
+                    "attackWinRate": 0.5454545454545454,
+                    "defenseWinRate": 0.5833333333333334,
+                    "outcome": "Win"
+                }
+            ],
+            "topAgents": [
+                {
+                    "agentId": "41fb69c1-4189-7b37-f117-bcaf1e96f1bf"
+                }
+            ],
+            "version": 20
+        },
+        "92584fbe-486a-b1b2-9faa-39b0f486b498": {
+            "regionId": "92584fbe-486a-b1b2-9faa-39b0f486b498",
+            "values": {
+                "winRate": 0,
+                "attackWinRate": 0.4412584312275202,
+                "defenseWinRate": 0.3314082670432543,
+                "tempValueF": 332.7243555518515,
+                "regionIndex": 170.08978168412744,
+                "totalGames": 2,
+                "computedFromValidSeasons": true
+            },
+            "deltaValues": {
+                "winRate": 0,
+                "attackWinRate": 0,
+                "defenseWinRate": 0,
+                "tempValueF": 0,
+                "regionIndex": 0,
+                "totalGames": 0,
+                "computedFromValidSeasons": false
+            },
+            "bestMatch": {
+                "matchId": "b2f6eb3e-11a2-494d-8b98-96b4bee5ad1f",
+                "agentId": "117ed9e3-49f3-6512-3ccf-0cada7e3823b",
+                "actIndexBefore": 147.05247519881104,
+                "actIndexAfter": 170.08978168412744,
+                "tempValueF": 354.6422888984613,
+                "attackWinRate": 0.42857142857142855,
+                "defenseWinRate": 0.25,
+                "outcome": "Lose"
+            },
+            "matchHistory": [
+                {
+                    "matchId": "b2f6eb3e-11a2-494d-8b98-96b4bee5ad1f",
+                    "agentId": "117ed9e3-49f3-6512-3ccf-0cada7e3823b",
+                    "actIndexBefore": 147.05247519881104,
+                    "actIndexAfter": 170.08978168412744,
+                    "tempValueF": 354.6422888984613,
+                    "attackWinRate": 0.42857142857142855,
+                    "defenseWinRate": 0.25,
+                    "outcome": "Lose"
+                },
+                {
+                    "matchId": "2e5630fe-b80a-4f6b-bac8-2f95396d32da",
+                    "agentId": "df1cb487-4902-002e-5c17-d28e83e78588",
+                    "actIndexBefore": 0,
+                    "actIndexAfter": 147.05247519881104,
+                    "tempValueF": 309.76983277357283,
+                    "attackWinRate": 0.45454545454545453,
+                    "defenseWinRate": 0.4166666666666667,
+                    "outcome": "Lose"
+                }
+            ],
+            "topAgents": [
+                {
+                    "agentId": "117ed9e3-49f3-6512-3ccf-0cada7e3823b"
+                },
+                {
+                    "agentId": "df1cb487-4902-002e-5c17-d28e83e78588"
+                }
+            ],
+            "version": 20
+        }
+    }
+}

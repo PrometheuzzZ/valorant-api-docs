@@ -1,0 +1,42 @@
+---
+import SimpleCode from "../SimpleCode.astro";
+
+const regions = new Map<string, string>([
+    ['na', 'North America'],
+    ['latam', 'Latin America'],
+    ['br', 'Brazil'],
+    ['eu', 'Europe'],
+    ['ap', 'Asia Pacific'],
+    ['kr', 'Korea']
+])
+
+---
+
+<p>
+    There are {regions.size} regions:
+    <table class="m-1 border rounded border-separate border-spacing-x-3 border-spacing-y-1">
+        <thead class="font-semibold">
+            <tr>
+                <th>Region ID</th>
+                <th>Region Name</th>
+            </tr>
+        </thead>
+        <tbody>
+            {Array.from(regions.entries()).map(([id, name]) => (
+                <tr>
+                    <td><SimpleCode>{id}</SimpleCode></td>
+                    <td>{name}</td>
+                </tr>
+            ))}
+        </tbody>
+    </table>
+    Obtaining locally:
+    <p class="ml-6">
+        The region can be found in the ShooterGame log (<SimpleCode>%LocalAppData%\VALORANT\Saved\Logs\ShooterGame.log</SimpleCode>) when it's used in an endpoint url.<br/>
+        Example regex capturing region and shard: <SimpleCode>https://glz-(.+?)-1.(.+?).a.pvp.net</SimpleCode>
+    </p>
+    Obtaining remotely:
+    <p class="ml-6">
+        Use the <a class="link" href="/endpoint/riot-geo">Riot Geo</a> endpoint with the ID and auth tokens from <a class="link" href="/endpoint/cookie-reauth">Cookie Reauth</a>
+    </p>
+</p>
